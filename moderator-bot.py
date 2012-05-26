@@ -30,10 +30,15 @@ from urllib.parse import urlencode
 import http.cookiejar
 from credentials import *
 
+def p(self, data):
+        print(time.strftime('\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d\033[39m][\03'
+                             '3[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data)
+
 def sigint_handler(signal, frame):
     '''Handles ^c'''
-    print('Recieved SIGINT! Exiting...')
+    p('Recieved SIGINT! Exiting...')
     sys.exit(0)
+
 
 class Reddit(object):
     """Base class to perform the tasks of a redditor."""
@@ -54,7 +59,7 @@ class Reddit(object):
             return json.loads(w.read().decode('utf-8'))
     
     def _login(self):
-        print("Logging in as {}.".format(self.username))
+        p("Logging in as {}.".format(self.username))
         body = {'user' :self.username, 'passwd' : self.password, 'api_type' : 'json'}
         resp = self._request('https://www.reddit.com/api/login', body)
         self.modhash = resp['json']['data']['modhash']
@@ -91,16 +96,16 @@ def main():
                   ", please [message the moderators](/message/compose/?to={sub}&subject=Removal%20D"
                   "ipute).".format(sub=SUBREDDIT))
     r = Reddit(USERNAME, PASSWORD)
-    print('Started monitoring submissions on {}.'.format(SUBREDDIT))
+    p('Started monitoring submissions on {}.'.format(SUBREDDIT))
     while True:
-        print('Getting feed...')
+        p('Getting feed...')
         feed = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
         for f in feed['data']['children']:
             f = f['data']
             if suggestion.match(f['title']):
-                print('Found [Suggestion] post.')
+                p('Found [Suggestion] post.')
                 if f['domain'] != 'self.{}'.format(SUBREDDIT):
-                    print('Submission is not a self post, removing.')
+                    p('Submission is not a self post, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                    'id' : f['name'], 'executed' : 'removed'}
                     comment_body = {'thing_id' : f['name'], 'text' : template_1}
@@ -110,7 +115,7 @@ def main():
                     distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
                     r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
                 elif not f['selftext']:
-                    print('Submission has no self-text, removing.')
+                    p('Submission has no self-text, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                    'id' : f['name'], 'executed' : 'removed'}
                     comment_body = {'thing_id' : f['name'], 'text' : template_2}
@@ -120,7 +125,7 @@ def main():
                     distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
                     r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
             elif fixed.match(f['title']):
-                print('Submission is a [fixed] post, removing.')
+                p('Submission is a [fixed] post, removing.')
                 remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                'id' : f['name'], 'executed' : 'removed'}
                 comment_body = {'thing_id' : f['name'], 'text' : template_3}
@@ -129,7 +134,7 @@ def main():
                                     comment_body)['json']['data']['things'][0]['data']['id']
                 distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
                 r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
-        print('Sleeping for {} seconds.'.format(sleep_time))
+        p('Sleeping for {} seconds.'.format(sleep_time))
         time.sleep(sleep_time)
 
 if __name__ == '__main__':
