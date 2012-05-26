@@ -24,7 +24,6 @@ import json
 import urllib.request
 import time
 import re
-import sys
 import signal
 from urllib.parse import urlencode
 import http.cookiejar
