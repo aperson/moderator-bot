@@ -25,6 +25,7 @@ import urllib.request
 import time
 import re
 import signal
+import sys
 from urllib.parse import urlencode
 import http.cookiejar
 from credentials import *
@@ -88,11 +89,11 @@ def main():
     template_3 = ("This submission has been removed automatically.  According to our [subreddit rul"
                   "es](r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was in error,"
                   " please [message the moderators](/message/compose/?to={sub}&subject=Removal%20Di"
-                  "pute)."
+                  "pute).".format(sub=SUBREDDIT))
     r = Reddit(USERNAME, PASSWORD)
     while True:
         feed = r.get('http://reddit.com/r/{}/new/.json'.format(SUBREDDIT))
-        for f in feed['data']:
+        for f in feed['data']['children']:
             f = f['data']
             if suggestion.match(f['title']):
                 print('Found [Suggestion] post.')
@@ -100,21 +101,21 @@ def main():
                     print('Submission is not a self post, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                    'id' : f['name'], 'executed' : 'removed'}
-                    comment_body = {'id' : f['name'], 'text' : template_1}
+                    comment_body = {'thing_id' : f['name'], 'text' : template_1}
                     r.post('http://www.reddit.com/api/remove', remove_body)
                     r.post('http://www.reddit.com/api/comment', comment_body)
                 elif not f['selftext']:
                     print('Submission has no self-text, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                    'id' : f['name'], 'executed' : 'removed'}
-                    comment_body = {'id' : f['name'], 'text' : template_2}
+                    comment_body = {'thing_id' : f['name'], 'text' : template_2}
                     r.post('http://www.reddit.com/api/remove', remove_body)
                     r.post('http://www.reddit.com/api/comment', comment_body)
             elif fixed.match(f['title']):
                 print('Submission is a [fixed] post, removing.')
                 remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                'id' : f['name'], 'executed' : 'removed'}
-                comment_body = {'id' : f['name'], 'text' : template_3}
+                comment_body = {'thing_id' : f['name'], 'text' : template_3}
                 r.post('http://www.reddit.com/api/remove', remove_body)
                 r.post('http://www.reddit.com/api/comment', comment_body)
         time.sleep(sleep_time)
