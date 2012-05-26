@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#  untitled.py
+#  moderator-bot.py
 #  
 #  Copyright 2012 Zach McCullough <nosrepa@gmail.com>
 #  
@@ -103,7 +103,7 @@ def main():
         for f in feed['data']['children']:
             f = f['data']
             if suggestion.match(f['title']):
-                p('Found [Suggestion] post.')
+                p('Found [Suggestion] post: http://reddit.com{}'.format(f['permalink'])
                 if f['domain'] != 'self.{}'.format(SUBREDDIT):
                     p('Submission is not a self post, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
@@ -125,7 +125,7 @@ def main():
                     distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
                     r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
             elif fixed.match(f['title']):
-                p('Submission is a [fixed] post, removing.')
+                p('Found [fixed] post, removing.')
                 remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                'id' : f['name'], 'executed' : 'removed'}
                 comment_body = {'thing_id' : f['name'], 'text' : template_3}
