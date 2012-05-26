@@ -76,6 +76,20 @@ class Reddit(object):
 def main():
     suggestion = re.compile(r'''[\[<\({]?(sug*estion)(?:$|\s|\]|>|\)|:|})''', re.I)
     fixed = re.compile(r'''[\[<\({]?(fixed)(?:$|\s|\]|>|\)|:|})''', re.I)
+    sleep_time = 60 * 5
+    template_1 = ("This submission has been removed automatically.  According to our [subreddit rul"
+                  "es](/r/{sub}/faq), suggestion posts must be self-posts only.  If you feel this w"
+                  "as in error, please [message the moderators](/message/compose/?to=/r/{sub}&subje"
+                  "ct=Removal%20Dispute).".format(sub=SUBREDDIT))
+    template_2 = ("This submission has been removed automatically.  According to our [subreddit rul"
+                  "es](/r/{sub}/faq), suggestion posts must have a description along with them, whi"
+                  "ch is something you cannot convey with only a title.  If you feel this was in er"
+                  "ror, please [message the moderators](/message/compose/?to={sub}&subject=Removal%"
+                  "20Dispute).".format(sub=SUBREDDIT))
+    template_3 = ("This submission has been removed automatically.  According to our [subreddit rul"
+                  "es](r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was in error,"
+                  " please [message the moderators](/message/compose/?to={sub}&subject=Removal%20Di"
+                  "pute)."
     r = Reddit(USERNAME, PASSWORD)
     feed = r.get('http://reddit.com/r/{}/new/.json'.format(SUBREDDIT))
     for f in feed['data']:
@@ -83,12 +97,26 @@ def main():
         if suggestion.match(f['title']):
             print('Found [Suggestion] post.')
             if f['domain'] != 'self.{}'.format(SUBREDDIT):
-               print('Submission is not a self post, removing.')
+                print('Submission is not a self post, removing.')
+                remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
+                               'id' : f['name'], 'executed' : 'removed'}
+                comment_body = {'id' : f['name'], 'text' : template_1}
+                r.post('http://www.reddit.com/api/remove', remove_body)
+                r.post('http://www.reddit.com/api/comment', comment_body)
             elif not f['selftext']:
                 print('Submission has no self-text, removing.')
+                remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
+                               'id' : f['name'], 'executed' : 'removed'}
+                comment_body = {'id' : f['name'], 'text' : template_2}
+                r.post('http://www.reddit.com/api/remove', remove_body)
+                r.post('http://www.reddit.com/api/comment', comment_body)
         elif fixed.match(f['title']):
             print('Submission is a [fixed] post, removing.')
-    
+            remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
+                           'id' : f['name'], 'executed' : 'removed'}
+            comment_body = {'id' : f['name'], 'text' : template_3}
+            r.post('http://www.reddit.com/api/remove', remove_body)
+            r.post('http://www.reddit.com/api/comment', comment_body)
 
 if __name__ == '__main__':
     main()
