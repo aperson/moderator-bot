@@ -23,10 +23,12 @@
 import json
 import urllib.request
 import time
+import re
 import sys
 import signal
 from urllib.parse import urlencode
 import http.cookiejar
+from credentials import *
 
 def sigint_handler(signal, frame):
     '''Handles ^c'''
@@ -72,7 +74,21 @@ class Reddit(object):
         return self._request(url)
 
 def main():
-    return 0
+    suggestion = re.compile(r'''[\[<\({]?(sug*estion)(?:$|\s|\]|>|\)|:|})''', re.I)
+    fixed = re.compile(r'''[\[<\({]?(fixed)(?:$|\s|\]|>|\)|:|})''', re.I)
+    r = Reddit(USERNAME, PASSWORD)
+    feed = r.get('http://reddit.com/r/{}/new/.json'.format(SUBREDDIT))
+    for f in feed['data']:
+        f = f['data']
+        if suggestion.match(f['title']):
+            print('Found [Suggestion] post.')
+            if f['domain'] != 'self.{}'.format(SUBREDDIT):
+               print('Submission is not a self post, removing.')
+            elif not f['selftext']:
+                print('Submission has no self-text, removing.')
+        elif fixed.match(f['title']):
+            print('Submission is a [fixed] post, removing.')
+    
 
 if __name__ == '__main__':
     main()
