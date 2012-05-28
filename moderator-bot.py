@@ -102,8 +102,8 @@ def main():
         new_listing = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
         feed = []
-        feed.extend(new_listing['data']['children']
-        feed.extend(modqueue_listing['data']['children']
+        feed.extend(new_listing['data']['children'])
+        feed.extend(modqueue_listing['data']['children'])
         for f in feed:
             f = f['data']
             if suggestion.match(f['title']):
