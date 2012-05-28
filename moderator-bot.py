@@ -106,12 +106,37 @@ def main():
         feed.extend(modqueue_listing['data']['children'])
         for f in feed:
             f = f['data']
-            if suggestion.match(f['title']):
-                if f['domain'] != 'self.{}'.format(SUBREDDIT):
-                    p('Found [Suggestion] submission that is not a self post, removing.')
+            if 'title' in f:
+                if suggestion.match(f['title']):
+                    if f['domain'] != 'self.{}'.format(SUBREDDIT):
+                        p('Found [Suggestion] submission that is not a self post, removing.')
+                        remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
+                                       'id' : f['name'], 'executed' : 'removed'}
+                        comment_body = {'thing_id' : f['name'], 'text' : template_1}
+                        hide_body = {'id' : f['name']}
+                        r.post('http://www.reddit.com/api/remove', remove_body)
+                        submission = r.post('http://www.reddit.com/api/comment',
+                                            comment_body)['json']['data']['things'][0]['data']['id']
+                        distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
+                        r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
+                        r.post('http://www.reddit.com/api/hide', hide_body)
+                    elif not f['selftext']:
+                        p('Found [Suggestion] submission that has no self-text, removing.')
+                        remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
+                                       'id' : f['name'], 'executed' : 'removed'}
+                        comment_body = {'thing_id' : f['name'], 'text' : template_2}
+                        hide_body = {'id' : f['name']}
+                        r.post('http://www.reddit.com/api/remove', remove_body)
+                        submission = r.post('http://www.reddit.com/api/comment',
+                                            comment_body)['json']['data']['things'][0]['data']['id']
+                        distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
+                        r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
+                        r.post('http://www.reddit.com/api/hide', hide_body)
+                elif fixed.match(f['title']):
+                    p('Found [fixed] post, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                    'id' : f['name'], 'executed' : 'removed'}
-                    comment_body = {'thing_id' : f['name'], 'text' : template_1}
+                    comment_body = {'thing_id' : f['name'], 'text' : template_3}
                     hide_body = {'id' : f['name']}
                     r.post('http://www.reddit.com/api/remove', remove_body)
                     submission = r.post('http://www.reddit.com/api/comment',
@@ -119,30 +144,6 @@ def main():
                     distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
                     r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
                     r.post('http://www.reddit.com/api/hide', hide_body)
-                elif not f['selftext']:
-                    p('Found [Suggestion] submission that has no self-text, removing.')
-                    remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
-                                   'id' : f['name'], 'executed' : 'removed'}
-                    comment_body = {'thing_id' : f['name'], 'text' : template_2}
-                    hide_body = {'id' : f['name']}
-                    r.post('http://www.reddit.com/api/remove', remove_body)
-                    submission = r.post('http://www.reddit.com/api/comment',
-                                        comment_body)['json']['data']['things'][0]['data']['id']
-                    distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
-                    r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
-                    r.post('http://www.reddit.com/api/hide', hide_body)
-            elif fixed.match(f['title']):
-                p('Found [fixed] post, removing.')
-                remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
-                               'id' : f['name'], 'executed' : 'removed'}
-                comment_body = {'thing_id' : f['name'], 'text' : template_3}
-                hide_body = {'id' : f['name']}
-                r.post('http://www.reddit.com/api/remove', remove_body)
-                submission = r.post('http://www.reddit.com/api/comment',
-                                    comment_body)['json']['data']['things'][0]['data']['id']
-                distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
-                r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
-                r.post('http://www.reddit.com/api/hide', hide_body)
         p('Sleeping for {} seconds.'.format(sleep_time))
         time.sleep(sleep_time)
 
