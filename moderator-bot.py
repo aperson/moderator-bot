@@ -30,9 +30,9 @@ from urllib.parse import urlencode
 import http.cookiejar
 from credentials import *
 
-def p(self, data):
-        print(time.strftime('\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d\033[39m][\03'
-                             '3[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data)
+def p(data):
+        print(time.strftime('\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d\033[39m]'
+                             '[\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data)
 
 def sigint_handler(signal, frame):
     '''Handles ^c'''
@@ -79,7 +79,7 @@ class Reddit(object):
         return self._request(url)
 
 def main():
-    suggestion = re.compile(r'''[\[<\({]?(sug*estion)(?:$|\s|\]|>|\)|:|})''', re.I)
+    suggestion = re.compile(r'''(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''', re.I)
     fixed = re.compile(r'''[\[<\({]?(fixed)(?:$|\s|\]|>|\)|:|})''', re.I)
     sleep_time = 60 * 5
     template_1 = ("This submission has been removed automatically.  According to our [subreddit rul"
@@ -96,16 +96,15 @@ def main():
                   ", please [message the moderators](/message/compose/?to={sub}&subject=Removal%20D"
                   "ipute).".format(sub=SUBREDDIT))
     r = Reddit(USERNAME, PASSWORD)
-    p('Started monitoring submissions on {}.'.format(SUBREDDIT))
+    p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
     while True:
         p('Getting feed...')
         feed = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
         for f in feed['data']['children']:
             f = f['data']
             if suggestion.match(f['title']):
-                p('Found [Suggestion] post: http://reddit.com{}'.format(f['permalink'])
                 if f['domain'] != 'self.{}'.format(SUBREDDIT):
-                    p('Submission is not a self post, removing.')
+                    p('Found [Suggestion] submission that is not a self post, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                    'id' : f['name'], 'executed' : 'removed'}
                     comment_body = {'thing_id' : f['name'], 'text' : template_1}
@@ -115,7 +114,7 @@ def main():
                     distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
                     r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
                 elif not f['selftext']:
-                    p('Submission has no self-text, removing.')
+                    p('Found [Suggestion] submission that has no self-text, removing.')
                     remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
                                    'id' : f['name'], 'executed' : 'removed'}
                     comment_body = {'thing_id' : f['name'], 'text' : template_2}
