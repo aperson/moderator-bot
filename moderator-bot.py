@@ -60,8 +60,8 @@ class Reddit(object):
     
     def _login(self):
         p("Logging in as {}.".format(self.username))
-        body = {'user' :self.username, 'passwd' : self.password}
-        resp = self.post('https://www.reddit.com/api/login', body)
+        body = {'user' :self.username, 'passwd' : self.password, 'api_type' : 'json'}
+        resp = self._request('https://www.reddit.com/api/login', body)
         self.modhash = resp['json']['data']['modhash']
     
     def post(self, url, body):
@@ -79,67 +79,117 @@ class Reddit(object):
         if '.json' not in url: url += '.json'
         return self._request(url)
     
-    def nuke(self, post, comment):
+    def nuke(self, post, comment=None, hide=True):
         '''Remove/hide/comment.'''
         remove = {'spam' : 'False', 'r' : post['subreddit'],
                                            'id' : post['name'], 'executed' : 'removed'}
-        comment = {'thing_id' : post['name'], 'text' : comment}
-        hide = {'id' : post['name']}
-        for api, data in [('remove', remove), ('comment', comment), ('hide', hide)]:
-            self.post('http://reddit.com/api/{}'.format(api), data)
+        self.post('http://www.reddit.com/api/remove', remove)
+        if hide:
+            hide = {'id' : post['name']}
+            self.post('http://www.reddit.com/api/hide', hide)
+        if comment:
+            comment = {'thing_id' : post['name'], 'text' : comment}
+            submission = self.post('http://www.reddit.com/api/comment',
+                                 comment)['json']['data']['things'][0]['data']['id']
+            distinguish = {'id' : submission, 'executed' : 'distinguishing...'}
+            self.post('http://www.reddit.com/api/distinguish/yes', distinguish)
 
 def main():    
     sleep_time = 60 * 5
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
     
-    # Lets define our filters
+    # Lets define our filters. They should return True in boolean context if match is positive
     def suggestion_filter(post):
         """Removes [Suggestion] submissions that eitherare not self post or do not have
         self-text."""
-        suggestion = re.compile(r'''(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''',
+        suggestion = re.compile(r'''.*?(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''',
                                  re.I)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), suggestion posts must be self-posts only.  If you fee"
                       "l this was in error, please [message the moderators](/message/compose/?to=/r"
                       "/{sub}&subject=Removal%20Dispute).".format(sub=SUBREDDIT))
         template_2 = ("This submission has been removed automatically.  According to our [subreddit"
-                      "rules](/r/{sub}/faq), suggestion posts must have a description along with th"
-                      "em, which is something you cannot convey with only a title.  If you feel thi"
-                      "s was in error, please [message the moderators](/message/compose/?to={sub}&s"
-                      "ubject=Removal%20Dispute).".format(sub=SUBREDDIT))
+                      " rules](/r/{sub}/faq), suggestion posts must have a description along with t"
+                      "hem, which is something you cannot convey with only a title.  If you feel th"
+                      "is was in error, please [message the moderators](/message/compose/?to={sub}&"
+                      "subject=Removal%20Dispute).".format(sub=SUBREDDIT))
         if 'title' in post and suggestion.match(post['title']):
             if post['domain'] != 'self.{}'.format(SUBREDDIT):
                 p('Found [Suggestion] submission that is not a self post, removing.')
                 r.nuke(post, template_1)
+                return True
             elif not post['selftext']:
                 p('Found [Suggestion] submission that has no self-text, removing.')
                 r.nuke(post, template_2)
+                return True
     
     def fixed_filter(post):
-        fixed = re.compile(r'''[\[<\({]?(fixed)(?:$|\s|\]|>|\)|:|})''', re.I)
+        """Removes [Fixed] posts."""
+        fixed = re.compile(r'''.*?(?:\[|<|\(|{|^)(fixed)(?:\]|>|\)|:|})''', re.I)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
-                      "rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was i"
-                      "n error, please [message the moderators](/message/compose/?to={sub}&subject="
-                      "Removal%20Dispute).".format(sub=SUBREDDIT))
-        if 'title' in post and fixed.match(post['title']:
+                      " rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was "
+                      "in error, please [message the moderators](/message/compose/?to={sub}&subject"
+                      "=Removal%20Dispute).".format(sub=SUBREDDIT))
+        if 'title' in post and fixed.match(post['title']):
             p('Found [fixed] post, removing.')
             r.nuke(post, template_1)
+            return True
+    
+    def ip_filter(post):
+        """Removes submissions and comments that have an ip in them."""
+        def ip_in(text):
+            ip = re.compile(r'''.*?(\d{1,3}(?:\.\d{1,3}){3})''')
+            if ip.match(text):
+                for i in ip.findall(text)[0].split('.'):
+                    try:
+                        if not int(i) <= 255:
+                            return False
+                    except ValueError:
+                        # this shouldn't happen
+                        return False
+                return True
+        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
+                      " rules](/r/{sub}/faq), server advertisements are not allowed.  If you feel t"
+                      "his was in error, please [message the moderators](/message/compose/?to={sub}"
+                      "&subject=Removal%20Dispute).".format(sub=SUBREDDIT))
+        if 'title' in post:
+            if ip_in(post['title']):
+                p('Found server ad in title, removing.')
+                r.nuke(post, template_1)
+                return True
+            elif post['selftext'] and ip_in(post['selftext']):
+                p('Found server ad in selftext, removing.')
+                r.nuke(post, template_1)
+                return True
+        elif 'body' in post:
+            if ip_in(post['body']):
+                p('Found server ad in comment, removing.')
+                r.nuke(post, hide=False)
+                return True
     
     # and throw them into a list of filters
-    filters = [suggestion_filter, fixed_filter]
+    filters = [suggestion_filter, fixed_filter, ip_filter]
     
+    # main loop
     while True:
         p('Getting feed...')
         new_listing = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
+        comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
         feed = []
         feed.extend(new_listing['data']['children'])
         feed.extend(modqueue_listing['data']['children'])
-        for i in feed:
-            i = i['data']
-            for f in filters:
-                f(i)
+        feed.extend(comments_listing['data']['children'])
+        with open('test.json', 'w') as f:
+            f.write(json.dumps(feed))
+        for item in feed:
+            item = item['data']
+            # I know using 'is True' isn't the 'right' way, but reddit's api is weird here
+            # and I wanted to explicitly show it
+            if item['banned_by'] is True and item['author'] != USERNAME:
+                for f in filters:
+                    if f(item): break
         p('Sleeping for {} seconds.'.format(sleep_time))
         time.sleep(sleep_time)
 
