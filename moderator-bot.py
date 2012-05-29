@@ -60,8 +60,8 @@ class Reddit(object):
     
     def _login(self):
         p("Logging in as {}.".format(self.username))
-        body = {'user' :self.username, 'passwd' : self.password, 'api_type' : 'json'}
-        resp = self._request('https://www.reddit.com/api/login', body)
+        body = {'user' :self.username, 'passwd' : self.password}
+        resp = self.post('https://www.reddit.com/api/login', body)
         self.modhash = resp['json']['data']['modhash']
     
     def post(self, url, body):
@@ -77,6 +77,22 @@ class Reddit(object):
     def get(self, url):
         if '.json' not in url: url += '.json'
         return self._request(url)
+    
+    def nuke(self, post, comment):
+        '''Remove/hide/comment.'''
+        remove = {'spam' : 'False', 'r' : SUBREDDIT,
+                                           'id' : post['name'], 'executed' : 'removed'}
+        comment = {'thing_id' : post['name'], 'text' : comment}
+        hide = {'id' : post['name']}
+        for api, data in [('remove', remove), ('comment', comment), ('hide', hide)]:
+            self.post('http://reddit.com/api/{}'.format(api), data)
+
+def suggestion_filter(post):
+    suggestion = re.compile(r'''(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''', re.I)
+    if 'title' in post['data']:
+        if post['domain'] != 'self.{}'.format(SUBREDDIT):
+            p('Found [Suggestion] submission that is not a self post, removing.')
+            r.nuke(post)
 
 def main():
     suggestion = re.compile(r'''(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''', re.I)
