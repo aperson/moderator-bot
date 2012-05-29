@@ -75,44 +75,60 @@ class Reddit(object):
 
     
     def get(self, url):
+        """Sends a GET to the url and returns the json as a dict."""
         if '.json' not in url: url += '.json'
         return self._request(url)
     
     def nuke(self, post, comment):
         '''Remove/hide/comment.'''
-        remove = {'spam' : 'False', 'r' : SUBREDDIT,
+        remove = {'spam' : 'False', 'r' : post['subreddit'],
                                            'id' : post['name'], 'executed' : 'removed'}
         comment = {'thing_id' : post['name'], 'text' : comment}
         hide = {'id' : post['name']}
         for api, data in [('remove', remove), ('comment', comment), ('hide', hide)]:
             self.post('http://reddit.com/api/{}'.format(api), data)
 
-def suggestion_filter(post):
-    suggestion = re.compile(r'''(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''', re.I)
-    if 'title' in post['data']:
-        if post['domain'] != 'self.{}'.format(SUBREDDIT):
-            p('Found [Suggestion] submission that is not a self post, removing.')
-            r.nuke(post)
-
-def main():
-    suggestion = re.compile(r'''(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''', re.I)
-    fixed = re.compile(r'''[\[<\({]?(fixed)(?:$|\s|\]|>|\)|:|})''', re.I)
+def main():    
     sleep_time = 60 * 5
-    template_1 = ("This submission has been removed automatically.  According to our [subreddit rul"
-                  "es](/r/{sub}/faq), suggestion posts must be self-posts only.  If you feel this w"
-                  "as in error, please [message the moderators](/message/compose/?to=/r/{sub}&subje"
-                  "ct=Removal%20Dispute).".format(sub=SUBREDDIT))
-    template_2 = ("This submission has been removed automatically.  According to our [subreddit rul"
-                  "es](/r/{sub}/faq), suggestion posts must have a description along with them, whi"
-                  "ch is something you cannot convey with only a title.  If you feel this was in er"
-                  "ror, please [message the moderators](/message/compose/?to={sub}&subject=Removal%"
-                  "20Dispute).".format(sub=SUBREDDIT))
-    template_3 = ("This submission has been removed automatically.  According to our [subreddit rul"
-                  "es](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was in error"
-                  ", please [message the moderators](/message/compose/?to={sub}&subject=Removal%20D"
-                  "ipute).".format(sub=SUBREDDIT))
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
+    
+    # Lets define our filters
+    def suggestion_filter(post):
+        """Removes [Suggestion] submissions that eitherare not self post or do not have
+        self-text."""
+        suggestion = re.compile(r'''(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''',
+                                 re.I)
+        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
+                      " rules](/r/{sub}/faq), suggestion posts must be self-posts only.  If you fee"
+                      "l this was in error, please [message the moderators](/message/compose/?to=/r"
+                      "/{sub}&subject=Removal%20Dispute).".format(sub=SUBREDDIT))
+        template_2 = ("This submission has been removed automatically.  According to our [subreddit"
+                      "rules](/r/{sub}/faq), suggestion posts must have a description along with th"
+                      "em, which is something you cannot convey with only a title.  If you feel thi"
+                      "s was in error, please [message the moderators](/message/compose/?to={sub}&s"
+                      "ubject=Removal%20Dispute).".format(sub=SUBREDDIT))
+        if 'title' in post and suggestion.match(post['title']):
+            if post['domain'] != 'self.{}'.format(SUBREDDIT):
+                p('Found [Suggestion] submission that is not a self post, removing.')
+                r.nuke(post, template_1)
+            elif not post['selftext']:
+                p('Found [Suggestion] submission that has no self-text, removing.')
+                r.nuke(post, template_2)
+    
+    def fixed_filter(post):
+        fixed = re.compile(r'''[\[<\({]?(fixed)(?:$|\s|\]|>|\)|:|})''', re.I)
+        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
+                      "rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was i"
+                      "n error, please [message the moderators](/message/compose/?to={sub}&subject="
+                      "Removal%20Dispute).".format(sub=SUBREDDIT))
+        if 'title' in post and fixed.match(post['title']:
+            p('Found [fixed] post, removing.')
+            r.nuke(post, template_1)
+    
+    # and throw them into a list of filters
+    filters = [suggestion_filter, fixed_filter]
+    
     while True:
         p('Getting feed...')
         new_listing = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
@@ -120,50 +136,13 @@ def main():
         feed = []
         feed.extend(new_listing['data']['children'])
         feed.extend(modqueue_listing['data']['children'])
-        for f in feed:
-            f = f['data']
-            if 'title' in f:
-                if suggestion.match(f['title']):
-                    if f['domain'] != 'self.{}'.format(SUBREDDIT):
-                        p('Found [Suggestion] submission that is not a self post, removing.')
-                        remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
-                                       'id' : f['name'], 'executed' : 'removed'}
-                        comment_body = {'thing_id' : f['name'], 'text' : template_1}
-                        hide_body = {'id' : f['name']}
-                        r.post('http://www.reddit.com/api/remove', remove_body)
-                        submission = r.post('http://www.reddit.com/api/comment',
-                                            comment_body)['json']['data']['things'][0]['data']['id']
-                        distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
-                        r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
-                        r.post('http://www.reddit.com/api/hide', hide_body)
-                    elif not f['selftext']:
-                        p('Found [Suggestion] submission that has no self-text, removing.')
-                        remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
-                                       'id' : f['name'], 'executed' : 'removed'}
-                        comment_body = {'thing_id' : f['name'], 'text' : template_2}
-                        hide_body = {'id' : f['name']}
-                        r.post('http://www.reddit.com/api/remove', remove_body)
-                        submission = r.post('http://www.reddit.com/api/comment',
-                                            comment_body)['json']['data']['things'][0]['data']['id']
-                        distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
-                        r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
-                        r.post('http://www.reddit.com/api/hide', hide_body)
-                elif fixed.match(f['title']):
-                    p('Found [fixed] post, removing.')
-                    remove_body = {'spam' : 'False', 'r' : SUBREDDIT,
-                                   'id' : f['name'], 'executed' : 'removed'}
-                    comment_body = {'thing_id' : f['name'], 'text' : template_3}
-                    hide_body = {'id' : f['name']}
-                    r.post('http://www.reddit.com/api/remove', remove_body)
-                    submission = r.post('http://www.reddit.com/api/comment',
-                                        comment_body)['json']['data']['things'][0]['data']['id']
-                    distinguish_body = {'id' : submission, 'executed' : 'distinguishing...'}
-                    r.post('http://www.reddit.com/api/distinguish/yes', distinguish_body)
-                    r.post('http://www.reddit.com/api/hide', hide_body)
+        for i in feed:
+            i = i['data']
+            for f in filters:
+                f(i)
         p('Sleeping for {} seconds.'.format(sleep_time))
         time.sleep(sleep_time)
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, sigint_handler)
     main()
-
