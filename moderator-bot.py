@@ -181,8 +181,6 @@ def main():
         feed.extend(new_listing['data']['children'])
         feed.extend(modqueue_listing['data']['children'])
         feed.extend(comments_listing['data']['children'])
-        with open('test.json', 'w') as f:
-            f.write(json.dumps(feed))
         for item in feed:
             item = item['data']
             # I know using 'is True' isn't the 'right' way, but reddit's api is weird here
