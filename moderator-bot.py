@@ -195,7 +195,7 @@ def main():
             item = item['data']
             # I know using 'is True' isn't the 'right' way, but reddit's api is weird here
             # and I wanted to explicitly show it
-            if item['banned_by'] is True and
+            if item['banned_by'] is True and \
                 item['author'] != USERNAME and not item['approved_by']:
                 for f in filters:
                     if f(item): break
