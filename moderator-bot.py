@@ -117,12 +117,12 @@ def main():
         if 'title' in post and suggestion.match(post['title']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             if post['domain'] != 'self.{}'.format(SUBREDDIT):
-                p('Found [Suggestion] submission that is not a self post, removing.')
+                p('Found [Suggestion] submission that is not a self post, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
             elif not post['selftext']:
-                p('Found [Suggestion] submission that has no self-text, removing.')
+                p('Found [Suggestion] submission that has no self-text, removing:')
                 p(link)
                 r.nuke(post, template_2.format(sub=SUBREDDIT, link=link))
                 return True
@@ -161,18 +161,18 @@ def main():
         if 'title' in post:
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             if ip_in(post['title']):
-                p('Found server ad in title, removing.')
+                p('Found server ad in title, removing:')
                 P(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
             elif post['selftext'] and ip_in(post['selftext']):
-                p('Found server ad in selftext, removing.')
+                p('Found server ad in selftext, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
         elif 'body' in post:
             if ip_in(post['body']):
-                p('Found server ad in comment, removing.')
+                p('Found server ad in comment, removing:')
                 p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
                                                                     post['id']))
                 r.nuke(post, hide=False)
