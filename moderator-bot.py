@@ -145,6 +145,8 @@ def main():
         """Removes submissions and comments that have an ip in them."""
         def ip_in(text):
             ip = re.compile(r'''.*?(\d{1,3}(?:\.\d{1,3}){3})''', re.DOTALL)
+            if "Minecraft has crashed!" in text:
+                return False
             if ip.match(text):
                 for i in ip.findall(text)[0].split('.'):
                     try:
