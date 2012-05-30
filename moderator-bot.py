@@ -104,7 +104,7 @@ def main():
         """Removes [Suggestion] submissions that eitherare not self post or do not have
         self-text."""
         suggestion = re.compile(r'''.*?(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''',
-                                 re.I)
+                                 re.I | re.S)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), suggestion posts must be self-posts only.  If you fee"
                       "l this was in error, please [message the moderators](/message/compose/?to=/r"
@@ -129,7 +129,7 @@ def main():
     
     def fixed_filter(post):
         """Removes [Fixed] posts."""
-        fixed = re.compile(r'''.*?(?:\[|<|\(|{|^)(fixed)(?:\]|>|\)|:|})''', re.I)
+        fixed = re.compile(r'''.*?(?:\[|<|\(|{|^)(fixed)(?:\]|>|\)|:|})''', re.I | re.S)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was "
                       "in error, please [message the moderators](/message/compose/?to={sub}&subject"
@@ -144,7 +144,7 @@ def main():
     def ip_filter(post):
         """Removes submissions and comments that have an ip in them."""
         def ip_in(text):
-            ip = re.compile(r'''.*?(\d{1,3}(?:\.\d{1,3}){3})''')
+            ip = re.compile(r'''.*?(\d{1,3}(?:\.\d{1,3}){3})''', re.DOTALL)
             if ip.match(text):
                 for i in ip.findall(text)[0].split('.'):
                     try:
