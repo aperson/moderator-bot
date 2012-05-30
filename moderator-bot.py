@@ -108,22 +108,23 @@ def main():
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), suggestion posts must be self-posts only.  If you fee"
                       "l this was in error, please [message the moderators](/message/compose/?to=/r"
-                      "/{sub}&subject=Removal%20Dispute).".format(sub=SUBREDDIT))
+                      "/{sub}&subject=Removal%20Dispute&message={link}).")
         template_2 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), suggestion posts must have a description along with t"
                       "hem, which is something you cannot convey with only a title.  If you feel th"
                       "is was in error, please [message the moderators](/message/compose/?to={sub}&"
-                      "subject=Removal%20Dispute).".format(sub=SUBREDDIT))
+                      "subject=Removal%20Dispute&message={link}).")
         if 'title' in post and suggestion.match(post['title']):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             if post['domain'] != 'self.{}'.format(SUBREDDIT):
                 p('Found [Suggestion] submission that is not a self post, removing.')
-                p('http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id']))
-                r.nuke(post, template_1)
+                p(link)
+                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
             elif not post['selftext']:
                 p('Found [Suggestion] submission that has no self-text, removing.')
-                p('http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id']))
-                r.nuke(post, template_2)
+                p(link)
+                r.nuke(post, template_2.format(sub=SUBREDDIT, link=link))
                 return True
     
     def fixed_filter(post):
@@ -132,11 +133,12 @@ def main():
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was "
                       "in error, please [message the moderators](/message/compose/?to={sub}&subject"
-                      "=Removal%20Dispute).".format(sub=SUBREDDIT))
+                      "=Removal%20Dispute&message={link}).")
         if 'title' in post and fixed.match(post['title']):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             p('Found [fixed] post, removing.')
-            p('http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id']))
-            r.nuke(post, template_1)
+            p(link)
+            r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
             return True
     
     def ip_filter(post):
@@ -155,17 +157,18 @@ def main():
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), server advertisements are not allowed.  If you feel t"
                       "his was in error, please [message the moderators](/message/compose/?to={sub}"
-                      "&subject=Removal%20Dispute).".format(sub=SUBREDDIT))
+                      "&subject=Removal%20Dispute&message={link}).")
         if 'title' in post:
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             if ip_in(post['title']):
                 p('Found server ad in title, removing.')
-                p('http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id']))
-                r.nuke(post, template_1)
+                P(link)
+                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
             elif post['selftext'] and ip_in(post['selftext']):
                 p('Found server ad in selftext, removing.')
-                p('http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id']))
-                r.nuke(post, template_1)
+                p(link)
+                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
         elif 'body' in post:
             if ip_in(post['body']):
