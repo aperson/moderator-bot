@@ -189,7 +189,7 @@ def main():
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
         feed = []
         for i in (new_listing, modqueue_listing, comments_listing):
-            feed.extend(i['data']['children']
+            feed.extend(i['data']['children'])
         for item in feed:
             item = item['data']
             # I know using 'is True' isn't the 'right' way, but reddit's api is weird here
