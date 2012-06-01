@@ -103,8 +103,10 @@ def main():
     def suggestion_filter(post):
         """Removes [Suggestion] submissions that eitherare not self post or do not have
         self-text."""
-        suggestion = re.compile(r'''.*?(?:^|\s|\[|<|\(|{)?(sug*estion|idea)(?:$|\s|\]|>|\)|:|})''',
+        suggestion = re.compile(r'''.*?((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|'''
+                                 r'''(?:^|\[|<|\(|{)ideas?(?:\]|>|\)|:|}))''',
                                  re.I | re.S)
+        
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), suggestion posts must be self-posts only.  If you fee"
                       "l this was in error, please [message the moderators](/message/compose/?to=/r"
