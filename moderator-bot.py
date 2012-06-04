@@ -31,8 +31,9 @@ import http.cookiejar
 from credentials import *
 
 def p(data):
-        print(time.strftime('\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d\033[39m]'
-                             '[\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data)
+        print(time.strftime('\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
+                             '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ')
+                              + data)
 
 def sigint_handler(signal, frame):
     '''Handles ^c'''
