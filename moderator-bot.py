@@ -151,12 +151,20 @@ def main():
             if "Minecraft has crashed!" in text:
                 return False
             if ip.match(text):
-                for i in ip.findall(text)[0].split('.'):
-                    try:
-                        if not int(i) <= 255:
-                            return False
-                    except ValueError:
-                        # this shouldn't happen
+                try:
+                    split_ip = [int(i) for i in ip.findall(text)[0].split('.')]
+                except ValueError:
+                    return False
+                if split_ip[:3] == [10, 0, 0]:
+                    return False
+                elif split_ip[:3] == [127, 0, 0]:
+                    return False
+                elif split_ip[:2] == [192, 168]:
+                    return False
+                elif split_ip == [0] * 4:
+                    return False
+                for i in split_ip:
+                    if not i <= 255:
                         return False
                 return True
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
