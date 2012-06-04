@@ -178,13 +178,14 @@ def main():
                 P(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
-            elif post['selftext'] and ip_in(post['selftext']):
-                p('Found server ad in selftext, removing:')
-                p(link)
-                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                return True
+            elif post['selftext']:
+                if ip_in(post['selftext'] or 'planetminecraft.com/server/' in post['selftext']:
+                    p('Found server ad in selftext, removing:')
+                    p(link)
+                    r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                    return True
         elif 'body' in post:
-            if ip_in(post['body']):
+            if ip_in(post['body']) or 'planetminecraft.com/server/' in post['body']:
                 p('Found server ad in comment, removing:')
                 p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
                                                                     post['id']))
