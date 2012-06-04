@@ -131,7 +131,7 @@ def main():
     
     def fixed_filter(post):
         """Removes [Fixed] posts."""
-        fixed = re.compile(r'''.*?(?:\[|<|\(|{|^)(fixed)(?:\]|>|\)|:|})''', re.I | re.S)
+        fixed = re.compile(r'''.*?(?:\[|<|\(|{)(fixed)(?:\]|>|\)|:|})''', re.I | re.S)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was "
                       "in error, please [message the moderators](/message/compose/?to={sub}&subject"
@@ -164,7 +164,7 @@ def main():
                       "&subject=Removal%20Dispute&message={link}).")
         if 'title' in post:
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if ip_in(post['title']):
+            if ip_in(post['title']) or 'planetminecraft.com/server/' in post['url']:
                 p('Found server ad in title, removing:')
                 P(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
