@@ -179,7 +179,7 @@ def main():
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
             elif post['selftext']:
-                if ip_in(post['selftext'] or 'planetminecraft.com/server/' in post['selftext']:
+                if ip_in(post['selftext']) or 'planetminecraft.com/server/' in post['selftext']:
                     p('Found server ad in selftext, removing:')
                     p(link)
                     r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
