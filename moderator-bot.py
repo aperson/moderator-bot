@@ -195,9 +195,26 @@ def main():
         """Tries to blanket remove all of the free minecraft sites."""
         free_mc = re.compile(r'''(?:free-?minecraft|minecraft-?(?:codes|rewards|'''
                               r'''giftcodegenerator))\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
+        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
+                      " rules](/r/{sub}/faq), free minecraft links are not allowed.  If you feel th"
+                      "is was in error, please [message the moderators](/message/compose/?to={sub}&"
+                      "subject=Removal%20Dispute&message={link}).")
+        if 'title' in post:
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
+            if freemc_search(post['title']):
+                p('Found free minecraft link, removing:')
+                p(link)
+                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                return True
+        elif 'body' in post:
+            if free_mc.search(post['body']):
+                p('Found free minecraft link in comment, removing:')
+                p(link)
+                r.nuke(post, hide=False)
+                return True
     
     # and throw them into a list of filters
-    filters = [suggestion_filter, fixed_filter, ip_filter]
+    filters = [suggestion_filter, fixed_filter, ip_filter, freemc_filter]
     
     # main loop
     while True:
