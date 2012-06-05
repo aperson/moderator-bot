@@ -193,8 +193,8 @@ def main():
     
     def freemc_filter(post):
         """Tries to blanket remove all of the free minecraft sites."""
-        free_mc = re.compile(r'''(?:free-?minecraft|minecraft-?(?:codes|rewards|'''
-                              r'''giftcodegenerator))\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
+        free_mc = re.compile(r'''(?:free)?-?minecraft-?(?:codes?|rewards?|gift-?codes?'''
+                              r'''(?:-?generator)?)\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), free minecraft links are not allowed.  If you feel th"
                       "is was in error, please [message the moderators](/message/compose/?to={sub}&"
