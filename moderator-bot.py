@@ -206,6 +206,11 @@ def main():
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
+            elif post['selftext'] and free_mc.search(post['selftext']):
+                p('Found free minecraft link, removing:')
+                p(link)
+                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                return True
         elif 'body' in post:
             if free_mc.search(post['body']):
                 p('Found free minecraft link in comment, removing:')
