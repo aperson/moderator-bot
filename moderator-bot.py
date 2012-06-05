@@ -201,7 +201,7 @@ def main():
                       "subject=Removal%20Dispute&message={link}).")
         if 'title' in post:
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if freemc_search(post['title']):
+            if free_mc.search(post['title']):
                 p('Found free minecraft link, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
