@@ -104,9 +104,8 @@ def main():
     def suggestion_filter(post):
         """Removes [Suggestion] submissions that eitherare not self post or do not have
         self-text."""
-        suggestion = re.compile(r'''.*?((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|'''
-                                 r'''(?:^|\[|<|\(|{)ideas?(?:\]|>|\)|:|}))''',
-                                 re.I | re.S)
+        suggestion = re.compile(r'''((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|'''
+                                 r'''(?:^|\[|<|\(|{)ideas?(?:\]|>|\)|:|}))''', re.I)
         
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), suggestion posts must be self-posts only.  If you fee"
@@ -117,7 +116,7 @@ def main():
                       "hem, which is something you cannot convey with only a title.  If you feel th"
                       "is was in error, please [message the moderators](/message/compose/?to={sub}&"
                       "subject=Removal%20Dispute&message={link}).")
-        if 'title' in post and suggestion.match(post['title']):
+        if 'title' in post and suggestion.search(post['title']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             if post['domain'] != 'self.{}'.format(SUBREDDIT):
                 p('Found [Suggestion] submission that is not a self post, removing:')
@@ -132,12 +131,12 @@ def main():
     
     def fixed_filter(post):
         """Removes [Fixed] posts."""
-        fixed = re.compile(r'''.*?(?:\[|<|\(|{)(fixed)(?:\]|>|\)|:|})''', re.I | re.S)
+        fixed = re.compile(r'''[\[|<\({]fixed[\]>\):}]''', re.I)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was "
                       "in error, please [message the moderators](/message/compose/?to={sub}&subject"
                       "=Removal%20Dispute&message={link}).")
-        if 'title' in post and fixed.match(post['title']):
+        if 'title' in post and fixed.search(post['title']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             p('Found [fixed] post, removing.')
             p(link)
@@ -147,10 +146,10 @@ def main():
     def ip_filter(post):
         """Removes submissions and comments that have an ip in them."""
         def ip_in(text):
-            ip = re.compile(r'''.*?(\d{1,3}(?:\.\d{1,3}){3})''', re.DOTALL)
+            ip = re.compile(r'''\d{1,3}(?:\.\d{1,3}){3}''')
             if "Minecraft has crashed!" in text:
                 return False
-            if ip.match(text):
+            if ip.search(text):
                 try:
                     split_ip = [int(i) for i in ip.findall(text)[0].split('.')]
                 except ValueError:
@@ -175,7 +174,7 @@ def main():
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             if ip_in(post['title']) or 'planetminecraft.com/server/' in post['url']:
                 p('Found server ad in title, removing:')
-                P(link)
+                p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
                 return True
             elif post['selftext']:
@@ -191,6 +190,11 @@ def main():
                                                                     post['id']))
                 r.nuke(post, hide=False)
                 return True
+    
+    def freemc_filter(post):
+        """Tries to blanket remove all of the free minecraft sites."""
+        free_mc = re.compile(r'''(?:free-?minecraft|minecraft-?(?:codes|rewards|'''
+                              r'''giftcodegenerator))\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
     
     # and throw them into a list of filters
     filters = [suggestion_filter, fixed_filter, ip_filter]
