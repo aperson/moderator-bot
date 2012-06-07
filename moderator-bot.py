@@ -95,7 +95,7 @@ class Reddit(object):
             distinguish = {'id' : submission, 'executed' : 'distinguishing...'}
             self.post('http://www.reddit.com/api/distinguish/yes', distinguish)
     
-    def rts(self, username):
+    def rts(self, username, tag=''):
         """Checks the account age of a user and rts' them if they are less than a day old."""
         
         DAY = 60 * 60 * 24
@@ -103,8 +103,8 @@ class Reddit(object):
         user= self.get("http://reddit.com/{}/about.json".format(username))
         
         if (time.time() - user['data']['created_utc']) <= DAY:
-            p('{} is less than a day old. Submitting to /r/moderator_bot:'
-            body = {'title' : username, 'sr' : 'moderator_bot',
+            p('{} is less than a day old. Submitting to /r/moderator_bot:')
+            body = {'title' : '{} {}'.format(username, tag), 'sr' : 'moderator_bot',
                     'link' : 'http://reddit.com/u/' + username}
             submission = self.post('http://www.reddit.com/api/submit', body)
             p(submission['json']['data']['url'])
@@ -216,59 +216,66 @@ def main():
                       " rules](/r/{sub}/faq), free minecraft links are not allowed.  If you feel th"
                       "is was in error, please [message the moderators](/message/compose/?to={sub}&"
                       "subject=Removal%20Dispute&message={link}).")
+        tag = "[free minecraft spam]"
         if 'title' in post:
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
             if free_mc.search(post['title']):
                 p('Found free minecraft link, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                r.rts(post['username'], tag)
                 return True
             elif post['url'] and free_mc.search(post['url']):
                 p('Found free minecraft link, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                r.rts(post['username'], tag)
                 return True
             elif post['selftext'] and free_mc.search(post['selftext']):
                 p('Found free minecraft link, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                r.rts(post['username'], tag)
                 return True
         elif 'body' in post:
             if free_mc.search(post['body']):
                 p('Found free minecraft link in comment, removing:')
-                p(link)
+                p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
+                                                                    post['id']))
                 r.nuke(post, hide=False)
+                r.rts(post['username'], tag)
                 return True
     
     def amazon_filter(post):
         """Removes amazon referrals and submits 0 day old accounts to rts."""
         amazon = re.compile(r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk))*.?tag=*.?-20''')
+        tag = "[amazon referral spam]"
         if 'title' in post:
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if free_mc.search(post['title']):
+            if amazon.search(post['title']):
                 p('Found amazon referral link, removing:')
                 p(link)
                 r.nuke(post)
-                r.rts(post['username'])
+                r.rts(post['username'], tag)
                 return True
-            elif post['url'] and free_mc.search(post['url']):
+            elif post['url'] and amazon.search(post['url']):
                 p('Found amazon referral link, removing:')
                 p(link)
                 r.nuke(post)
-                r.rts(post['username'])
+                r.rts(post['username'], tag)
                 return True
-            elif post['selftext'] and free_mc.search(post['selftext']):
+            elif post['selftext'] and amazon.search(post['selftext']):
                 p('Found amazon referral link, removing:')
                 p(link)
                 r.nuke(post)
-                r.rts(post['username'])
+                r.rts(post['username'], tag)
                 return True
         elif 'body' in post:
-            if free_mc.search(post['body']):
+            if amazon.search(post['body']):
                 p('Found amazon referral in comment, removing:')
                 p(link)
                 r.nuke(post, hide=False)
-                r.rts(post['username'])
+                r.rts(post['username'], tag)
                 return True
     
     # and throw them into a list of filters
