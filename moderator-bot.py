@@ -163,7 +163,7 @@ def main():
     def ip_filter(post):
         """Removes submissions and comments that have an ip in them."""
         def ip_in(text):
-            ip = re.compile(r'''\d{1,3}(?:\.\d{1,3}){3}''')
+            ip = re.compile(r'''\d{1,3}(?:\.\d{1,3}){3}(?!/)''')
             if "Minecraft has crashed!" in text:
                 return False
             if ip.search(text):
@@ -223,19 +223,19 @@ def main():
                 p('Found free minecraft link, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
             elif post['url'] and free_mc.search(post['url']):
                 p('Found free minecraft link, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
             elif post['selftext'] and free_mc.search(post['selftext']):
                 p('Found free minecraft link, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
         elif 'body' in post:
             if free_mc.search(post['body']):
@@ -243,7 +243,7 @@ def main():
                 p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
                                                                     post['id']))
                 r.nuke(post, hide=False)
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
     
     def amazon_filter(post):
@@ -256,26 +256,26 @@ def main():
                 p('Found amazon referral link, removing:')
                 p(link)
                 r.nuke(post)
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
             elif post['url'] and amazon.search(post['url']):
                 p('Found amazon referral link, removing:')
                 p(link)
                 r.nuke(post)
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
             elif post['selftext'] and amazon.search(post['selftext']):
                 p('Found amazon referral link, removing:')
                 p(link)
                 r.nuke(post)
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
         elif 'body' in post:
             if amazon.search(post['body']):
                 p('Found amazon referral in comment, removing:')
                 p(link)
                 r.nuke(post, hide=False)
-                r.rts(post['username'], tag)
+                r.rts(post['author'], tag)
                 return True
     
     # and throw them into a list of filters
