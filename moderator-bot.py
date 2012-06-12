@@ -100,12 +100,12 @@ class Reddit(object):
         
         DAY = 60 * 60 * 24
         
-        user= self.get("http://reddit.com/{}/about.json".format(username))
+        user= self.get("http://reddit.com/user/{}/about.json".format(username))
         
         if (time.time() - user['data']['created_utc']) <= DAY:
             p('{} is less than a day old. Submitting to /r/moderator_bot:')
             body = {'title' : '{} {}'.format(username, tag), 'sr' : 'moderator_bot',
-                    'link' : 'http://reddit.com/u/' + username}
+                    'url' : 'http://reddit.com/u/' + username, 'kind' : 'link'}
             submission = self.post('http://www.reddit.com/api/submit', body)
             p(submission['json']['data']['url'])
         
@@ -162,6 +162,7 @@ def main():
     
     def ip_filter(post):
         """Removes submissions and comments that have an ip in them."""
+        tag = "[server spam]"
         def ip_in(text):
             ip = re.compile(r'''\d{1,3}(?:\.\d{1,3}){3}(?!/)''')
             if "Minecraft has crashed!" in text:
@@ -193,12 +194,14 @@ def main():
                 p('Found server ad in title, removing:')
                 p(link)
                 r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                r.rts(post['author'], tag)
                 return True
             elif post['selftext']:
                 if ip_in(post['selftext']) or 'planetminecraft.com/server/' in post['selftext']:
                     p('Found server ad in selftext, removing:')
                     p(link)
                     r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                    r.rts(post['author'], tag)
                     return True
         elif 'body' in post:
             if ip_in(post['body']) or 'planetminecraft.com/server/' in post['body']:
@@ -206,6 +209,7 @@ def main():
                 p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
                                                                     post['id']))
                 r.nuke(post, hide=False)
+                r.rts(post['author'], tag)
                 return True
     
     def freemc_filter(post):
