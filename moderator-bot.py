@@ -100,10 +100,10 @@ class Reddit(object):
         
         DAY = 60 * 60 * 24
         
-        user= self.get("http://reddit.com/user/{}/about.json".format(username))
+        user = self.get("http://reddit.com/user/{}/about.json".format(username))
         
         if (time.time() - user['data']['created_utc']) <= DAY:
-            p('{} is less than a day old. Submitting to /r/moderator_bot:')
+            p('{} is less than a day old. Submitting to /r/moderator_bot:'.format(username))
             body = {'title' : '{} {}'.format(username, tag), 'sr' : 'moderator_bot',
                     'url' : 'http://reddit.com/u/' + username, 'kind' : 'link'}
             submission = self.post('http://www.reddit.com/api/submit', body)
