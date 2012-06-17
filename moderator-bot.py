@@ -252,7 +252,8 @@ def main():
     
     def amazon_filter(post):
         """Removes amazon referrals and submits 0 day old accounts to rts."""
-        amazon = re.compile(r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk))*.?tag=*.?-20''')
+        amazon = re.compile(r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk))*.?tag=*.?-20''',
+                             re.I)
         tag = "[amazon referral spam]"
         if 'title' in post:
             link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
@@ -282,8 +283,39 @@ def main():
                 r.rts(post['author'], tag)
                 return True
     
+    def short_url_filter(post):
+        '''Removes any non-approved short urls.'''
+        short_url = re.compile(r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
+                                r'''tiny\.cc)/''', re.I)
+        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
+                      " rules](/r/{sub}/faq), url shorteners  are not allowed.  If you feel this wa"
+                      "s in error or you edited your post to omit the url shortener, please [messag"
+                      "e the moderators](/message/compose/?to={sub}&subject=Removal%20Dispute&messa"
+                      "ge={link}).")
+        if 'title' in post:
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
+            if short_url.search(post['title']):
+                p('Found short url in title, removing:')
+                p(link)
+                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                return True
+            elif post['selftext']:
+                if short_url.search(post['selftext']):
+                    p('Found short url in selftext, removing:')
+                    p(link)
+                    r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
+                    return True
+        elif 'body' in post:
+            if short_url.search(post['body']):
+                p('Found short url in comment, removing:')
+                p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
+                                                                    post['id']))
+                r.nuke(post, hide=False)
+                return True
+    
     # and throw them into a list of filters
-    filters = [suggestion_filter, fixed_filter, ip_filter, freemc_filter, amazon_filter]
+    filters = [suggestion_filter, fixed_filter, ip_filter, freemc_filter, amazon_filter,
+                short_url_filter]
     
     # main loop
     while True:
