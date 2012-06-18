@@ -164,7 +164,7 @@ def main():
         """Removes submissions and comments that have an ip in them."""
         tag = "[server spam]"
         def ip_in(text):
-            ip = re.compile(r'''\d{1,3}(?:\.\d{1,3}){3}(?!/)''')
+            ip = re.compile(r'''(?:^|\s)(\d{1,3}(?:\.\d{1,3}){3})(?!/|-|\.)''')
             if "Minecraft has crashed!" in text:
                 return False
             if ip.search(text):
@@ -286,7 +286,7 @@ def main():
     def short_url_filter(post):
         '''Removes any non-approved short urls.'''
         short_url = re.compile(r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
-                                r'''tiny\.cc)/''', re.I)
+                                r'''tiny\.cc|soc.li)/''', re.I)
         template_1 = ("This submission has been removed automatically.  According to our [subreddit"
                       " rules](/r/{sub}/faq), url shorteners  are not allowed.  If you feel this wa"
                       "s in error or you edited your post to omit the url shortener, please [messag"
