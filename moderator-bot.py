@@ -164,7 +164,7 @@ def main():
         """Removes submissions and comments that have an ip in them."""
         tag = "[server spam]"
         def ip_in(text):
-            ip = re.compile(r'''(?:^|\s)(\d{1,3}(?:\.\d{1,3}){3})(?!/|-|\.)''')
+            ip = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?!/|-|\.)''')
             if "Minecraft has crashed!" in text:
                 return False
             if ip.search(text):
