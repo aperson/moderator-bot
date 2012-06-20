@@ -84,10 +84,12 @@ class Reddit(object):
 
     def nuke(self, post, action, comment=None):
         '''Remove/hide/comment.'''
-        remove = {'spam': 'False', 'r': post['subreddit'],
+        remove = {'r': post['subreddit'],
             'id': post['name'], 'executed': action}
         if action == 'spammed':
-            remove['spam'] = 'true'
+            remove['spam'] = 'True'
+        else:
+            remove['spam'] = 'False'
         self.post('http://www.reddit.com/api/remove', remove)
         if 'title' in post:
             hide = {'id': post['name']}
