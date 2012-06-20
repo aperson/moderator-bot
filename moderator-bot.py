@@ -82,10 +82,10 @@ class Reddit(object):
             url += '.json'
         return self._request(url)
 
-    def nuke(self, post, comment=None):
+    def nuke(self, post, action, comment=None):
         '''Remove/hide/comment.'''
         remove = {'spam': 'False', 'r': post['subreddit'],
-            'id': post['name'], 'executed': 'removed'}
+            'id': post['name'], 'executed': action}
         self.post('http://www.reddit.com/api/remove', remove)
         if 'title' in post:
             hide = {'id': post['name']}
@@ -122,6 +122,7 @@ class Filter(object):
             "ge={link}).")
         self.comment = ""
         self.tag = ""
+        self.action = 'remove'
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -331,13 +332,34 @@ class Failed(Filter):
             return True
 
 
+class PicsHd(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''http://(?:www\.)?picshd\.com/\w*''', re.I)
+        self.action = 'spammed'
+
+    def filterSubmission(self, submission):
+        link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']):
+            p("Found picshd.com in submission:")
+            p(link)
+            return True
+
+    def filterComment(self, comment):
+        if self.regex.search(comment['body']):
+            p("Found picshd.com in comment:")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
+                comment['link_id'][3:], comment['id']))
+            return True
+
 def main():
     sleep_time = 60 * 5
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed()]
+        Failed(), PicsHd()]
 
     # main loop
     while True:
@@ -357,9 +379,9 @@ def main():
                 for f in filters:
                     if f.runFilter(item):
                         if f.comment:
-                            r.nuke(item, comment=f.comment)
+                            r.nuke(item, f.action, comment=f.comment)
                         else:
-                            r.nuke(item)
+                            r.nuke(item, f.action)
                         if f.tag:
                             r.rts(item['author'], tag=f.tag)
                         break
