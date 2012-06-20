@@ -87,9 +87,9 @@ class Reddit(object):
         remove = {'r': post['subreddit'],
             'id': post['name'], 'executed': action}
         if action == 'spammed':
-            remove['spam'] = 'True'
+            remove['spam'] = 'true'
         else:
-            remove['spam'] = 'False'
+            remove['spam'] = 'false'
         self.post('http://www.reddit.com/api/remove', remove)
         if 'title' in post:
             hide = {'id': post['name']}
