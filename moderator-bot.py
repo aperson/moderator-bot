@@ -339,11 +339,10 @@ class PicsHd(Filter):
         self.action = 'spammed'
 
     def filterSubmission(self, submission):
-        link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
-                submission['id'])
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']):
             p("Found picshd.com in submission:")
-            p(link)
+            p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
             return True
 
     def filterComment(self, comment):
