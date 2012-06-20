@@ -73,7 +73,7 @@ class Reddit(object):
         body['uh'] = self.modhash
         
         return self._request(url, body)
-
+    
     
     def get(self, url):
         """Sends a GET to the url and returns the json as a dict."""
@@ -107,7 +107,7 @@ class Reddit(object):
             body = {'title' : '{} {}'.format(username, tag), 'sr' : 'moderator_bot',
                     'url' : 'http://reddit.com/u/' + username, 'kind' : 'link'}
             submission = self.post('http://www.reddit.com/api/submit', body)
-            p(submission['json']['data']['url'])
+            p('http://redd.it/{}'.format(submission['json']['data']['id']))
         
         
         
