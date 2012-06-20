@@ -312,6 +312,19 @@ class ShortUrl(Filter):
                 comment['link_id'][3:], comment['id']))
             return True
 
+class Failed(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+
+    def filterSubmission(self, submission):
+        if submission['domain'].startswith('['):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            self.comment = ("You've seemed to try to use markdown or other markup in the url field"
+                " when you made this submission. Markdown formatting is only for self text and comm"
+                "enting; any other formatting code is invalid on reddit. When you make a link submi"
+                "ssion, please only enter the bare link in the url field.")
+
 
 def main():
     sleep_time = 60 * 5
