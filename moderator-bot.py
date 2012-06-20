@@ -116,10 +116,10 @@ class Filter(object):
     """Base filter class"""
     def __init__(self):
         self.regex = None
-        self.comment_template = ("This submission has been removed automatically.\nAccording to ou"
-            "r [subreddit rules](/r/{sub}/faq), {reason}.  If you feel this was in error, please [m"
-            "essage the moderators](/message/compose/?to=/r/{sub}&subject=Removal%20Dispute&message"
-            "={link}).")
+        self.comment_template = ("##This submission has been removed automatically.\nAccording to "
+            "our [subreddit rules](/r/{sub}/faq), {reason}.  If you feel this was in error, please "
+            "[message the moderators](/message/compose/?to=/r/{sub}&subject=Removal%20Dispute&messa"
+            "ge={link}).")
         self.comment = ""
         self.tag = ""
 
