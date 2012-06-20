@@ -274,7 +274,7 @@ class AmazonReferral(Filter):
         self.tag = "[Amazon Referral Spam]"
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']):
+        if submission['domain'] is 'picshd.com' or self.regex.search(submission['selftext']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
             p("Found Amazon referral link in submission:")
