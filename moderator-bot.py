@@ -312,6 +312,7 @@ class ShortUrl(Filter):
                 comment['link_id'][3:], comment['id']))
             return True
 
+
 class Failed(Filter):
     def __init__(self):
         Filter.__init__(self)
@@ -322,8 +323,12 @@ class Failed(Filter):
                 submission['id'])
             self.comment = ("You've seemed to try to use markdown or other markup in the url field"
                 " when you made this submission. Markdown formatting is only for self text and comm"
-                "enting; any other formatting code is invalid on reddit. When you make a link submi"
-                "ssion, please only enter the bare link in the url field.")
+                "enting; other formatting code is invalid on reddit. When you make a link submissio"
+                "n, please only enter the bare link in the url field.\n\nFeel free to try submitti"
+                "ng again.")
+            p("Found link submission with formatting in the url:")
+            p(link)
+            return True
 
 
 def main():
@@ -331,7 +336,8 @@ def main():
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
-    filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl()]
+    filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
+        Failed()]
 
     # main loop
     while True:
