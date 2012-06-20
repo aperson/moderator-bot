@@ -175,7 +175,7 @@ class Suggestion(Filter):
                 return True
 
 
-class  Fixed(Filter):
+class Fixed(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''[\[|<\({]fixed[\]>\):}]''', re.I)
@@ -224,7 +224,8 @@ class Ip(Filter):
             return True
 
     def filterSubmission(self, submission):
-        if self._server_in(submission['title']) or self._server_in(submission['selftext']):
+        if self._server_in(submission['title']) or self._server_in(submission['selftext']) \
+            or self._server_in(submission['url']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
             reason = "server advertisements are not allowed"
@@ -250,7 +251,8 @@ class FreeMinecraft(Filter):
         self.tag = "[Free Minecraft Spam]"
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']):
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
+            or self.regex.search(submission['url']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
             reason = "free minecraft links are not allowed"
@@ -276,7 +278,8 @@ class AmazonReferral(Filter):
         self.tag = "[Amazon Referral Spam]"
 
     def filterSubmission(self, submission):
-        if submission['domain'] is 'picshd.com' or self.regex.search(submission['selftext']):
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
+            or self.regex.search(submission['url']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
             p("Found Amazon referral link in submission:")
@@ -298,7 +301,8 @@ class ShortUrl(Filter):
             r'''tiny\.cc|soc.li)/''', re.I)
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']):
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
+        or self.regex.search(submission['url']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
             reason = "short urls are not allowed"
@@ -341,7 +345,8 @@ class PicsHd(Filter):
         self.action = 'spammed'
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']):
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
+            or submission['domain'].lower() == 'picshd.com':
             p("Found picshd.com in submission:")
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id']))
