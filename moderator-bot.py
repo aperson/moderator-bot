@@ -50,7 +50,7 @@ class Reddit(object):
         self.password = password
         self.cj = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cj))
-        self.opener.addheaders = [('User-agent', 'moderator-bot.py')]
+        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
         self._login()
 
     def _request(self, url, body=None):
