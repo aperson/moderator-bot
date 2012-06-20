@@ -31,9 +31,9 @@ import http.cookiejar
 from credentials import *
 
 def p(data):
-        print(time.strftime('\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
-                             '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ')
-                              + data)
+    print(time.strftime('\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
+                         '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ')
+                         + data)
 
 def sigint_handler(signal, frame):
     '''Handles ^c'''
@@ -80,12 +80,12 @@ class Reddit(object):
         if '.json' not in url: url += '.json'
         return self._request(url)
     
-    def nuke(self, post, comment=None, hide=True):
+    def nuke(self, post, comment=None):
         '''Remove/hide/comment.'''
         remove = {'spam' : 'False', 'r' : post['subreddit'],
                                            'id' : post['name'], 'executed' : 'removed'}
         self.post('http://www.reddit.com/api/remove', remove)
-        if hide:
+        if 'title' in post:
             hide = {'id' : post['name']}
             self.post('http://www.reddit.com/api/hide', hide)
         if comment:
@@ -109,213 +109,198 @@ class Reddit(object):
             submission = self.post('http://www.reddit.com/api/submit', body)
             p('http://redd.it/{}'.format(submission['json']['data']['id']))
         
+class Filter(object):
+    """Base filter class"""
+    def __init__(self):
+        self.regex = None
+        self.comment_template = ("This submission has been removed automatically.  According to ou"
+            "r [subreddit rules](/r/{sub}/faq), {reason}.  If you feel this was in error, please [m"
+            "essage the moderators](/message/compose/?to=/r/{sub}&subject=Removal%20Dispute&message"
+            "={link}).")
+        self.comment = ""
+        self.tag = ""
+    
+    def filterComment(self, comment):
+        raise NotImplementedError
+    
+    def filterSubmission(self, submission):
+        raise NotImplementedError
+    
+    def runFilter(self, post):
+        if 'title' in post:
+            try:
+                self.filterSubmission(post)
+            except NotImplementedError:
+                p("Tried to parse submission on a filter that does not implement it!")
+        elif 'body' in post:
+            try:
+                self.filterComment(post)
+            except NotImplementedError:
+                p("Tried to parse comment on a filter that does not implement it!")
+
+class Suggestion(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|(?:^|\[|<|'''
+            '''\(|{)ideas?(?:\]|>|\)|:|}))''', re.I)
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title']):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            
+            if submission['domain'] != 'self.{}'.format(submission['subreddit']):
+                reason = "suggestions must be self-post only"
+                self.comment = self.comment_template.format(sub=submission['subreddit'],
+                    reason=reason, link=link)
+                p("Found [Suggestion] submission that is not a self post:")
+                p(link)
+                return True
+            elif not submission['selftext']:
+                reason = ("suggestion posts must have a description along with them, which is somet"
+                    "hing you cannot convey with only a title")
+                self.comment = self.comment_template.format(sub=submission['subreddit'],
+                    reason=reason, link=link)
+                p("Found [Suggestion] submisison that has not self text:")
+                p(link)
+                return True
+
+class  Fixed(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''[\[|<\({]fixed[\]>\):}]''', re.I)
+    
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title']):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            reason = "[Fixed] submissions are not allowed"
+            self.comment = self.comment_template.format(sub=submission['subreddit'],
+                reason=reason, link=link)
+            p("Found [Fixed] submission:")
+            p(link)
+            return True
+
+class Ip(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?!/|-|\.)''', re.I)
+        self.tag = "[Server Spam]"
+    
+    def _ip_in(self, ip):
+        try:
+            split_ip = [int(i) for i in self.regex.findall(text)[0].split('.')]
+        except ValueError:
+            return False
+        if split_ip[:3] == [10, 0, 0]:
+            return False
+        elif split_ip[:3] == [127, 0, 0]:
+            return False
+        elif split_ip[:2] == [192, 168]:
+            return False
+        elif split_ip == [0] * 4:
+            return False
+        for i in split_ip:
+            if not i <= 255:
+                return False
+        return True
+    
+    def filterSubmission(self, submisison):
+        if _ip_in(submission['title']) or 'planetminecraft.com/server/' in submission['title'] or
+            _ip_in(submission['selftext']) or 'planetminecraft.com/server/' in
+            submission['selftext']: 
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            reason = "server advertisements are not allowed"
+            self.comment = self.comment_template.format(sub=submission['subreddit'],
+                reason=reason, link=link)
+            p("Found server advertisement in submission:")
+            p(link)
+            return True
+    
+    def filterComment(self, comment):
+        if _ip_in(comment['body']) or 'planetminecraft.com/server/' in comment['body']:
+            p("Found server ad in comment:")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
+                comment['link_id'][3:], post['id']))
+            return True
+
+class FreeMinecraft(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:codes?|rewards?|gift-?codes?'''
+                              r'''(?:-?generator)?)\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
+        self.tag = "[Free Minecraft Spam]"
+    
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title'] or self.regex.search(submission['selftext']):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            reason = "free minecraft links are not allowed"
+            self.comment = self.comment_template.format(sub=submission['subreddit'],
+                reason=reason, link=link)
+            p("Found free Minecraft link in submission:")
+            p(link)
+            return True
+    
+    def filterComment(self, comment):
+        if self.regex.search(comment):
+            p("Found free minecraft link in comment:")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
+                comment['link_id'][3:], comment['id']))
+            return True
+
+class AmazonReferral(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk))*.?tag=*.?'''
+            r'''-20''', re.I)
+        self.tag = "[Amazon Referral Spam]"
         
-        
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']:
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            p("Found Amazon referral link in submission:")
+            p(link)
+            return True
+    
+    def filterComment(self, comment):
+        if self.regex.search(submission['body']):
+            p("Found Amazon referral link in comment:")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
+                comment['link_id'][3:], comment['id']))
+            return True
+
+class ShortUrl(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
+            r'''tiny\.cc|soc.li)/''', re.I)
+    
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']:
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            reason = "short urls are not allowed"
+            self.comment = self.comment_template.format(sub=submission['subreddit'],
+                reason=reason, link=link)
+            p("Found short url in submission:")
+            p(link)
+            return True
+    
+    def filterComment(self, comment):
+        if self.regex.search(submission['body']):
+            p("Found short in comment:")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
+                comment['link_id'][3:], comment['id']))
+            return True
 
 def main():    
     sleep_time = 60 * 5
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
     
-    # Lets define our filters. They should return True in boolean context if match is positive
-    def suggestion_filter(post):
-        """Removes [Suggestion] submissions that eitherare not self post or do not have
-        self-text."""
-        suggestion = re.compile(r'''((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|'''
-                                 r'''(?:^|\[|<|\(|{)ideas?(?:\]|>|\)|:|}))''', re.I)
-        
-        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
-                      " rules](/r/{sub}/faq), suggestion posts must be self-posts only.  If you fee"
-                      "l this was in error, please [message the moderators](/message/compose/?to=/r"
-                      "/{sub}&subject=Removal%20Dispute&message={link}).")
-        template_2 = ("This submission has been removed automatically.  According to our [subreddit"
-                      " rules](/r/{sub}/faq), suggestion posts must have a description along with t"
-                      "hem, which is something you cannot convey with only a title.  If you feel th"
-                      "is was in error, please [message the moderators](/message/compose/?to={sub}&"
-                      "subject=Removal%20Dispute&message={link}).")
-        if 'title' in post and suggestion.search(post['title']):
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if post['domain'] != 'self.{}'.format(SUBREDDIT):
-                p('Found [Suggestion] submission that is not a self post, removing:')
-                p(link)
-                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                return True
-            elif not post['selftext']:
-                p('Found [Suggestion] submission that has no self-text, removing:')
-                p(link)
-                r.nuke(post, template_2.format(sub=SUBREDDIT, link=link))
-                return True
-    
-    def fixed_filter(post):
-        """Removes [Fixed] posts."""
-        fixed = re.compile(r'''[\[|<\({]fixed[\]>\):}]''', re.I)
-        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
-                      " rules](/r/{sub}/faq), [Fixed] posts are not allowed.  If you feel this was "
-                      "in error, please [message the moderators](/message/compose/?to={sub}&subject"
-                      "=Removal%20Dispute&message={link}).")
-        if 'title' in post and fixed.search(post['title']):
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            p('Found [fixed] post, removing.')
-            p(link)
-            r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-            return True
-    
-    def ip_filter(post):
-        """Removes submissions and comments that have an ip in them."""
-        tag = "[server spam]"
-        def ip_in(text):
-            ip = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?!/|-|\.)''')
-            if "Minecraft has crashed!" in text:
-                return False
-            if ip.search(text):
-                try:
-                    split_ip = [int(i) for i in ip.findall(text)[0].split('.')]
-                except ValueError:
-                    return False
-                if split_ip[:3] == [10, 0, 0]:
-                    return False
-                elif split_ip[:3] == [127, 0, 0]:
-                    return False
-                elif split_ip[:2] == [192, 168]:
-                    return False
-                elif split_ip == [0] * 4:
-                    return False
-                for i in split_ip:
-                    if not i <= 255:
-                        return False
-                return True
-        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
-                      " rules](/r/{sub}/faq), server advertisements are not allowed.  If you feel t"
-                      "his was in error, please [message the moderators](/message/compose/?to={sub}"
-                      "&subject=Removal%20Dispute&message={link}).")
-        if 'title' in post:
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if ip_in(post['title']) or 'planetminecraft.com/server/' in post['url']:
-                p('Found server ad in title, removing:')
-                p(link)
-                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                r.rts(post['author'], tag)
-                return True
-            elif post['selftext']:
-                if ip_in(post['selftext']) or 'planetminecraft.com/server/' in post['selftext']:
-                    p('Found server ad in selftext, removing:')
-                    p(link)
-                    r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                    r.rts(post['author'], tag)
-                    return True
-        elif 'body' in post:
-            if ip_in(post['body']) or 'planetminecraft.com/server/' in post['body']:
-                p('Found server ad in comment, removing:')
-                p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
-                                                                    post['id']))
-                r.nuke(post, hide=False)
-                r.rts(post['author'], tag)
-                return True
-    
-    def freemc_filter(post):
-        """Tries to blanket remove all of the free minecraft sites."""
-        free_mc = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:codes?|rewards?|gift-?codes?'''
-                              r'''(?:-?generator)?)\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
-        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
-                      " rules](/r/{sub}/faq), free minecraft links are not allowed.  If you feel th"
-                      "is was in error, please [message the moderators](/message/compose/?to={sub}&"
-                      "subject=Removal%20Dispute&message={link}).")
-        tag = "[free minecraft spam]"
-        if 'title' in post:
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if free_mc.search(post['title']):
-                p('Found free minecraft link, removing:')
-                p(link)
-                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                r.rts(post['author'], tag)
-                return True
-            elif post['url'] and free_mc.search(post['url']):
-                p('Found free minecraft link, removing:')
-                p(link)
-                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                r.rts(post['author'], tag)
-                return True
-            elif post['selftext'] and free_mc.search(post['selftext']):
-                p('Found free minecraft link, removing:')
-                p(link)
-                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                r.rts(post['author'], tag)
-                return True
-        elif 'body' in post:
-            if free_mc.search(post['body']):
-                p('Found free minecraft link in comment, removing:')
-                p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
-                                                                    post['id']))
-                r.nuke(post, hide=False)
-                r.rts(post['author'], tag)
-                return True
-    
-    def amazon_filter(post):
-        """Removes amazon referrals and submits 0 day old accounts to rts."""
-        amazon = re.compile(r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk))*.?tag=*.?-20''',
-                             re.I)
-        tag = "[amazon referral spam]"
-        if 'title' in post:
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if amazon.search(post['title']):
-                p('Found amazon referral link, removing:')
-                p(link)
-                r.nuke(post)
-                r.rts(post['author'], tag)
-                return True
-            elif post['url'] and amazon.search(post['url']):
-                p('Found amazon referral link, removing:')
-                p(link)
-                r.nuke(post)
-                r.rts(post['author'], tag)
-                return True
-            elif post['selftext'] and amazon.search(post['selftext']):
-                p('Found amazon referral link, removing:')
-                p(link)
-                r.nuke(post)
-                r.rts(post['author'], tag)
-                return True
-        elif 'body' in post:
-            if amazon.search(post['body']):
-                p('Found amazon referral in comment, removing:')
-                p(link)
-                r.nuke(post, hide=False)
-                r.rts(post['author'], tag)
-                return True
-    
-    def short_url_filter(post):
-        '''Removes any non-approved short urls.'''
-        short_url = re.compile(r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
-                                r'''tiny\.cc|soc.li)/''', re.I)
-        template_1 = ("This submission has been removed automatically.  According to our [subreddit"
-                      " rules](/r/{sub}/faq), url shorteners  are not allowed.  If you feel this wa"
-                      "s in error or you edited your post to omit the url shortener, please [messag"
-                      "e the moderators](/message/compose/?to={sub}&subject=Removal%20Dispute&messa"
-                      "ge={link}).")
-        if 'title' in post:
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(SUBREDDIT, post['id'])
-            if short_url.search(post['title']):
-                p('Found short url in title, removing:')
-                p(link)
-                r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                return True
-            elif post['selftext']:
-                if short_url.search(post['selftext']):
-                    p('Found short url in selftext, removing:')
-                    p(link)
-                    r.nuke(post, template_1.format(sub=SUBREDDIT, link=link))
-                    return True
-        elif 'body' in post:
-            if short_url.search(post['body']):
-                p('Found short url in comment, removing:')
-                p('http://reddit.com/r/{}/comments/{}/a/{}'.format(SUBREDDIT, post['link_id'][3:],
-                                                                    post['id']))
-                r.nuke(post, hide=False)
-                return True
-    
-    # and throw them into a list of filters
-    filters = [suggestion_filter, fixed_filter, ip_filter, freemc_filter, amazon_filter,
-                short_url_filter]
+    filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl()]
     
     # main loop
     while True:
@@ -333,7 +318,14 @@ def main():
             if item['banned_by'] is True and \
                 item['author'] != USERNAME and not item['approved_by']:
                 for f in filters:
-                    if f(item): break
+                    if f.run(item):
+                        if f.comment:
+                            r.nuke(item, comment=f.comment)
+                        else:
+                            r.nuke(itme)
+                        if f.tag:
+                            r.rts(item['author'], tag=f.tag)
+                        break
         p('Sleeping for {} seconds.'.format(sleep_time))
         time.sleep(sleep_time)
 
