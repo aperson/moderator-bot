@@ -342,7 +342,7 @@ class PicsHd(Filter):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']):
             p("Found picshd.com in submission:")
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
-                submission['id'])
+                submission['id']))
             return True
 
     def filterComment(self, comment):
