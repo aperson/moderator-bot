@@ -125,6 +125,11 @@ class Filter(object):
         self.comment = ""
         self.tag = ""
         self.action = 'remove'
+        self.log_text = ""
+
+    def _logToDisk(self, log_text):
+        log_base_html = "<html><head><title>{username} modlog</title></head><body>{body}</body>"
+        pass
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -136,12 +141,14 @@ class Filter(object):
         if 'title' in post:
             try:
                 if self.filterSubmission(post):
+                    self._logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
         elif 'body' in post:
             try:
                 if self.filterComment(post):
+                    self._logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
