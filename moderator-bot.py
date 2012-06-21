@@ -131,17 +131,18 @@ class Filter(object):
         log_start = "<html><head><title>{username} modlog</title></head><body>".format(
             username=USERNAME)
         log_end = "</body>"
-        entry_base = "<div class=\"entry\">{time}: {data}</div>\n".format(time=time.time(),
+        entry_base = "<div class=\"entry\">{time}: {data}</div>\n".format(time=int(time.time()),
             data=log_text)
         with open(LOGFILE) as l:
             log = l.read()
-        log = re.sub(log_start, log, '')
-        log = re.sub(log_end, log, '')
+        log = log[len(log_start):-len(log_end)].strip()
         split_log = log.split('\n')
-        if len(split_log) >= 100:
-            log = ''.join(split_log[1:])
+        if len(split_log) < 100:
+            log = '\n'.join(split_log)
+        else:
+            log = '\n'.join(split_log[1:])
         with open(LOGFILE, 'w') as l:
-            l.write(log_start + log + entry_base + log_end)
+            l.write(log_start + entry_base+ log + log_end)
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -344,7 +345,7 @@ class ShortUrl(Filter):
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
-            self.log_text = "Found short in comment"
+            self.log_text = "Found short url in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
                 comment['link_id'][3:], comment['id']))
