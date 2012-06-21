@@ -131,7 +131,8 @@ class Filter(object):
         log_start = "<html><head><title>{username} modlog</title></head><body>".format(
             username=USERNAME)
         log_end = "</body>"
-        entry_base = "<div class=\"entry\">{data}</div>\n".format(data=log_text)
+        entry_base = "<div class=\"entry\">{time}: {data}</div>\n".format(time=time.time(),
+            data=log_text)
         with open(LOGFILE) as l:
             log = l.read()
         log = re.sub(log_start, log, '')
