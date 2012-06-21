@@ -128,12 +128,12 @@ class Filter(object):
         self.log_text = ""
 
     def _logToDisk(self, log_text):
-        log_start = "<html><head><title>{username} modlog</title></head><body>".format(USERNAME)
+        log_start = "<html><head><title>{username} modlog</title></head><body>".format(
+            username=USERNAME)
         log_end = "</body>"
         entry_base = "<div class=\"entry\">{data}</div>\n".format(log_text)
         with open(LOGFILE) as l:
             log = l.read().decode('utf-8')
-
         log = re.sub(log_start, '')
         log = re.sub(log_end, '')
         split_log = log.split('\n')
