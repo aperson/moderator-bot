@@ -172,7 +172,6 @@ class Suggestion(Filter):
         Filter.__init__(self)
         self.regex = re.compile(r'''((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|(?:^|\[|<|'''
             '''\(|{)ideas?(?:\]|>|\)|:|}))''', re.I)
-        self.log_text = "Found [Suggestion] submisison that has no self text"
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']):
@@ -181,12 +180,14 @@ class Suggestion(Filter):
 
             if submission['domain'] != 'self.{}'.format(submission['subreddit']):
                 reason = "suggestions must be self-post only"
+                self.log_text = "Found [Suggestion] submisison that is not a self post"
                 self.comment = self.comment_template.format(sub=submission['subreddit'],
                     reason=reason, link=link)
-                p("Found [Suggestion] submission that is not a self post:")
+                p(self.log_text + ":")")
                 p(link)
                 return True
             elif not submission['selftext']:
+                self.log_text = "Found [Suggestion] submisison that has no self text"
                 reason = ("suggestion posts must have a description along with them, which is somet"
                     "hing you cannot convey with only a title")
                 self.comment = self.comment_template.format(sub=submission['subreddit'],
