@@ -128,8 +128,19 @@ class Filter(object):
         self.log_text = ""
 
     def _logToDisk(self, log_text):
-        log_base_html = "<html><head><title>{username} modlog</title></head><body>{body}</body>"
-        pass
+        log_start = "<html><head><title>{username} modlog</title></head><body>".format(USERNAME)
+        log_end = "</body>"
+        entry_base = "<div class=\"entry\">{data}</div>\n".format(log_text)
+        with open(LOGFILE) as l:
+            log = l.read().decode('utf-8')
+
+        log = re.sub(log_start, '')
+        log = re.sub(log_end, '')
+        split_log = log.split('\n')
+        if len(split_log) >= 100:
+            log = ''.join(split_log[1:])
+        with open(LOGFILE, 'w') as l:
+            l.write(log + entry_base)
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -159,6 +170,7 @@ class Suggestion(Filter):
         Filter.__init__(self)
         self.regex = re.compile(r'''((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|(?:^|\[|<|'''
             '''\(|{)ideas?(?:\]|>|\)|:|}))''', re.I)
+        self.log_text = "Found [Suggestion] submisison that has no self text"
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']):
@@ -177,7 +189,7 @@ class Suggestion(Filter):
                     "hing you cannot convey with only a title")
                 self.comment = self.comment_template.format(sub=submission['subreddit'],
                     reason=reason, link=link)
-                p("Found [Suggestion] submisison that has no self text:")
+                p(self.log_text + ":")
                 p(link)
                 return True
 
@@ -186,6 +198,7 @@ class Fixed(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''[\[|<\({]fixed[\]>\):}]''', re.I)
+        self.log_text ="Found [Fixed] submission"
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']):
@@ -194,7 +207,7 @@ class Fixed(Filter):
             reason = "[Fixed] submissions are not allowed"
             self.comment = self.comment_template.format(sub=submission['subreddit'],
                 reason=reason, link=link)
-            p("Found [Fixed] submission:")
+            p(self.log_text + ":")
             p(link)
             return True
 
@@ -233,18 +246,20 @@ class Ip(Filter):
     def filterSubmission(self, submission):
         if self._server_in(submission['title']) or self._server_in(submission['selftext']) \
             or self._server_in(submission['url']):
+            self.log_text = "Found server advertisement in submission"
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
             reason = "server advertisements are not allowed"
             self.comment = self.comment_template.format(sub=submission['subreddit'],
                 reason=reason, link=link)
-            p("Found server advertisement in submission:")
+            p(self.log_text + ":")
             p(link)
             return True
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
-            p("Found server ad in comment:")
+            self.log_text = "Found server ad in comment"
+            p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
                 comment['link_id'][3:], comment['id']))
             return True
@@ -263,16 +278,18 @@ class FreeMinecraft(Filter):
             or self.regex.search(submission['url']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
+            self.log_text = "Found free Minecraft link in submission"
             reason = "free minecraft links are not allowed"
             self.comment = self.comment_template.format(sub=submission['subreddit'],
                 reason=reason, link=link)
-            p("Found free Minecraft link in submission:")
+            p(self.log_text + ":")
             p(link)
             return True
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
-            p("Found free minecraft link in comment:")
+            self.log_text = "Found free minecraft link in comment"
+            p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
                 comment['link_id'][3:], comment['id']))
             return True
@@ -289,15 +306,17 @@ class AmazonReferral(Filter):
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
             or self.regex.search(submission['url']):
+            self.log_text = "Found Amazon referral link in submission"
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
-            p("Found Amazon referral link in submission:")
+            p(self.log_text +":")
             p(link)
             return True
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
-            p("Found Amazon referral link in comment:")
+            self.log_text = "Found Amazon referral link in comment"
+            p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
                 comment['link_id'][3:], comment['id']))
             return True
@@ -314,16 +333,18 @@ class ShortUrl(Filter):
         or self.regex.search(submission['url']):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
+            self.log_text = "Found short url in submission"
             reason = "short urls are not allowed"
             self.comment = self.comment_template.format(sub=submission['subreddit'],
                 reason=reason, link=link)
-            p("Found short url in submission:")
+            p(self.log_text + ":")
             p(link)
             return True
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
-            p("Found short in comment:")
+            self.log_text = "Found short in comment"
+            p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
                 comment['link_id'][3:], comment['id']))
             return True
@@ -337,12 +358,13 @@ class Failed(Filter):
         if submission['domain'].startswith('['):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
+            self.log_text = "Found link submission with formatting in the url"
             self.comment = ("You've seemed to try to use markdown or other markup in the url field"
                 " when you made this submission. Markdown formatting is only for self text and comm"
                 "enting; other formatting code is invalid on reddit. When you make a link submissio"
                 "n, please only enter the bare link in the url field.\n\nFeel free to try submitti"
                 "ng again.")
-            p("Found link submission with formatting in the url:")
+            p(self.log_text + ":")
             p(link)
             return True
 
@@ -356,14 +378,16 @@ class PicsHd(Filter):
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
             or submission['domain'] == 'picshd.com':
-            p("Found picshd.com in submission:")
+            self.log_text = "Found picshd.com in submission"
+            p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id']))
             return True
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
-            p("Found picshd.com in comment:")
+            self.log_text = "Found picshd.com in comment"
+            p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
                 comment['link_id'][3:], comment['id']))
             return True
