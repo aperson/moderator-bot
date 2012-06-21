@@ -128,8 +128,8 @@ class Filter(object):
         self.log_text = ""
 
     def _logToDisk(self, log_text):
-        log_start = ("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\" /"
-            "><title>{username} modlog</title></head><body>".format(username=USERNAME))
+        log_start = ("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /><"
+            "title>{username} modlog</title></head><body>".format(username=USERNAME))
         log_end = "</body>"
         entry_base = "<div class=\"entry\">{time}: {data}</div>\n".format(time=int(time.time()),
             data=log_text)
