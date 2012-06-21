@@ -346,7 +346,7 @@ class PicsHd(Filter):
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
-            or submission['domain'].lower() == 'picshd.com':
+            or submission['domain'] == 'picshd.com':
             p("Found picshd.com in submission:")
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id']))
