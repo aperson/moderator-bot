@@ -134,8 +134,8 @@ class Filter(object):
         entry_base = "<div class=\"entry\">{data}</div>\n".format(data=log_text)
         with open(LOGFILE) as l:
             log = l.read()
-        log = re.sub(log_start, '')
-        log = re.sub(log_end, '')
+        log = re.sub(log_start, log, '')
+        log = re.sub(log_end, log, '')
         split_log = log.split('\n')
         if len(split_log) >= 100:
             log = ''.join(split_log[1:])
