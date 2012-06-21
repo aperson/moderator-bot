@@ -249,6 +249,7 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:codes?|rewards?|gift-?codes?'''
                               r'''(?:-?generator)?)\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
         self.tag = "[Free Minecraft Spam]"
+        self.action = 'spammed'
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
@@ -276,6 +277,7 @@ class AmazonReferral(Filter):
         self.regex = re.compile(r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk))*.?tag=*.?'''
             r'''-20''', re.I)
         self.tag = "[Amazon Referral Spam]"
+        self.action = 'spammed'
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
