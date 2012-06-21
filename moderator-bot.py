@@ -133,7 +133,7 @@ class Filter(object):
         log_end = "</body>"
         entry_base = "<div class=\"entry\">{data}</div>\n".format(data=log_text)
         with open(LOGFILE) as l:
-            log = l.read().decode('utf-8')
+            log = l.read()
         log = re.sub(log_start, '')
         log = re.sub(log_end, '')
         split_log = log.split('\n')
