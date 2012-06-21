@@ -183,7 +183,7 @@ class Suggestion(Filter):
                 self.log_text = "Found [Suggestion] submisison that is not a self post"
                 self.comment = self.comment_template.format(sub=submission['subreddit'],
                     reason=reason, link=link)
-                p(self.log_text + ":")")
+                p(self.log_text + ":")
                 p(link)
                 return True
             elif not submission['selftext']:
