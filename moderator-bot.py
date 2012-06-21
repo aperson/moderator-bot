@@ -140,7 +140,7 @@ class Filter(object):
         if len(split_log) >= 100:
             log = ''.join(split_log[1:])
         with open(LOGFILE, 'w') as l:
-            l.write(log + entry_base)
+            l.write(log_start + log + entry_base + log_end)
 
     def filterComment(self, comment):
         raise NotImplementedError
