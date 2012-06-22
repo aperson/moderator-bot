@@ -271,8 +271,8 @@ class Ip(Filter):
 class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:codes?|rewards?|gift-?codes?'''
-                              r'''(?:-?generator)?)\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
+        self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:install|codes?|rewards?|gif'''
+            r'''t-?codes?(?:-?generator)?)\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
         self.tag = "[Free Minecraft Spam]"
         self.action = 'spammed'
 
