@@ -261,7 +261,7 @@ class Ip(Filter):
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
-            self.log_text = "Found server ad in comment"
+            self.log_text = "Found server advertisement in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
                 comment['link_id'][3:], comment['id']))
