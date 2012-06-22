@@ -40,8 +40,7 @@ def logToDisk(log_text):
         "e>{username} modlog</title></head><body>".format(username=USERNAME))
     log_end = "</body>"
     entry_base = "<div class=\"entry\"><span>{time}</span>: {data}</div>\n".format(time=
-        time.strftime'[%y/%m/%d][%H:%M:%S]'),
-        data=log_text)
+        time.strftime('[%y/%m/%d][%H:%M:%S]'), data=log_text)
     with open(LOGFILE) as l:
         log = l.read()
     log = log[len(log_start):-len(log_end)].strip()
