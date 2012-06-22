@@ -35,6 +35,23 @@ def p(data):
     print(time.strftime('\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
         '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data)
 
+def logToDisk(log_text):
+    log_start = ("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /><titl"
+        "e>{username} modlog</title></head><body>".format(username=USERNAME))
+    log_end = "</body>"
+    entry_base = "<div class=\"entry\">{time}: {data}</div>\n".format(time=int(time.strftime(
+        '[%y/%m/%d][%H:%M:%S]')),
+        data=log_text)
+    with open(LOGFILE) as l:
+        log = l.read()
+    log = log[len(log_start):-len(log_end)].strip()
+    split_log = log.split('\n')
+    if len(split_log) < 1000:
+        log = '\n'.join(split_log)
+    else:
+        log = '\n'.join(split_log[1:])
+    with open(LOGFILE, 'w') as l:
+        l.write(log_start + entry_base+ log + log_end)
 
 def sigint_handler(signal, frame):
     '''Handles ^c'''
@@ -127,23 +144,6 @@ class Filter(object):
         self.action = 'remove'
         self.log_text = ""
 
-    def _logToDisk(self, log_text):
-        log_start = ("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /><"
-            "title>{username} modlog</title></head><body>".format(username=USERNAME))
-        log_end = "</body>"
-        entry_base = "<div class=\"entry\">{time}: {data}</div>\n".format(time=int(time.time()),
-            data=log_text)
-        with open(LOGFILE) as l:
-            log = l.read()
-        log = log[len(log_start):-len(log_end)].strip()
-        split_log = log.split('\n')
-        if len(split_log) < 100:
-            log = '\n'.join(split_log)
-        else:
-            log = '\n'.join(split_log[1:])
-        with open(LOGFILE, 'w') as l:
-            l.write(log_start + entry_base+ log + log_end)
-
     def filterComment(self, comment):
         raise NotImplementedError
 
@@ -154,14 +154,14 @@ class Filter(object):
         if 'title' in post:
             try:
                 if self.filterSubmission(post):
-                    self._logToDisk(self.log_text)
+                    logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
         elif 'body' in post:
             try:
                 if self.filterComment(post):
-                    self._logToDisk(self.log_text)
+                    logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
