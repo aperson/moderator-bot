@@ -416,7 +416,7 @@ def main():
             # I know using 'is True' isn't the 'right' way, but reddit's api is weird here
             # and I wanted to explicitly show it
             if item['banned_by'] is True and item['author'] != USERNAME and not \
-                item['approved_by']:
+                item['approved_by'] and item['author'] != 'tweet_poster':
                 for f in filters:
                     if f.runFilter(item):
                         if f.comment:
