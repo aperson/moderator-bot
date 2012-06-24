@@ -409,6 +409,7 @@ def main():
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
         feed = []
+        processed = []
         for i in (new_listing, modqueue_listing, comments_listing):
             feed.extend(i['data']['children'])
         for item in feed:
@@ -418,13 +419,14 @@ def main():
             if item['banned_by'] is True and item['author'] != USERNAME and not \
                 item['approved_by'] and item['author'] != 'tweet_poster':
                 for f in filters:
-                    if f.runFilter(item):
+                    if item['id'] not in processed and f.runFilter(item):
                         if f.comment:
                             r.nuke(item, f.action, comment=f.comment)
                         else:
                             r.nuke(item, f.action)
                         if f.tag:
                             r.rts(item['author'], tag=f.tag)
+                        processed.append(item['id'])
                         break
         p('Sleeping for {} seconds.'.format(sleep_time))
         time.sleep(sleep_time)
