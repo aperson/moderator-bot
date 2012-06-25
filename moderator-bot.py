@@ -169,8 +169,8 @@ class Filter(object):
 class Suggestion(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''((?:\[|<|\(|{)?sug*estion(?:\s|s?\]|s?>|s?\)|:|})|(?:^|\[|<|'''
-            '''\(|{)ideas?(?:\]|>|\)|:|}))''', re.I)
+        self.regex = re.compile(r'''((?:\[|<|\(|{|\*|\|)?sug*estion(?:\s|s?\]|s?>|s?\)|:|}|\*|\|'''
+            r''')|(?:^|\[|<|\(|{|\*|\|)ideas?(?:\]|>|\)|:|}|\*|\|))''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']):
@@ -199,7 +199,7 @@ class Suggestion(Filter):
 class Fixed(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''[\[|<\({]fixed[\]>\):}]''', re.I)
+        self.regex = re.compile(r'''[\[|<\({\*]fixed[\]|>\):}\*]''', re.I)
         self.log_text ="Found [Fixed] submission"
 
     def filterSubmission(self, submission):
