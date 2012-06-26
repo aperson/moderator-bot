@@ -360,7 +360,7 @@ class Failed(Filter):
         if submission['domain'].startswith('['):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
-            self.log_text = "Found link submission with formatting in the url"
+            self.log_text = "Found submission with formatting in the url"
             self.comment = ("You've seemed to try to use markdown or other markup in the url field"
                 " when you made this submission. Markdown formatting is only for self text and comm"
                 "enting; other formatting code is invalid on reddit. When you make a link submissio"
@@ -369,6 +369,13 @@ class Failed(Filter):
             p(self.log_text + ":")
             p(link)
             return True
+        elif '.' not in submission['domain']:
+            self.log_text = "Found submission with invalid url"
+            self.comment =("The submission you've made does not have a valid url in it.  Please tr"
+                "y resubmitting and make special attention to what you're typing/pasting in the url"
+                " field.")
+            p(self.log_text + ":)
+            p(link)
 
 
 class PicsHd(Filter):
