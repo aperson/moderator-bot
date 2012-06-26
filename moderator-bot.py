@@ -374,7 +374,7 @@ class Failed(Filter):
             self.comment =("The submission you've made does not have a valid url in it.  Please tr"
                 "y resubmitting and make special attention to what you're typing/pasting in the url"
                 " field.")
-            p(self.log_text + ":)
+            p(self.log_text + ":")
             p(link)
 
 
