@@ -271,7 +271,8 @@ class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:install|codes?|rewards?|gif'''
-            r'''t-?codes?(?:-?generator)?)\.(?:me|info|com|net|org|ru|co\.uk)''', re.I)
+            r'''t-?codes?(?:-?generator)?|acc(?:t|ount)s?)(?:\.blogspot)?\.(?:me|info|com|net|org|'''
+            r'''ru|co\.uk)''', re.I)
         self.tag = "[Free Minecraft Spam]"
         self.action = 'spammed'
 
