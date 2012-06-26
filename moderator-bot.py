@@ -394,6 +394,31 @@ class PicsHd(Filter):
                 comment['link_id'][3:], comment['id']))
             return True
 
+
+class Minebook(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''minebook\.me''', re.I)
+        self.action = 'spammed'
+
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
+            or submission['domain'] == 'minebook.me':
+            self.log_text = "Found minebook in submission"
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id']))
+            return True
+
+
+    def filterComment(self, comment):
+        if self.regex.search(comment['body']):
+            self.log_text = "Found minebook in comment"
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
+                comment['link_id'][3:], comment['id']))
+
+
 def main():
     sleep_time = 60 * 5
     r = Reddit(USERNAME, PASSWORD)
