@@ -142,6 +142,7 @@ class Filter(object):
         self.tag = ""
         self.action = 'remove'
         self.log_text = ""
+        self.ban = False
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -275,6 +276,7 @@ class FreeMinecraft(Filter):
             r'''ru|co\.uk)''', re.I)
         self.tag = "[Free Minecraft Spam]"
         self.action = 'spammed'
+        self.ban = True
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
@@ -459,6 +461,10 @@ def main():
                             r.nuke(item, f.action)
                         if f.tag:
                             r.rts(item['author'], tag=f.tag)
+                        if f.ban:
+                            body = {'action': 'add', 'type': 'banned', 'name': item['author'],
+                                'id': '#banned', 'r': item['subreddit']}
+                            r.post('http://www.reddit.com/api/friend', body)
                         processed.append(item['id'])
                         break
         p('Sleeping for {} seconds.'.format(sleep_time))
