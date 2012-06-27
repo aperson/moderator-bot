@@ -274,7 +274,6 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:install|codes?|rewards?|gif'''
             r'''t-?codes?(?:-?generator)?|acc(?:t|ount)s?)(?:\.blogspot)?\.(?:me|info|com|net|org|'''
             r'''ru|co\.uk)''', re.I)
-        self.tag = "[Free Minecraft Spam]"
         self.action = 'spammed'
         self.ban = True
 
@@ -462,6 +461,7 @@ def main():
                         if f.tag:
                             r.rts(item['author'], tag=f.tag)
                         if f.ban:
+                            p('Banning http://reddit.com/u/{}'.format(item['author']))
                             body = {'action': 'add', 'type': 'banned', 'name': item['author'],
                                 'id': '#banned', 'r': item['subreddit']}
                             r.post('http://www.reddit.com/api/friend', body)
