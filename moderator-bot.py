@@ -273,7 +273,7 @@ class FreeMinecraft(Filter):
         Filter.__init__(self)
         self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:install|codes?|rewards?|gif'''
             r'''t-?codes?(?:-?generator)?|acc(?:t|ount)s?|now)(?:\.blogspot)?\.(?:me|info|com|net|'''
-            r'''org|ru|co\.uk|us''', re.I)
+            r'''org|ru|co\.uk|us)''', re.I)
         self.action = 'spammed'
         self.ban = True
 
