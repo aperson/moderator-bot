@@ -50,7 +50,7 @@ def logToDisk(log_text):
     else:
         log = '\n'.join(split_log[1:])
     with open(LOGFILE, 'w') as l:
-        l.write(log_start + entry_base+ log + log_end)
+        l.write(log_start + entry_base + log + log_end)
 
 def sigint_handler(signal, frame):
     '''Handles ^c'''
@@ -272,8 +272,8 @@ class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''(?:free|cracked)?-?minecraft-?(?:install|codes?|rewards?|gif'''
-            r'''t-?codes?(?:-?generator)?|acc(?:t|ount)s?)(?:\.blogspot)?\.(?:me|info|com|net|org|'''
-            r'''ru|co\.uk)''', re.I)
+            r'''t-?codes?(?:-?generator)?|acc(?:t|ount)s?|now)(?:\.blogspot)?\.(?:me|info|com|net|o'''
+            r'''rg|ru|co\.uk|us''', re.I)
         self.action = 'spammed'
         self.ban = True
 
