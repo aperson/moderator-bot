@@ -35,6 +35,9 @@ def p(data):
     print(time.strftime('\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
         '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data)
 
+def status(data):
+    print('\r> {}'.format(data), end='')
+
 def logToDisk(log_text):
     log_start = ("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /><titl"
         "e>{username} modlog</title></head><body>".format(username=USERNAME))
@@ -432,6 +435,7 @@ def main():
 
     # main loop
     while True:
+        status('Getting feed...')
         new_listing = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
@@ -463,7 +467,9 @@ def main():
                             r.post('http://www.reddit.com/api/friend', body)
                         processed.append(item['id'])
                         break
-        time.sleep(sleep_time)
+        for i in range(sleep_time):
+            status('Sleeping for {} seconds...'.format(sleep_time - i))
+            time.sleep(1)
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, sigint_handler)
