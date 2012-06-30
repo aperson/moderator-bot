@@ -255,6 +255,7 @@ class Ip(Filter):
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
+            self.comment = ''
             self.log_text = "Found server advertisement in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
@@ -286,6 +287,7 @@ class FreeMinecraft(Filter):
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
+            self.comment = ''
             self.log_text = "Found free minecraft link in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
@@ -341,6 +343,7 @@ class ShortUrl(Filter):
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
+            self.comment = ''
             self.log_text = "Found short url in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
