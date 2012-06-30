@@ -432,7 +432,7 @@ def main():
 
     # main loop
     while True:
-        p('> Getting feed...', end='')
+        p('Getting feed...', end='')
         new_listing = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
@@ -465,7 +465,7 @@ def main():
                         processed.append(item['id'])
                         break
         for i in range(sleep_time):
-            p('> Sleeping for {} seconds...'.format(sleep_time - i), end='')
+            p('Sleeping for {} seconds...'.format(sleep_time - i), end='')
             time.sleep(1)
 
 if __name__ == '__main__':
