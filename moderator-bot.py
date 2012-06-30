@@ -432,7 +432,7 @@ def main():
 
     # main loop
     while True:
-        status('Getting feed...')
+        p('> Getting feed...', end='')
         new_listing = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
