@@ -31,12 +31,9 @@ import http.cookiejar
 from credentials import *
 
 
-def p(data):
+def p(data, end='\n':
     print(time.strftime('\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
-        '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data)
-
-def status(data):
-    print('\r> {}'.format(data), end='')
+        '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data, end=end)
 
 def logToDisk(log_text):
     log_start = ("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /><titl"
@@ -468,7 +465,7 @@ def main():
                         processed.append(item['id'])
                         break
         for i in range(sleep_time):
-            status('Sleeping for {} seconds...'.format(sleep_time - i))
+            p('> Sleeping for {} seconds...'.format(sleep_time - i), end='')
             time.sleep(1)
 
 if __name__ == '__main__':
