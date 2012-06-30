@@ -449,7 +449,7 @@ def main():
                     if item['id'] not in processed and f.runFilter(item):
                         r.nuke(item)
                         if f.comment:
-                            comment = {'thing_id': post['name'], 'text': comment}
+                            comment = {'thing_id': item['name'], 'text': comment}
                             submission = r.post('http://www.reddit.com/api/comment',
                                  comment)['json']['data']['things'][0]['data']['id']
                             distinguish = {'id': submission, 'executed': 'distinguishing...'}
