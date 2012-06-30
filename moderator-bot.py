@@ -377,30 +377,6 @@ class Failed(Filter):
             p(link)
 
 
-class PicsHd(Filter):
-    def __init__(self):
-        Filter.__init__(self)
-        self.regex = re.compile(r'''http://(?:www\.)?picshd\.com/\w*''', re.I)
-        self.action = 'spammed'
-
-    def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
-            or submission['domain'] == 'picshd.com':
-            self.log_text = "Found picshd.com in submission"
-            p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
-                submission['id']))
-            return True
-
-    def filterComment(self, comment):
-        if self.regex.search(comment['body']):
-            self.log_text = "Found picshd.com in comment"
-            p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
-                comment['link_id'][3:], comment['id']))
-            return True
-
-
 class Minebook(Filter):
     def __init__(self):
         Filter.__init__(self)
@@ -431,7 +407,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed(), PicsHd(), Minebook()]
+        Failed(), Minebook()]
 
     # main loop
     while True:
