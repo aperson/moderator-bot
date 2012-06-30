@@ -98,7 +98,7 @@ class Reddit(object):
             url += '.json'
         return self._request(url)
 
-    def nuke(self, post, action, comment=None):
+    def nuke(self, post, action):
         '''Remove/hide/comment.'''
         remove = {'r': post['subreddit'],
             'id': post['name'], 'executed': action}
@@ -108,12 +108,6 @@ class Reddit(object):
         if 'title' in post:
             hide = {'id': post['name']}
             self.post('http://www.reddit.com/api/hide', hide)
-        if comment:
-            comment = {'thing_id': post['name'], 'text': comment}
-            submission = self.post('http://www.reddit.com/api/comment',
-                                 comment)['json']['data']['things'][0]['data']['id']
-            distinguish = {'id': submission, 'executed': 'distinguishing...'}
-            self.post('http://www.reddit.com/api/distinguish/yes', distinguish)
 
     def rts(self, username, tag=''):
         """Checks the account age of a user and rts' them if they are less than a day old."""
@@ -453,10 +447,13 @@ def main():
                 item['approved_by'] and item['author'] != 'tweet_poster':
                 for f in filters:
                     if item['id'] not in processed and f.runFilter(item):
+                        r.nuke(item)
                         if f.comment:
-                            r.nuke(item, f.action, comment=f.comment)
-                        else:
-                            r.nuke(item, f.action)
+                            comment = {'thing_id': post['name'], 'text': comment}
+                            submission = r.post('http://www.reddit.com/api/comment',
+                                 comment)['json']['data']['things'][0]['data']['id']
+                            distinguish = {'id': submission, 'executed': 'distinguishing...'}
+                            r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
                         if f.tag:
                             r.rts(item['author'], tag=f.tag)
                         if f.ban:
