@@ -31,7 +31,7 @@ import http.cookiejar
 from credentials import *
 
 
-def p(data, end='\n':
+def p(data, end='\n'):
     print(time.strftime('\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
         '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data, end=end)
 
