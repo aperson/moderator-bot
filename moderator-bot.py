@@ -39,11 +39,11 @@ def logToDisk(log_text):
     log_start = ("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /><titl"
         "e>{username} modlog</title></head><body>".format(username=USERNAME))
     log_end = "</body>"
-    entry_base = "<div class=\"entry\"><span>{time}</span> {data}</div>\n".format(time=
+    entry_base = "<div class=\"entry\"><span>{time}</span> {data}</div>".format(time=
         time.strftime('[%y/%m/%d][%H:%M:%S]'), data=log_text)
     with open(LOGFILE) as l:
-        log = l.read()
-    log = log[len(log_start):-len(log_end)].strip()
+        log = l.read().strip()
+    log = log[len(log_start):-len(log_end)]
     split_log = log.split('\n')
     if len(split_log) < 1000:
         log = '\n'.join(split_log)
