@@ -4,4 +4,4 @@
 
 * New youtuber detection.
 
-# Support for filters that do not remove submssions.
+* Support for filters that do not remove submssions.
