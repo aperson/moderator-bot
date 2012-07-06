@@ -447,7 +447,7 @@ def main():
                         processed.append(item['id'])
                         break
         for i in range(sleep_time):
-            p('Sleeping for {} seconds...'.format(sleep_time - i), end='')
+            p('Next scan in {} seconds...'.format(sleep_time - i), end='')
             time.sleep(1)
 
 if __name__ == '__main__':
