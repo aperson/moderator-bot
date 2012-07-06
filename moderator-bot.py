@@ -405,7 +405,7 @@ class Minebook(Filter):
 
 
 def main():
-    sleep_time = 60 * 5
+    sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
