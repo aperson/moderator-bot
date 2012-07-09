@@ -359,9 +359,9 @@ class Failed(Filter):
         Filter.__init__(self)
 
     def filterSubmission(self, submission):
-        if submission['domain'].startswith('['):
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+        link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
+        if submission['domain'].startswith('['):
             self.log_text = "Found submission with formatting in the url"
             self.comment = ("You've seemed to try to use markdown or other markup in the url field"
                 " when you made this submission. Markdown formatting is only for self text and comm"
