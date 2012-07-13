@@ -244,7 +244,7 @@ class Ip(Filter):
 
     def filterSubmission(self, submission):
         if self._server_in(submission['title']) or self._server_in(submission['selftext']) \
-            or self._server_in(submission['url']):
+            or self._server_in(submission['url'][7:]):
             self.log_text = "Found server advertisement in submission"
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
