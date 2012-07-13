@@ -378,6 +378,7 @@ class Failed(Filter):
                 " field.")
             p(self.log_text + ":")
             p(link)
+            return True
 
 
 class Minebook(Filter):
