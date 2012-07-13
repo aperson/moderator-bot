@@ -329,7 +329,7 @@ class ShortUrl(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
-            r'''tiny\.cc|soc.li)/''', re.I)
+            r'''tiny\.cc|soc.li|ultrafiles\.net|linkbucks\.com|lnk\.co)/''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
