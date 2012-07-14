@@ -413,7 +413,7 @@ class SelfLinks(Filter):
     def filterSubmission(self, submission)):
         if submission['selftext']:
             for i in submission['selftext'].split():
-                if not regex.search(i):
+                if not self.regex.search(i):
                     break
             else:
                 self.comment = ("This submission has been removed automatically.  You appear to ha"
