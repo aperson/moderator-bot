@@ -405,13 +405,34 @@ class Minebook(Filter):
                 comment['link_id'][3:], comment['id']))
 
 
+class SelfLinks(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''^http://\S*$''')
+
+    def filterSubmission(self, submission)):
+        if submission['selftext']:
+            for i in submission['selftext'].split():
+                if not regex.search(i):
+                    break
+            else:
+                self.comment = ("This submission has been removed automatically.  You appear to ha"
+                    "ve only included links in your self-post with no explanatory text.  Please res"
+                    "ubmit or edit your post accordingly."
+                self.log_text = "Found self-post that only contained links"
+                p(self.log_text + ":")
+                p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                    submission['id']))
+                return True
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed(), Minebook()]
+        Failed(), Minebook(), SelfLinks()]
 
     # main loop
     while True:
