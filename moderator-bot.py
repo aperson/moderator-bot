@@ -418,7 +418,7 @@ class SelfLinks(Filter):
             else:
                 self.comment = ("This submission has been removed automatically.  You appear to ha"
                     "ve only included links in your self-post with no explanatory text.  Please res"
-                    "ubmit or edit your post accordingly."
+                    "ubmit or edit your post accordingly.")
                 self.log_text = "Found self-post that only contained links"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
