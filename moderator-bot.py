@@ -136,6 +136,7 @@ class Filter(object):
         self.comment = ""
         self.tag = ""
         self.action = 'remove'
+        self.log = True
         self.log_text = ""
         self.ban = False
         self.report_subreddit = None
@@ -150,14 +151,16 @@ class Filter(object):
         if 'title' in post:
             try:
                 if self.filterSubmission(post):
-                    logToDisk(self.log_text)
+                    if self.log:
+                        logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
         elif 'body' in post:
             try:
                 if self.filterComment(post):
-                    logToDisk(self.log_text)
+                    if self.log:
+                        logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
@@ -426,13 +429,38 @@ class SelfLinks(Filter):
                 return True
 
 
+class TempExploit(Filter):
+    def __init___(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''v=k3_AikX_OJg|gist.github.com/3115176''')
+        self.log = False
+        self.action = 'spammed'
+
+        def filterSubmission(self, submission):
+            if self.regex.search(submission['title']) or \
+                self.regex.search(submission['selftext']) or \
+                self.regex.search(submission['domain']):
+                self.log_text = "Found exploit related url in submission"
+                p(self.log_text + ":")
+                p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id']))
+                return True
+
+    def filterComment(self, comment):
+        if self.regex.search(comment['body']):
+            self.log_text = "Found exploit related url in comment"
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
+                comment['link_id'][3:], comment['id']))
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed(), Minebook(), SelfLinks()]
+        Failed(), Minebook(), SelfLinks(), TempExploit()]
 
     # main loop
     while True:
