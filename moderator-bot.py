@@ -410,7 +410,7 @@ class SelfLinks(Filter):
         Filter.__init__(self)
         self.regex = re.compile(r'''^http://\S*$''')
 
-    def filterSubmission(self, submission)):
+    def filterSubmission(self, submission):
         if submission['selftext']:
             for i in submission['selftext'].split():
                 if not self.regex.match(i):
