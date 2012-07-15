@@ -430,9 +430,9 @@ class SelfLinks(Filter):
 
 
 class TempExploit(Filter):
-    def __init___(self):
+    def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''v=k3_AikX_OJg|gist.github.com/3115176''')
+        self.regex = re.compile(r'''v=k3_AikX_OJg|gist\.github\.com/3115176''')
         self.log = False
         self.action = 'spammed'
 
