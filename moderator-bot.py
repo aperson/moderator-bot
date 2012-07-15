@@ -426,34 +426,6 @@ class SelfLinks(Filter):
                 return True
 
 
-<<<<<<< HEAD
-class TempExploit(Filter):
-    def __init__(self):
-        Filter.__init__(self)
-        self.regex = re.compile(r'''v=k3_AikX_OJg|gist\.github\.com/3115176''')
-        self.log = False
-        self.action = 'spammed'
-
-    def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or \
-            self.regex.search(submission['selftext']) or \
-            self.regex.search(submission['domain']):
-            self.log_text = "Found exploit related url in submission"
-            p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
-            submission['id']))
-            return True
-
-    def filterComment(self, comment):
-        if self.regex.search(comment['body']):
-            self.log_text = "Found exploit related url in comment"
-            p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(comment['subreddit'],
-                comment['link_id'][3:], comment['id']))
-
-
-=======
->>>>>>> parent of 474b1bf... added temporary filter to remove exploit related links
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
