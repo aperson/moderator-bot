@@ -136,7 +136,6 @@ class Filter(object):
         self.comment = ""
         self.tag = ""
         self.action = 'remove'
-        self.log = True
         self.log_text = ""
         self.ban = False
         self.report_subreddit = None
@@ -151,16 +150,14 @@ class Filter(object):
         if 'title' in post:
             try:
                 if self.filterSubmission(post):
-                    if self.log:
-                        logToDisk(self.log_text)
+                    logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
         elif 'body' in post:
             try:
                 if self.filterComment(post):
-                    if self.log:
-                        logToDisk(self.log_text)
+                    logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
@@ -429,6 +426,7 @@ class SelfLinks(Filter):
                 return True
 
 
+<<<<<<< HEAD
 class TempExploit(Filter):
     def __init__(self):
         Filter.__init__(self)
@@ -454,13 +452,15 @@ class TempExploit(Filter):
                 comment['link_id'][3:], comment['id']))
 
 
+=======
+>>>>>>> parent of 474b1bf... added temporary filter to remove exploit related links
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed(), Minebook(), SelfLinks(), TempExploit()]
+        Failed(), Minebook(), SelfLinks()]
 
     # main loop
     while True:
