@@ -214,7 +214,7 @@ class Fixed(Filter):
 class Ip(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?!/|-|\.)''', re.I)
+        self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
         self.tag = "[Server Spam]"
 
     def _server_in(self, text):
