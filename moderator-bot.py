@@ -86,7 +86,7 @@ class Reddit(object):
             if url.endswith('.json'):
                 return json.loads(w.read().decode('utf-8'))
             else:
-                return(w.read().decode('utf-8')
+                return(w.read().decode('utf-8'))
 
     def _login(self):
         p("Logging in as {}.".format(self.username))
