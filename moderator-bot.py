@@ -28,7 +28,16 @@ import signal
 import sys
 from urllib.parse import urlencode
 import http.cookiejar
-from credentials import *
+
+try:
+    from credentials import *
+except:
+    USERNAME = 'botname'
+    PASSWORD = 'botpass'
+    SUBREDDIT = 'subtomonitor'
+    BOTSUB = 'botprivatesub'
+    LOGFILE = '/some/file/to/log/to.html'
+    SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
 
 
 def p(data, end='\n'):
@@ -211,16 +220,18 @@ class Fixed(Filter):
             return True
 
 
-class Ip(Filter):
-    def __init__(self):
+class ServerAd(Filter):
+    def __init__(self, domain_list):
         Filter.__init__(self)
+        self.domain_list = domain_list
         self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
         self.tag = "[Server Spam]"
 
     def _server_in(self, text):
         if text:
-            if 'planetminecraft.com/server/' in text.lower():
-                return True
+            for i in self.domain_list:
+                if i in text.lower():
+                    return True
             try:
                 ip = self.regex.findall(text)
                 if ip:
@@ -431,8 +442,14 @@ def main():
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
-    filters = [Suggestion(), Fixed(), Ip(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed(), Minebook(), SelfLinks()]
+    p('Getting domain blacklist from:')
+    p(SERVERDOMAINS)
+
+    server_domains = r._request(SERVERDOMAINS).split('\n')
+    p('Found {} domains in the blacklist.'.format(len(server_domains)))
+
+    filters = [Suggestion(), Fixed(), ServerAd(server_domains), FreeMinecraft(), AmazonReferral(),
+        ShortUrl(), Failed(), Minebook(), SelfLinks()]
 
     # main loop
     while True:
