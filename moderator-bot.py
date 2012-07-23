@@ -230,7 +230,7 @@ class ServerAd(Filter):
     def _server_in(self, text):
         if text:
             for i in self.domain_list:
-                if i in text.lower():
+                if i.lower() in text.lower():
                     return True
             try:
                 ip = self.regex.findall(text)
