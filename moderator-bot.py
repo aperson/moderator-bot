@@ -227,7 +227,7 @@ class ServerAd(Filter):
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
         with self.opener.open(SERVERDOMAINS) as w:
             self.domain_list = w.read().decode('utf-8').split('\n')
-        p('Found {} domains in online blacklist.'.format(len(self.domain_list))
+        p('Found {} domains in online blacklist.'.format(len(self.domain_list)))
         self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
         self.tag = "[Server Spam]"
 
