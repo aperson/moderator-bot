@@ -83,10 +83,7 @@ class Reddit(object):
             body = urlencode(body).encode('utf-8')
         with self.opener.open(url, data=body) as w:
             time.sleep(2)
-            if url.endswith('.json') and body is not None:
-                return json.loads(w.read().decode('utf-8'))
-            else:
-                return w.read().decode('utf-8')
+            return json.loads(w.read().decode('utf-8'))
 
     def _login(self):
         p("Logging in as {}.".format(self.username))
@@ -224,9 +221,13 @@ class Fixed(Filter):
 
 
 class ServerAd(Filter):
-    def __init__(self, domain_list):
+    def __init__(self):
         Filter.__init__(self)
-        self.domain_list = domain_list
+        self.opener = urllib.request.build_opener()
+        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+        with self.opener.open(SERVERDOMAINS) as w:
+            self.domain_list = w.read().decode('utf-8').split('\n')
+        p('Found {} domains in online blacklist.'.format(len(self.domain_list))
         self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
         self.tag = "[Server Spam]"
 
@@ -445,14 +446,8 @@ def main():
     r = Reddit(USERNAME, PASSWORD)
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
-    p('Getting domain blacklist from:')
-    p(SERVERDOMAINS)
-
-    server_domains = r._request(SERVERDOMAINS).split('\n')
-    p('Found {} domains in the blacklist.'.format(len(server_domains)))
-
-    filters = [Suggestion(), Fixed(), ServerAd(server_domains), FreeMinecraft(), AmazonReferral(),
-        ShortUrl(), Failed(), Minebook(), SelfLinks()]
+    filters = [Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(),ShortUrl(),
+        Failed(), Minebook(), SelfLinks()]
 
     # main loop
     while True:
