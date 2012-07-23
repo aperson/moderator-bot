@@ -83,7 +83,10 @@ class Reddit(object):
             body = urlencode(body).encode('utf-8')
         with self.opener.open(url, data=body) as w:
             time.sleep(2)
-            return json.loads(w.read().decode('utf-8'))
+            if url.endswith('.json'):
+                return json.loads(w.read().decode('utf-8'))
+            else:
+                return(w.read().decode('utf-8')
 
     def _login(self):
         p("Logging in as {}.".format(self.username))
