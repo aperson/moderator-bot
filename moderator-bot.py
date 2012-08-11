@@ -158,7 +158,7 @@ class Reddit(object):
         sub = self.get('http://www.reddit.com/r/{}/about.json'.format(subreddit))['data']
         regex = r'''{}.*?{}'''.format(re.escape(EDITSTART), re.escape(EDITSTOP))
         text = EDITSTART + text + EDITSTOP
-        sub['description'].replace('&amp;', '&'
+        sub['description'] = sub['description'].replace('&amp;', '&'
             ).replace('&gt;', '>'
             ).replace('&lt;', '<')
         sidebar = re.sub(regex, text, sub['description'])
