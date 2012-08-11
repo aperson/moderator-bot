@@ -35,9 +35,11 @@ except:
     USERNAME = 'botname'
     PASSWORD = 'botpass'
     SUBREDDIT = 'subtomonitor'
-    SUBOPTS = {'type': 'restricted', 'link_type': 'any'}
+    SUBOPTS = {'type': 'restricted', 'link_type': 'any', 'show_media': True, 'allow_top': True}
     EDITSTART = '[](/mbeditstart)'
     EDITSTOP = '[](/mbeditstop)'
+    GREENTEXT = "[](/redstone_lamp_on '{} is online')"
+    REDTEXT = "[](/redstone_lamp_off '{} is offline')"
     BOTSUB = 'botprivatesub'
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
@@ -68,6 +70,20 @@ def sigint_handler(signal, frame):
     '''Handles ^c'''
     p('Recieved SIGINT! Exiting...')
     sys.exit(0)
+
+def mojangStatus():
+    '''Returns the status indicator for /r/Minecraft's sidebar'''
+    opener = urllib.request.build_opener()
+    with opener.open('http://status.mojang.com/check') as w:
+        status = json.loads(w.read().decode('utf-8'))
+    text = ''
+    for x in status:
+        for y in x:
+            if x[y] == 'green':
+                text += GREENTEXT.format(y)
+            elif x[y] == 'red':
+                text += REDTEXT.format(y)
+    return text
 
 
 class Reddit(object):
@@ -145,7 +161,12 @@ class Reddit(object):
         sidebar = re.sub(regex, text, sub['description'])
         body = {'sr': sub['name'], 'title': sub['title'],
             'public_description': sub['public_description'], 'description': sidebar,
-            'type': SUBOPTS['type'], 'link_type': SUBOPTS['link_type']}
+            'type': SUBOPTS['type'], 'link_type': SUBOPTS['link_type'],
+            'show_media': SUBOPTS['show_media'], 'allow_top': SUBOPTS['allow_top']}
+        if sub['header_title']:
+            body['header-title'] = sub['header_title']
+        if sub['over18']:
+            body['over_18'] = True
         self.post('http://www.reddit.com/api/site_admin', body)
 
 
@@ -459,6 +480,7 @@ class SelfLinks(Filter):
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
+    last_status = None
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(),ShortUrl(),
@@ -472,6 +494,14 @@ def main():
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
         feed = []
         processed = []
+
+        status = mojangStatus()
+        p('Checking Mojang servers...', end='')
+        if status == last_status:
+            p('Mojang server status changed, updating sidebar')
+            r.sidebar(SUBREDDIT, status)
+        last_status = status
+
         for i in (new_listing, modqueue_listing, comments_listing):
             feed.extend(i['data']['children'])
         for item in feed:
