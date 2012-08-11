@@ -35,6 +35,9 @@ except:
     USERNAME = 'botname'
     PASSWORD = 'botpass'
     SUBREDDIT = 'subtomonitor'
+    SUBOPTS = {'type': 'restricted', 'link_type': 'any'}
+    EDITSTART = '[](/mbeditstart)'
+    EDITSTOP = '[](/mbeditstop)'
     BOTSUB = 'botprivatesub'
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
@@ -132,6 +135,18 @@ class Reddit(object):
                     'url': 'http://reddit.com/u/' + username, 'kind': 'link'}
             submission = self.post('http://www.reddit.com/api/submit', body)
             p('http://redd.it/{}'.format(submission['json']['data']['id']))
+
+    def sidebar(self, subreddit, text):
+        """Edits the sidebar in subreddit in-between the allowed tags set by EDITSTART and
+        EDITSTOP"""
+        sub = self.get('http://www.reddit.com/r/{}/about.json'.format(subreddit))['data']
+        regex = r'''{}.*?{}'''.format(re.escape(EDITSTART), re.escape(EDITSTOP))
+        text = EDITSTART + text + EDITSTOP
+        sidebar = re.sub(regex, text, sub['description'])
+        body = {'sr': sub['name'], 'title': sub['title'],
+            'public_description': sub['public_description'], 'description': sidebar,
+            'type': SUBOPTS['type'], 'link_type': SUBOPTS['link_type']}
+        self.post('http://www.reddit.com/api/site_admin', body)
 
 
 class Filter(object):
