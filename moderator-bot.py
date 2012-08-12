@@ -36,10 +36,10 @@ except:
     PASSWORD = 'botpass'
     SUBREDDIT = 'subtomonitor'
     SUBOPTS = {'type': 'restricted', 'link_type': 'any', 'show_media': True, 'allow_top': True}
-    EDITSTART = '[](/mbeditstart)'
-    EDITSTOP = '[](/mbeditstop)'
-    GREENTEXT = "[](/redstone_lamp_on '{} is online')"
-    REDTEXT = "[](/redstone_lamp_off '{} is offline')"
+    EDITSTART = '[](#mbeditstart)'
+    EDITSTOP = '[](#mbeditstop)'
+    GREENTEXT = "[](#status_green '{} is online')"
+    REDTEXT = "[](#status_red '{} is offline')"
     BOTSUB = 'botprivatesub'
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
@@ -76,14 +76,14 @@ def mojangStatus():
     opener = urllib.request.build_opener()
     with opener.open('http://status.mojang.com/check') as w:
         status = json.loads(w.read().decode('utf-8'))
-    text = ''
+    text = []
     for x in status:
         for y in x:
             if x[y] == 'green':
-                text += GREENTEXT.format(y)
+                text.append(GREENTEXT.format(y))
             elif x[y] == 'red':
-                text += REDTEXT.format(y)
-    return text
+                text.append(REDTEXT.format(y))
+    return ''.join(text)
 
 
 class Reddit(object):
@@ -383,7 +383,7 @@ class ShortUrl(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
-            r'''tiny\.cc|soc.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com)/''', re.I)
+            r'''tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com)/''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
