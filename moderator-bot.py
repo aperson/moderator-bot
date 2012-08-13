@@ -74,8 +74,11 @@ def sigint_handler(signal, frame):
 def mojangStatus():
     '''Returns the status indicator for /r/Minecraft's sidebar'''
     opener = urllib.request.build_opener()
-    with opener.open('http://status.mojang.com/check') as w:
-        status = json.loads(w.read().decode('utf-8'))
+    try:
+        with opener.open('http://status.mojang.com/check') as w:
+            status = json.loads(w.read().decode('utf-8'))
+    except urllib.error.HTTPError:
+        return ''
     text = []
     for x in status:
         for y in x:
@@ -500,7 +503,7 @@ def main():
 
         status = mojangStatus()
         p('Checking Mojang servers...', end='')
-        if status != last_status:
+        if status != last_status and status not '':
             p('Mojang server status changed, updating sidebar')
             r.sidebar(SUBREDDIT, status)
         last_status = status
