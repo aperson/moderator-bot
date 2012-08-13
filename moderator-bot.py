@@ -78,7 +78,7 @@ def mojangStatus():
         with opener.open('http://status.mojang.com/check') as w:
             status = json.loads(w.read().decode('utf-8'))
     except urllib.error.HTTPError:
-        return ''
+        return None
     text = []
     for x in status:
         for y in x:
@@ -503,7 +503,7 @@ def main():
 
         status = mojangStatus()
         p('Checking Mojang servers...', end='')
-        if status != last_status and status not '':
+        if status != last_status and status not None:
             p('Mojang server status changed, updating sidebar')
             r.sidebar(SUBREDDIT, status)
         last_status = status
