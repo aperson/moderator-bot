@@ -503,7 +503,7 @@ def main():
 
         status = mojangStatus()
         p('Checking Mojang servers...', end='')
-        if status != last_status and status not None:
+        if status != last_status and status != None:
             p('Mojang server status changed, updating sidebar')
             r.sidebar(SUBREDDIT, status)
         last_status = status
