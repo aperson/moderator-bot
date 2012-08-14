@@ -506,7 +506,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(),ShortUrl(),
-        Failed(), Minebook(), SelfLinks()]
+        Failed(), Minebook(), SelfLinks(), BadWords()]
 
     # main loop
     while True:
