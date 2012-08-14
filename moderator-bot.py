@@ -131,11 +131,15 @@ class Reddit(object):
 
     def nuke(self, post, action):
         '''Remove/hide/comment.'''
-        remove = {'r': post['subreddit'],
+        if action == 'remove' or action == 'spammed':
+            remove = {'r': post['subreddit'],
             'id': post['name'], 'executed': action}
-        if action == 'remove':
-            remove['spam'] = 'false'
-        self.post('http://www.reddit.com/api/remove', remove)
+            if action == 'remove':
+                remove['spam'] = 'false'
+            self.post('http://www.reddit.com/api/remove', remove)
+        if action == 'report':
+            report = {'id': post['name']}
+            self.post('http://www.reddit.com/api/report', report)
         if 'title' in post:
             hide = {'id': post['name']}
             self.post('http://www.reddit.com/api/hide', hide)
@@ -482,6 +486,18 @@ class SelfLinks(Filter):
                     submission['id']))
                 return True
 
+
+class BadWords(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.action = 'report'
+
+    def filterComment(self, comment):
+        badwords = ['gay', 'fag', 'cunt']
+        if comment['num_reports']:
+            for word in badwords:
+                if word in comment['body']:
+                    return True
 
 def main():
     sleep_time = 60 * 3
