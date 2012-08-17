@@ -205,14 +205,16 @@ class Filter(object):
         if 'title' in post:
             try:
                 if self.filterSubmission(post):
-                    logToDisk(self.log_text)
+                    if self.log_text:
+                        logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
         elif 'body' in post:
             try:
                 if self.filterComment(post):
-                    logToDisk(self.log_text)
+                    if self.log_text:
+                        logToDisk(self.log_text)
                     return True
             except NotImplementedError:
                 pass
