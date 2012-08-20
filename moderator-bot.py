@@ -291,7 +291,7 @@ class ServerAd(Filter):
             elif len(self.domain_list) > len(domain_list):
                 p('Removed {} domains from the online blacklist'.format(
                     len(self.domain_list) - len(domain_list)))
-                    self.domain_list = domain_list
+                self.domain_list = domain_list
         self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
 
     def _server_in(self, text):
