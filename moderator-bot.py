@@ -276,7 +276,7 @@ class ServerAd(Filter):
         self._update_list()
         self.tag = "[Server Spam]"
 
-    def _update_list():
+    def _update_list(self):
         if (time.time() - self.last_update) >= 1800:
             self.last_update = time.time()
             p('Updating domain blacklist...', end='')
@@ -293,7 +293,7 @@ class ServerAd(Filter):
         self._update_list()
         if text:
             for i in self.domain_list:
-                if i.lower() in text.lower():
+                if i.lower() in text.lower(self):
                     return True
             try:
                 ip = self.regex.findall(text)
