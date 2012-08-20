@@ -298,7 +298,7 @@ class ServerAd(Filter):
         self._update_list()
         if text:
             for i in self.domain_list:
-                if i.lower() in text.lower(self):
+                if i.lower() in text.lower():
                     return True
             try:
                 ip = self.regex.findall(text)
