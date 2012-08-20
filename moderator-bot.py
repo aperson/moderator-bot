@@ -270,16 +270,27 @@ class Fixed(Filter):
 
 class ServerAd(Filter):
     def __init__(self):
+        self.last_update = 0
+        self.domain_list = []
         Filter.__init__(self)
-        self.opener = urllib.request.build_opener()
-        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
-        with self.opener.open(SERVERDOMAINS) as w:
-            self.domain_list = w.read().decode('utf-8').split('\n')
-        p('Found {} domains in online blacklist.'.format(len(self.domain_list)))
-        self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
+        self._update_list()
         self.tag = "[Server Spam]"
 
+    def _update_list():
+        if (time.time() - self.last_update) >= 1800:
+            self.last_update = time.time()
+            p('Updating domain blacklist...', end='')
+            self.opener = urllib.request.build_opener()
+            self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+            with self.opener.open(SERVERDOMAINS) as w:
+                domain_list = w.read().decode('utf-8').split('\n')
+            if len(self.domain_list) > len(domain_list):
+                p('Found {} new domains in online blacklist.'.format(
+                    len(domain_list) - len(self.domain_list)))
+        self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
+
     def _server_in(self, text):
+        self._update_list()
         if text:
             for i in self.domain_list:
                 if i.lower() in text.lower():
