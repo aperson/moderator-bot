@@ -284,7 +284,7 @@ class ServerAd(Filter):
             self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
             with self.opener.open(SERVERDOMAINS) as w:
                 domain_list = w.read().decode('utf-8').split('\n')
-            if len(self.domain_list) > len(domain_list):
+            if len(self.domain_list) < len(domain_list):
                 p('Found {} new domains in online blacklist.'.format(
                     len(domain_list) - len(self.domain_list)))
         self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})(?:\s|$|:)''', re.I)
