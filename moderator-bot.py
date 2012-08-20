@@ -501,6 +501,10 @@ class BadWords(Filter):
                 if word in comment['body'].lower():
                     return True
 
+class YoutubeSpam(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
