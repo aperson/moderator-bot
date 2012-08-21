@@ -556,7 +556,7 @@ def main():
             if item['banned_by'] is True and item['author'] != USERNAME and not \
                 item['approved_by'] and item['author'] != 'tweet_poster':
                 for f in filters:
-                    if item['ids'] not in processed['id'] and f.runFilter(item):
+                    if item['id'] not in processed['ids'] and f.runFilter(item):
                         r.nuke(item, f.action)
                         if f.comment:
                             comment = {'thing_id': item['name'], 'text': f.comment}
