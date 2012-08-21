@@ -537,7 +537,7 @@ def main():
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
         feed = []
-        processed = []
+        processed = {'ids': [], 'authors': []}
 
         status = mojangStatus()
         p('Checking Mojang servers...', end='')
@@ -556,7 +556,7 @@ def main():
             if item['banned_by'] is True and item['author'] != USERNAME and not \
                 item['approved_by'] and item['author'] != 'tweet_poster':
                 for f in filters:
-                    if item['id'] not in processed and f.runFilter(item):
+                    if item['ids'] not in processed['id'] and f.runFilter(item):
                         r.nuke(item, f.action)
                         if f.comment:
                             comment = {'thing_id': item['name'], 'text': f.comment}
@@ -566,12 +566,12 @@ def main():
                             r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
                         if f.tag:
                             r.rts(item['author'], tag=f.tag, subreddit=f.report_subreddit)
-                        if f.ban:
+                        if f.ban and item['author'] not in processed['authors']:
                             p('Banning http://reddit.com/u/{}'.format(item['author']))
                             body = {'action': 'add', 'type': 'banned', 'name': item['author'],
                                 'id': '#banned', 'r': item['subreddit']}
                             r.post('http://www.reddit.com/api/friend', body)
-                        processed.append(item['id'])
+                        processed['ids'].append(item['id'])
                         break
         for i in range(sleep_time):
             p('Next scan in {} seconds...'.format(sleep_time - i), end='')
