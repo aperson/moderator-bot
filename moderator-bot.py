@@ -646,9 +646,13 @@ class YoutubeSpam(Filter):
                     with self.database.open() as db:
                         db['users'][submission['author']] = user
                         db['submissions'].append(submission['id'])
-                    return True
+                    output = True
                 else:
-                    return False
+                    output = False
+                with self.database.open() as db:
+                    db['users'][submission['author']] = user
+                    db['submissions'].append(submission['id'])
+                return output
 
 
 
