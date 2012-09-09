@@ -28,6 +28,7 @@ import signal
 import sys
 from urllib.parse import urlencode
 import http.cookiejar
+from contextlib import contextmanager
 
 try:
     from credentials import *
