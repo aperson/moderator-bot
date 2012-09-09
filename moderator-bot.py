@@ -43,6 +43,7 @@ except:
     BOTSUB = 'botprivatesub'
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
+    DATABASEFILE = '/some/path'
 
 
 def p(data, end='\n'):
@@ -66,6 +67,7 @@ def logToDisk(log_text):
     with open(LOGFILE, 'w') as l:
         l.write(log_start + entry_base + log + log_end)
 
+
 def sigint_handler(signal, frame):
     '''Handles ^c'''
     p('Recieved SIGINT! Exiting...')
@@ -88,6 +90,18 @@ def mojangStatus():
                 text.append(REDTEXT.format(y))
     return ''.join(text)
 
+class Database(object):
+    '''Handles reading and writing from a shelve 'database'.'''
+    def __init__(self, path):
+        self.path = path
+
+    @contextmanager
+    def open(self):
+        s = shelve.open(self.path, writeback=True)
+        try:
+            yield s
+        finally:
+            s.close()
 
 class Reddit(object):
     """Base class to perform the tasks of a redditor."""
@@ -520,6 +534,112 @@ class BadWords(Filter):
 class YoutubeSpam(Filter):
     def __init__(self):
         Filter.__init__(self)
+        self.database = Database(DATABASEFILE)
+
+    def _isVideo(self, submission):
+        '''Returns video author name if this is a video'''
+        if 'media' in submission:
+            if submission['media'] is not None:
+                if 'oembed' in submission['media']:
+                    if 'author_name' in submission['media']['oembed']:
+                        if submission['media']['oembed']['author_name'] is not None:
+                            return submission['media']['oembed']['author_name']
+
+    def _checkProfile(self, user):
+        '''Returns the percentage of things that the user only contributed to themselves.
+        ie: submitting and only commenting on their content.  Currently, the criteria is:
+            * linking to videos of the same author (which implies it is their account)
+            * commenting on your own submissions (not just videos)
+        these all will count against the user and an overall score will be returned.  Also, we only
+        check against the last 100 items on the user's profile.'''
+
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+    with opener.open(
+        'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user)) as w:
+        comments = json.loads(w.read().decode('utf-8'))['data']['children']
+        time.sleep(2)
+    with opener.open(
+        'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(user)) as w:
+        submitted = json.loads(w.read().decode('utf-8'))['data']['children']
+        time.sleep(2)
+    video_count = 0
+    video_authors = set()
+    video_submissions = set()
+    comments_on_self = 0
+    for item in submitted:
+        item = item['data']
+        video_author = self._isVideo(item)
+        if video_author:
+            video_count += 1
+            video_authors.add(video_author)
+            video_submissions.add(item['name'])
+    for item in comments:
+        item = item['data']
+        if item['link_id'] in video_submissions:
+            comments_on_self += 1
+    if len(video_authors) == 1 and video_count >= 3:
+        if (((video_count + comments_on_self) / (len(comments) + len(submitted))) * 100) > 90:
+            return True
+        else:
+            return False
+
+    def filterSubmission(self, submission):
+        DAY = 24 * 60 * 60
+        if submission['domain'] in ('youtube.com', 'youtu.be'):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+            with database.open() as db:
+                if submission['id'] in db['submissions']:
+                    return False
+                if submission['username'] in db['users']:
+                    user = db['users'][submission['username']
+                else:
+                    user = {'checked_last': 0 , 'warned': False}
+            if time.time() - user['checked_last'] > DAY:
+                if self._checkProfile(submission['username']):
+                    if user['warned']:
+                       self.action = 'ban'
+                       p("User was warned and is still matches a spammer, banning:")
+                       p("http://reddit.com/u/{}".format(submission['author']))
+                    else:
+                        self.comment = ("""It looks like you might be skirting on the line with  """
+                            """submitting your videos, so consider this a friendly warning/guidel"""
+                            """ine:\n\nReddit has [guidelines as to what constitutes spam](/help/"""
+                            """faq#Whatconstitutesspam).  To quote the page:\n\n* It's not strict"""
+                            """ly forbidden to submit a link to a site that you own or otherwise """
+                            """benefit from in some way, but you should sort of consider yourself"""
+                            """ on thin ice. So please pay careful attention to the rest of these"""
+                            """ bullet points.\n\n*If you spend more time submitting to reddit th"""
+                            """an reading it, you're almost certainly a spammer.\n\n* If your con"""
+                            """tribution to Reddit consists mostly of submitting links to a site("""
+                            """s) that you own or otherwise benefit from in some way, and additio"""
+                            """nally if you do not participate in discussion, or reply to peoples"""
+                            """ questions, regardless of how many upvotes your submissions get, y"""
+                            """ou are a spammer.\n\n* If people historically downvote your links """
+                            """or ones similar to yours, and you feel the need to keep submitting"""
+                            """ them anyway, they're probably spam.\n\n* If people historically u"""
+                            """pvote your links or ones like them -- and we're talking about real"""
+                            """ people here, not sockpuppets or people you asked to go vote for y"""
+                            """ou -- congratulations! It's almost certainly not spam. But we're s"""
+                            """erious about the "not people you asked to go vote for you" part."""
+                            """\n\n* If nobody's submitted a link like yours before, give it a sh"""
+                            """ot. But don't flood the new queue; submit one or two times and see"""
+                            """ what happens.\n\nFor right now, this is just a friendly message, """
+                            """but here in /r/{0}, we take action against anyone that fits the ab"""
+                            """ove definition.\n\nIf you feel this was in error, feel free to [me"""
+                            """ssage the moderators](/message/compose/?to=/r/{sub}&subject=Video%"""
+                            """20Spam&message={1}).""".format(SUBREDDIT, link)
+                        self.log_text = "Found potential video spammer"
+                        p(self.log_text + ":")
+                        p("http://reddit.com/u/{}".format(submission['author']))
+                        user['warned'] = True
+                user['checked_last'] = time.time()
+                with database.open() as db:
+                    db['users'][submission['username']] = user
+                    db['submissions'].append(submission['id'])
+                return True
+
 
 def main():
     sleep_time = 60 * 3
@@ -528,7 +648,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(),ShortUrl(),
-        Failed(), Minebook(), SelfLinks(), BadWords()]
+        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam()]
 
     # main loop
     while True:
