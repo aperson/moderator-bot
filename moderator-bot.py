@@ -210,6 +210,7 @@ class Filter(object):
         self.log_text = ""
         self.ban = False
         self.report_subreddit = None
+        self.nuke = True
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -591,19 +592,23 @@ class YoutubeSpam(Filter):
         if submission['domain'] in ('youtube.com', 'youtu.be'):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
+            # check if we've already parsed this submission
             with self.database.open() as db:
                 if submission['id'] in db['submissions']:
                     return False
                 if submission['author'] in db['users']:
                     user = db['users'][submission['author']]
                 else:
-                    user = {'checked_last': 0 , 'warned': False}
+                    user = {'checked_last': 0, 'warned': False}
+
             if time.time() - user['checked_last'] > DAY:
+                p("Checking profile of /u/{}".format(submission['author']))
+                user['checked_last'] = time.time()
                 if self._checkProfile(submission['author']):
-                    p("Checking profile of /u/{}".format(submission['author']))
                     if user['warned']:
-                       self.action = 'ban'
                        p("User was warned and is still matches a spammer")
+                        self.ban = True
+                        self.nuke = True
                     else:
                         self.comment = ("""It looks like you might be skirting on the line with  """
                             """submitting your videos, so consider this a friendly warning/guidel"""
@@ -632,16 +637,19 @@ class YoutubeSpam(Filter):
                             """ove definition.\n\nIf you feel this was in error, feel free to [me"""
                             """ssage the moderators](/message/compose/?to=/r/{sub}&subject=Video%"""
                             """20Spam&message={1}).""".format(SUBREDDIT, link))
-                        self.log_text = "Found potential video spammer"
-                        p(self.log_text + ":")
-                        p("http://reddit.com/u/{}".format(submission['author']))
-                        user['warned'] = True
-                user['checked_last'] = time.time()
-                with self.database.open() as db:
-                    db['users'][submission['author']] = user
-                    db['submissions'].append(submission['id'])
-                if self.action:
-                    return True
+                            self.ban = False
+                            self.nuke = True
+                            self.log_text = "Found potential video spammer"
+                            p(self.log_text + ":")
+                            p("http://reddit.com/u/{}".format(submission['author']))
+                            user['warned'] = True
+                        with self.database.open() as db:
+                            db['users'][submission['author']] = user
+                            db['submissions'].append(submission['id'])
+                        return True
+                else:
+                    return False
+
 
 
 def main():
@@ -680,7 +688,8 @@ def main():
                 item['approved_by'] and item['author'] != 'tweet_poster':
                 for f in filters:
                     if item['id'] not in processed['ids'] and f.runFilter(item):
-                        r.nuke(item, f.action)
+                        if f.nuke:
+                            r.nuke(item, f.action)
                         if f.comment:
                             comment = {'thing_id': item['name'], 'text': f.comment}
                             submission = r.post('http://www.reddit.com/api/comment',
