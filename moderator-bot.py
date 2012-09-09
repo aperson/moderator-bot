@@ -630,7 +630,7 @@ class YoutubeSpam(Filter):
                             """ upvote your links or ones like them -- and we're talking about re"""
                             """al people here, not sockpuppets or people you asked to go vote for"""
                             """ you -- congratulations! It's almost certainly not spam. But we're"""
-                            """ serious about the "not people you asked to go vote for you" part."""
+                            """ serious about the "not people you asked to go vote for your part."""
                             """\n\n* If nobody's submitted a link like yours before, give it a sh"""
                             """ot. But don't flood the new queue; submit one or two times and see"""
                             """ what happens.\n\nFor right now, this is just a friendly message, """
