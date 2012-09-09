@@ -590,7 +590,7 @@ class YoutubeSpam(Filter):
         if submission['domain'] in ('youtube.com', 'youtu.be'):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
-            with database.open() as db:
+            with self.database.open() as db:
                 if submission['id'] in db['submissions']:
                     return False
                 if submission['username'] in db['users']:
