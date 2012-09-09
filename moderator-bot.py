@@ -607,6 +607,7 @@ class YoutubeSpam(Filter):
                 if self._checkProfile(submission['author']):
                     if user['warned']:
                         p("User was warned and is still matches a spammer")
+                        self.comment = ''
                         self.ban = True
                         self.nuke = True
                     else:
@@ -654,6 +655,28 @@ class YoutubeSpam(Filter):
                     db['submissions'].append(submission['id'])
                 return output
 
+class AllCaps(Filter):
+    def __init__(self):
+        Filter.__init(self)
+        self.comment = ("""Hey there, you seem to be yelling!  You don't need to be so loud with """
+            """your title, your submission should be the one doing the talking for you. [Here's a"""
+            """ link to resubmit with a more appropriate title]({link}) 'click here to submit')."""
+
+    def filterSubmission(self, submission):
+        if submission['title'].isupper():
+            self.log_text = "Found submission with all-caps title"
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id']))
+            if submission['selftext']:
+                params = {'title': submission['title'].title(), 'text': submission['selftext'}
+            else:
+                params = {'title': submission['title'].title(), 'url': submission['url']
+            self.comment = self.comment.format(link='/r/{}submit?{}'.format(submission['subreddit'],
+                urlencode(params)))
+            return True
+
+
 
 
 def main():
@@ -663,7 +686,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(),ShortUrl(),
-        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam()]
+        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), AllCaps()]
 
     # main loop
     while True:
