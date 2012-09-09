@@ -594,12 +594,12 @@ class YoutubeSpam(Filter):
             with self.database.open() as db:
                 if submission['id'] in db['submissions']:
                     return False
-                if submission['username'] in db['users']:
-                    user = db['users'][submission['username']]
+                if submission['author'] in db['users']:
+                    user = db['users'][submission['author']]
                 else:
                     user = {'checked_last': 0 , 'warned': False}
             if time.time() - user['checked_last'] > DAY:
-                if self._checkProfile(submission['username']):
+                if self._checkProfile(submission['author']):
                     if user['warned']:
                        self.action = 'ban'
                        p("User was warned and is still matches a spammer, banning:")
@@ -638,7 +638,7 @@ class YoutubeSpam(Filter):
                         user['warned'] = True
                 user['checked_last'] = time.time()
                 with self.database.open() as db:
-                    db['users'][submission['username']] = user
+                    db['users'][submission['author']] = user
                     db['submissions'].append(submission['id'])
                 return True
 
