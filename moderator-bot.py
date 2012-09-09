@@ -660,7 +660,7 @@ class AllCaps(Filter):
         Filter.__init(self)
         self.comment = ("""Hey there, you seem to be yelling!  You don't need to be so loud with """
             """your title, your submission should be the one doing the talking for you. [Here's a"""
-            """ link to resubmit with a more appropriate title]({link}) 'click here to submit')."""
+            """ link to resubmit with a more appropriate title]({link}) 'click here to submit').""")
 
     def filterSubmission(self, submission):
         if submission['title'].isupper():
