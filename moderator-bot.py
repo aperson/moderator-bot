@@ -606,7 +606,7 @@ class YoutubeSpam(Filter):
                 user['checked_last'] = time.time()
                 if self._checkProfile(submission['author']):
                     if user['warned']:
-                       p("User was warned and is still matches a spammer")
+                        p("User was warned and is still matches a spammer")
                         self.ban = True
                         self.nuke = True
                     else:
