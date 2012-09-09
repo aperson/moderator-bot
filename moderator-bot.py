@@ -637,16 +637,16 @@ class YoutubeSpam(Filter):
                             """ove definition.\n\nIf you feel this was in error, feel free to [me"""
                             """ssage the moderators](/message/compose/?to=/r/{sub}&subject=Video%"""
                             """20Spam&message={1}).""".format(SUBREDDIT, link))
-                            self.ban = False
-                            self.nuke = True
-                            self.log_text = "Found potential video spammer"
-                            p(self.log_text + ":")
-                            p("http://reddit.com/u/{}".format(submission['author']))
-                            user['warned'] = True
-                        with self.database.open() as db:
-                            db['users'][submission['author']] = user
-                            db['submissions'].append(submission['id'])
-                        return True
+                        self.ban = False
+                        self.nuke = True
+                        self.log_text = "Found potential video spammer"
+                        p(self.log_text + ":")
+                        p("http://reddit.com/u/{}".format(submission['author']))
+                        user['warned'] = True
+                    with self.database.open() as db:
+                        db['users'][submission['author']] = user
+                        db['submissions'].append(submission['id'])
+                    return True
                 else:
                     return False
 
