@@ -669,7 +669,7 @@ class AllCaps(Filter):
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id']))
             if submission['selftext']:
-                params = {'title': submission['title'].title(), 'text': submission['selftext'}
+                params = {'title': submission['title'].title(), 'text': submission['selftext']}
             else:
                 params = {'title': submission['title'].title(), 'url': submission['url']
             self.comment = self.comment.format(link='/r/{}submit?{}'.format(submission['subreddit'],
