@@ -639,7 +639,7 @@ class YoutubeSpam(Filter):
                             """ssage the moderators](/message/compose/?to=/r/{0}&subject=Video%"""
                             """20Spam&message={1}).""".format(SUBREDDIT, link))
                         self.ban = False
-                        self.nuke = True
+                        self.nuke = False
                         self.log_text = "Found potential video spammer"
                         p(self.log_text + ":")
                         p("http://reddit.com/u/{}".format(submission['author']))
