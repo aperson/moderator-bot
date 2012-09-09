@@ -636,7 +636,7 @@ class YoutubeSpam(Filter):
                         p("http://reddit.com/u/{}".format(submission['author']))
                         user['warned'] = True
                 user['checked_last'] = time.time()
-                with database.open() as db:
+                with self.database.open() as db:
                     db['users'][submission['username']] = user
                     db['submissions'].append(submission['id'])
                 return True
