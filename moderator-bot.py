@@ -602,8 +602,7 @@ class YoutubeSpam(Filter):
                 if self._checkProfile(submission['author']):
                     if user['warned']:
                        self.action = 'ban'
-                       p("User was warned and is still matches a spammer, banning:")
-                       p("http://reddit.com/u/{}".format(submission['author']))
+                       p("User was warned and is still matches a spammer")
                     else:
                         self.comment = ("""It looks like you might be skirting on the line with  """
                             """submitting your videos, so consider this a friendly warning/guidel"""
