@@ -657,7 +657,7 @@ class YoutubeSpam(Filter):
 
 class AllCaps(Filter):
     def __init__(self):
-        Filter.__init(self)
+        Filter.__init__(self)
         self.comment = ("""Hey there, you seem to be yelling!  You don't need to be so loud with """
             """your title, your submission should be the one doing the talking for you. [Here's a"""
             """ link to resubmit with a more appropriate title]({link}) 'click here to submit').""")
