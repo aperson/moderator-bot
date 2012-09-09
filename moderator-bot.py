@@ -636,7 +636,7 @@ class YoutubeSpam(Filter):
                             """ what happens.\n\nFor right now, this is just a friendly message, """
                             """but here in /r/{0}, we take action against anyone that fits the ab"""
                             """ove definition.\n\nIf you feel this was in error, feel free to [me"""
-                            """ssage the moderators](/message/compose/?to=/r/{sub}&subject=Video%"""
+                            """ssage the moderators](/message/compose/?to=/r/{0}&subject=Video%"""
                             """20Spam&message={1}).""".format(SUBREDDIT, link))
                         self.ban = False
                         self.nuke = True
