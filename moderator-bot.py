@@ -593,7 +593,7 @@ class YoutubeSpam(Filter):
                 if submission['id'] in db['submissions']:
                     return False
                 if submission['username'] in db['users']:
-                    user = db['users'][submission['username']
+                    user = db['users'][submission['username']]
                 else:
                     user = {'checked_last': 0 , 'warned': False}
             if time.time() - user['checked_last'] > DAY:
@@ -629,7 +629,7 @@ class YoutubeSpam(Filter):
                             """but here in /r/{0}, we take action against anyone that fits the ab"""
                             """ove definition.\n\nIf you feel this was in error, feel free to [me"""
                             """ssage the moderators](/message/compose/?to=/r/{sub}&subject=Video%"""
-                            """20Spam&message={1}).""".format(SUBREDDIT, link)
+                            """20Spam&message={1}).""".format(SUBREDDIT, link))
                         self.log_text = "Found potential video spammer"
                         p(self.log_text + ":")
                         p("http://reddit.com/u/{}".format(submission['author']))
