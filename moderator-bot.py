@@ -658,9 +658,10 @@ class YoutubeSpam(Filter):
 class AllCaps(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.comment = ("""Hey there, you seem to be yelling!  You don't need to be so loud with """
-            """your title, your submission should be the one doing the talking for you. [Here's a"""
-            """ link to resubmit with a more appropriate title]({link} 'click here to submit').""")
+        self.comment_template = ("""Hey there, you seem to be yelling!  You don't need to be so l"""
+            """oud with your title, your submission should be the one doing the talking for you. """
+            """[Here's a link to resubmit with a more appropriate title]({link} 'click here to su"""
+            """bmit').""")
 
     def filterSubmission(self, submission):
         if submission['title'].isupper() and len(submission['title']) > 10:
@@ -672,8 +673,8 @@ class AllCaps(Filter):
                 params = {'title': submission['title'].title(), 'text': submission['selftext']}
             else:
                 params = {'title': submission['title'].title(), 'url': submission['url'] + '?mb'}
-            self.comment = self.comment.format(link='/r/{}/submit?{}'.format(submission['subreddit'],
-                urlencode(params)))
+            self.comment = self.comment_template.format(
+                link='/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params)))
             return True
 
 
