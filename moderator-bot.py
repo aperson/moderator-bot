@@ -660,10 +660,10 @@ class AllCaps(Filter):
         Filter.__init__(self)
         self.comment = ("""Hey there, you seem to be yelling!  You don't need to be so loud with """
             """your title, your submission should be the one doing the talking for you. [Here's a"""
-            """ link to resubmit with a more appropriate title]({link}) 'click here to submit').""")
+            """ link to resubmit with a more appropriate title]({link} 'click here to submit').""")
 
     def filterSubmission(self, submission):
-        if submission['title'].isupper():
+        if submission['title'].isupper() and len(submission['title']) > 10:
             self.log_text = "Found submission with all-caps title"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
@@ -672,7 +672,7 @@ class AllCaps(Filter):
                 params = {'title': submission['title'].title(), 'text': submission['selftext']}
             else:
                 params = {'title': submission['title'].title(), 'url': submission['url']}
-            self.comment = self.comment.format(link='/r/{}submit?{}'.format(submission['subreddit'],
+            self.comment = self.comment.format(link='/r/{}/submit?{}'.format(submission['subreddit'],
                 urlencode(params)))
             return True
 
