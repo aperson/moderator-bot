@@ -671,7 +671,7 @@ class AllCaps(Filter):
             if submission['selftext']:
                 params = {'title': submission['title'].title(), 'text': submission['selftext']}
             else:
-                params = {'title': submission['title'].title(), 'url': submission['url']}
+                params = {'title': submission['title'].title(), 'url': submission['url'] + '?mb'}
             self.comment = self.comment.format(link='/r/{}/submit?{}'.format(submission['subreddit'],
                 urlencode(params)))
             return True
