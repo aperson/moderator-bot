@@ -669,12 +669,13 @@ class AllCaps(Filter):
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id']))
+            params = {'title': submission['title'].title(), 'resubmit': True}
             if submission['selftext']:
-                params = {'title': submission['title'].title(), 'text': submission['selftext']}
+                params['text'] = submission['selftext']
             else:
-                params = {'title': submission['title'].title(), 'url': submission['url'] + '?mb'}
+                params['url'] = submission['url']
             self.comment = self.comment_template.format(
-                link='/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params)))
+                link = '/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params)))
             return True
 
 
