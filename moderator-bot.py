@@ -382,7 +382,7 @@ class ServerAd(Filter):
             p(link)
             return True
         elif submission['domain'] == 'imgur.com':
-            if _imgur_check(submission['url']):
+            if self._imgur_check(submission['url']):
                 self.log_text = "Found server advertisement in submission"
                 link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                     submission['id'])
