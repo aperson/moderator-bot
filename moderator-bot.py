@@ -753,9 +753,9 @@ def main():
             feed.extend(i['data']['children'])
         for item in feed:
             item = item['data']
-            # I know using 'is True' isn't the 'right' way, but reddit's api is weird here
+            # I know using 'is not True' isn't the 'right' way, but reddit's api is weird here
             # and I wanted to explicitly show it
-            if item['banned_by'] is True: break
+            if item['banned_by'] is not True: break
             if item['author'] in (USERNAME, 'tweet_poster') : break
             if item['approved_by']: break
             if item['id'] in processed['ids']: break
