@@ -37,7 +37,6 @@ except:
     USERNAME = 'botname'
     PASSWORD = 'botpass'
     SUBREDDIT = 'subtomonitor'
-    SUBOPTS = {'type': 'restricted', 'link_type': 'any', 'show_media': True, 'allow_top': True}
     EDITSTART = '[](#mbeditstart)'
     EDITSTOP = '[](#mbeditstop)'
     GREENTEXT = "[](#status_green '{} is online')"
