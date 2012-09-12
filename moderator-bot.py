@@ -361,8 +361,8 @@ class ServerAd(Filter):
                 image_list.append(imgur['image'])
 
         for i in image_list:
-            if i['description']:
-                if _server_in(i['description']):
+            if i['caption']:
+                if _server_in(i['caption']):
                     return True
             if i['title']:
                 if _server_in(i['title']):
