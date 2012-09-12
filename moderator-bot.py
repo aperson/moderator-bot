@@ -340,6 +340,7 @@ class ServerAd(Filter):
 
     def _imgur_check(self, url):
         '''Takes a imgur url and returns True if a server ad is found in the title or description'''
+        p("Checking: {}".format(url), end='')
         url = url.split('imgur.com/')[1]
         url = url.split('#')[0]
         if url.endswith('/'):
@@ -644,7 +645,7 @@ class YoutubeSpam(Filter):
                     user = {'checked_last': 0, 'warned': False}
 
             if time.time() - user['checked_last'] > DAY:
-                p("Checking profile of /u/{}".format(submission['author']))
+                p("Checking profile of /u/{}".format(submission['author']), end='')
                 user['checked_last'] = time.time()
                 if self._checkProfile(submission['author']):
                     if user['warned']:
