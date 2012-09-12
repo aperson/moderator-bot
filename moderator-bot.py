@@ -755,28 +755,29 @@ def main():
             item = item['data']
             # I know using 'is True' isn't the 'right' way, but reddit's api is weird here
             # and I wanted to explicitly show it
-            if item['banned_by'] is True and item['author'] != USERNAME and not \
-                item['approved_by'] and item['author'] != 'tweet_poster' and \
-                item['id'] not in processed['ids']:
-                for f in filters:
-                    if f.runFilter(item):
-                        if f.nuke:
-                            r.nuke(item, f.action)
-                        if f.comment:
-                            comment = {'thing_id': item['name'], 'text': f.comment}
-                            submission = r.post('http://www.reddit.com/api/comment',
-                                 comment)['json']['data']['things'][0]['data']['id']
-                            distinguish = {'id': submission, 'executed': 'distinguishing...'}
-                            r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
-                        if f.tag:
-                            r.rts(item['author'], tag=f.tag, subreddit=f.report_subreddit)
-                        if f.ban and item['author'] not in processed['authors']:
-                            p('Banning http://reddit.com/u/{}'.format(item['author']))
-                            body = {'action': 'add', 'type': 'banned', 'name': item['author'],
-                                'id': '#banned', 'r': item['subreddit']}
-                            r.post('http://www.reddit.com/api/friend', body)
-                        processed['ids'].append(item['id'])
-                        break
+            if item['banned_by'] is True: break
+            if item['author'] in (USERNAME, 'tweet_poster') : break
+            if item['approved_by']: break
+            if item['id'] in processed['ids']: break
+            for f in filters:
+                if f.runFilter(item):
+                    if f.nuke:
+                        r.nuke(item, f.action)
+                    if f.comment:
+                        comment = {'thing_id': item['name'], 'text': f.comment}
+                        submission = r.post('http://www.reddit.com/api/comment',
+                             comment)['json']['data']['things'][0]['data']['id']
+                        distinguish = {'id': submission, 'executed': 'distinguishing...'}
+                        r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
+                    if f.tag:
+                        r.rts(item['author'], tag=f.tag, subreddit=f.report_subreddit)
+                    if f.ban and item['author'] not in processed['authors']:
+                        p('Banning http://reddit.com/u/{}'.format(item['author']))
+                        body = {'action': 'add', 'type': 'banned', 'name': item['author'],
+                            'id': '#banned', 'r': item['subreddit']}
+                        r.post('http://www.reddit.com/api/friend', body)
+                    processed['ids'].append(item['id'])
+                    break
         for i in range(sleep_time):
             p('Next scan in {} seconds...'.format(sleep_time - i), end='')
             time.sleep(1)
