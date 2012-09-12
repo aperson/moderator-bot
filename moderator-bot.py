@@ -728,6 +728,7 @@ def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     last_status = None
+    processed = {'ids': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(),ShortUrl(),
@@ -740,8 +741,6 @@ def main():
         modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
         comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
         feed = []
-        processed = {'ids': [], 'authors': []}
-
         status = mojangStatus()
         p('Checking Mojang servers...', end='')
         if status and last_status:
