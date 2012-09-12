@@ -349,14 +349,14 @@ class ServerAd(Filter):
         image_list = []
 
         if url.startswith('a/'):
-            with self.opener.open('http://api.imgur.com/2/album/{}.json') as w:
+            with self.opener.open('http://api.imgur.com/2/album/{}.json'.format(url[2])) as w:
                 imgur = json.loads(w.read().decode('utf-8'))['album']
             image_list.append({'title': imgur['title'], 'caption': imgur['description']})
             for i in imgur['images']:
                 image_list.append(i['image'])
         else:
             for i in url.split(','):
-                with self.opener.open('http://api.imgur.com/2/image/{}.json') as w:
+                with self.opener.open('http://api.imgur.com/2/image/{}.json'.format(i)) as w:
                     imgur = json.loads(w.read().decode('utf-8'))['image']
                 image_list.append(imgur['image'])
 
