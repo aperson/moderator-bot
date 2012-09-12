@@ -362,10 +362,10 @@ class ServerAd(Filter):
 
         for i in image_list:
             if i['caption']:
-                if _server_in(i['caption']):
+                if self._server_in(i['caption']):
                     return True
             if i['title']:
-                if _server_in(i['title']):
+                if self._server_in(i['title']):
                     return True
         return False
 
