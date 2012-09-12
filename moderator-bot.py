@@ -211,6 +211,8 @@ class Filter(object):
         self.ban = False
         self.report_subreddit = None
         self.nuke = True
+        self.opener = urllib.request.build_opener()
+        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -297,8 +299,6 @@ class ServerAd(Filter):
         if (time.time() - self.last_update) >= 1800:
             self.last_update = time.time()
             p('Updating domain blacklist...', end='')
-            self.opener = urllib.request.build_opener()
-            self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
             with self.opener.open(SERVERDOMAINS) as w:
                 domain_list = w.read().decode('utf-8').split('\n')
             if len(self.domain_list) < len(domain_list):
@@ -338,6 +338,37 @@ class ServerAd(Filter):
                     return False
             return True
 
+    def _imgur_check(self, url):
+        '''Takes a imgur url and returns True if a server ad is found in the title or description'''
+        url = url.split('imgur.com/')[1]
+        if url.endswith('/'):
+            url = url[:-1]
+        if '.' in url:
+            return False
+
+        image_list = []
+
+        if url.startswith('a/'):
+            with self.opener.open('http://api.imgur.com/2/album/{}.json') as w:
+                imgur = json.loads(w.read().decode('utf-8'))['album']
+            image_list.append('title': imgur['title'], 'caption': imgur['description']})
+            for i in imgur['images']:
+                image_list.append(i['image'])
+        else:
+            for i in url.split(','):
+                with self.opener.open('http://api.imgur.com/2/image/{}.json') as w:
+                    imgur = json.loads(w.read().decode('utf-8'))['image']
+                image_list.append(imgur['image'])
+
+        for i in image_list:
+            if i['description']:
+                if _server_in(i['description']):
+                    return True
+            if i['title']:
+                if _server_in(i['title']):
+                    return True
+        return False
+
     def filterSubmission(self, submission):
         if self._server_in(submission['title']) or self._server_in(submission['selftext']) \
             or self._server_in(submission['url'][7:]):
@@ -350,6 +381,17 @@ class ServerAd(Filter):
             p(self.log_text + ":")
             p(link)
             return True
+        elif submission['domain'] == 'imgur.com':
+            if _imgur_check(submission['url']):
+                self.log_text = "Found server advertisement in submission"
+                link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                    submission['id'])
+                reason = "server advertisements are not allowed"
+                self.comment = self.comment_template.format(sub=submission['subreddit'],
+                    reason=reason, link=link)
+                p(self.log_text + ":")
+                p(link)
+                return True
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
@@ -556,13 +598,12 @@ class YoutubeSpam(Filter):
         these all will count against the user and an overall score will be returned.  Also, we only
         check against the last 100 items on the user's profile.'''
 
-        opener = urllib.request.build_opener()
-        opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
-        with opener.open(
+
+        with self.opener.open(
             'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user)) as w:
             comments = json.loads(w.read().decode('utf-8'))['data']['children']
             time.sleep(2)
-        with opener.open(
+        with self.opener.open(
             'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(user)) as w:
             submitted = json.loads(w.read().decode('utf-8'))['data']['children']
             time.sleep(2)
