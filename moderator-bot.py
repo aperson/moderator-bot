@@ -547,7 +547,7 @@ class Minebook(Filter):
 class SelfLinks(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''^http://\S*$''')
+        self.regex = re.compile(r'''^(?:https?://|www\.)\S*$''')
 
     def filterSubmission(self, submission):
         if submission['selftext']:
