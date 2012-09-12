@@ -178,7 +178,7 @@ class Reddit(object):
     def sidebar(self, subreddit, text):
         """Edits the sidebar in subreddit in-between the allowed tags set by EDITSTART and
         EDITSTOP"""
-        sub = self.get('http://www.reddit.com/r/{}/about.json'.format(subreddit))['data']
+        sub = self.get('http://www.reddit.com/r/{}/about/edit/.json'.format(subreddit))['data']
         regex = r'''{}.*?{}'''.format(re.escape(EDITSTART), re.escape(EDITSTOP))
         text = EDITSTART + text + EDITSTOP
         sub['description'] = sub['description'].replace('&amp;', '&'
@@ -187,12 +187,11 @@ class Reddit(object):
         sidebar = re.sub(regex, text, sub['description'])
         body = {'sr': sub['name'], 'title': sub['title'],
             'public_description': sub['public_description'], 'description': sidebar,
-            'type': SUBOPTS['type'], 'link_type': SUBOPTS['link_type'],
-            'show_media': SUBOPTS['show_media'], 'allow_top': SUBOPTS['allow_top']}
-        if sub['header_title']:
-            body['header-title'] = sub['header_title']
-        if sub['over18']:
-            body['over_18'] = True
+            'type': sub['subreddit_type'], 'link_type': sub['content_options'],
+            'show_media': sub['show_media'], 'allow_top': sub['default_set'],
+            'over_18': sub['over_18'], 'header-title': sub['header_hover_text'],
+            'prev_description_id': sub['prev_description_id'],
+            'prev_public_description_id': sub['prev_public_description_id']}
         self.post('http://www.reddit.com/api/site_admin', body)
 
 
