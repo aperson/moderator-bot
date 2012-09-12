@@ -760,6 +760,7 @@ def main():
                 if item['author'] in (USERNAME, 'tweet_poster'): break
                 if item['approved_by']: break
                 if item['id'] in processed['ids']: break
+                processed['ids'].append(item['id'])
                 if f.runFilter(item):
                     if f.nuke:
                         r.nuke(item, f.action)
@@ -776,7 +777,6 @@ def main():
                         body = {'action': 'add', 'type': 'banned', 'name': item['author'],
                             'id': '#banned', 'r': item['subreddit']}
                         r.post('http://www.reddit.com/api/friend', body)
-                    processed['ids'].append(item['id'])
                     break
         for i in range(sleep_time):
             p('Next scan in {} seconds...'.format(sleep_time - i), end='')
