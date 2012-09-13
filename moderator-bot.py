@@ -602,10 +602,6 @@ class YoutubeSpam(Filter):
         these all will count against the user and an overall score will be returned.  Also, we only
         check against the last 100 items on the user's profile.'''
 
-<<<<<<< HEAD
-=======
-        try:
->>>>>>> 7c33486bab1708e75e31fe9b6022fb520fd74cb1
         with self.opener.open(
             'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user)) as w:
             comments = json.loads(w.read().decode('utf-8'))
