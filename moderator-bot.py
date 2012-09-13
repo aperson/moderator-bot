@@ -411,9 +411,9 @@ class ServerAd(Filter):
 class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''(?:(?:free|cracked)?-?minecraft-?(?:install|codes?|rewards?|gif'''
-            r'''t-?codes?(?:-?generator)?|acc(?:t|ount)s?|now|forever)(?:\.blogspot)?\.(?:me|info|'''
-            r'''com|net|org|ru|co\.uk|us)|epicfreeprizes\.com)''', re.I)
+        self.regex = re.compile(r'''(?:(?:free|cracked)?-?minecraft-?(?:install|'''
+            r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?|now|forever)'''
+            r'''(?:\.blogspot)?\.(?:me|info|com|net|org|ru|co\.uk|us)|epicfreeprizes\.com)''', re.I)
         self.action = 'spammed'
         self.ban = True
 
