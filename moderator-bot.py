@@ -338,7 +338,8 @@ class ServerAd(Filter):
 
     def _imgur_check(self, url):
         '''Takes a imgur url and returns True if a server ad is found in the title or description'''
-        p("Checking {}".format(url), end='')
+        original_url = url
+        p("Checking {}".format(original_url), end='')
         url = url.split('imgur.com/')[1]
         url = url.split('#')[0]
         if url.endswith('/'):
@@ -361,7 +362,7 @@ class ServerAd(Filter):
                         imgur = json.loads(w.read().decode('utf-8'))['image']
                     image_list.append(imgur['image'])
         except urllib.error.HTTPError:
-            p('Could not parse: {}'.format(url))
+            p('Could not parse: {}'.format(original_url))
             return None
 
         for i in image_list:
