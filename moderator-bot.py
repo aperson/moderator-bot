@@ -593,7 +593,7 @@ class YoutubeSpam(Filter):
                 if 'oembed' in submission['media']:
                     if 'author_name' in submission['media']['oembed']:
                         if submission['media']['oembed']['author_name'] is not None:
-                            return submission['media']['oembed']['author_name']
+                            return submission['media']['oembed']['author_name'].replace(' ', '').lower()
 
     def _checkProfile(self, user):
         '''Returns the percentage of things that the user only contributed to themselves.
