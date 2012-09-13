@@ -602,18 +602,20 @@ class YoutubeSpam(Filter):
         these all will count against the user and an overall score will be returned.  Also, we only
         check against the last 100 items on the user's profile.'''
 
-        with self.opener.open(
-            'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user)) as w:
-            comments = json.loads(w.read().decode('utf-8'))
-            # hack to get around deleted/shadowbanned users
-            if 'error' in comments:
-                return False
-            comments = comments['data']['children']
-            time.sleep(2)
-        with self.opener.open(
-            'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(user)) as w:
-            submitted = json.loads(w.read().decode('utf-8'))['data']['children']
-            time.sleep(2)
+        try:
+            with self.opener.open(
+                'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user)) as w:
+                comments = json.loads(w.read().decode('utf-8'))
+                comments = comments['data']['children']
+                time.sleep(2)
+            with self.opener.open(
+                'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(user)) as w:
+                submitted = json.loads(w.read().decode('utf-8'))['data']['children']
+                time.sleep(2)
+        except urllib.error.HTTPError:
+            # This is a hack to get around shadowbanned or deleted users
+            p("Could not parse /u/{}, probably shadowbanned or deleted".format(user))
+            return False
         video_count = 0
         video_authors = set()
         video_submissions = set()
