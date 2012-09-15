@@ -338,7 +338,7 @@ class ServerAd(Filter):
 
     def _imgur_check(self, url):
         '''Takes a imgur url and returns True if a server ad is found in the title or description'''
-        url = url.replace('&amp;', '&'')
+        url = url.replace('&amp;', '&')
         original_url = url
         p("Checking {}".format(original_url), end='')
         url = url.split('imgur.com/')[1]
