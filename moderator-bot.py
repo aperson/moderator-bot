@@ -184,7 +184,7 @@ class Reddit(object):
             ).replace('&gt;', '>'
             ).replace('&lt;', '<')
         sidebar = re.sub(regex, text, sub['description'])
-        body = {'sr': sub['name'], 'title': sub['title'],
+        body = {'sr': subreddit, 'title': sub['title'],
             'public_description': sub['public_description'], 'description': sidebar,
             'type': sub['subreddit_type'], 'link_type': sub['content_options'],
             'show_media': sub['show_media'], 'allow_top': sub['default_set'],
@@ -397,6 +397,8 @@ class ServerAd(Filter):
                 p(self.log_text + ":")
                 p(link)
                 return True
+        elif submission['domain'] in ('youtube.com', 'youtu.be'):
+            pass
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
