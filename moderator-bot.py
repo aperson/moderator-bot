@@ -400,10 +400,11 @@ class ServerAd(Filter):
                 return True
         elif submission['domain'] in ('youtube.com', 'youtu.be'):
             if 'media' in submission:
-                if 'oembed' in submission['media']:
-                    if self._server_in(submission['media']['oembed']['description']) or \
-                        self._server_in(submission['media']['oembed']['title']):
-                            return True
+                if submission['media'] is not None:
+                    if 'oembed' in submission['media']:
+                        if self._server_in(submission['media']['oembed']['description']) or \
+                            self._server_in(submission['media']['oembed']['title']):
+                                return True
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
