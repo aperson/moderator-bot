@@ -358,7 +358,7 @@ class ServerAd(Filter):
                 for i in imgur['images']:
                     image_list.append(i['image'])
             else:
-                for i in url.split(','):
+                for i in re.split(r''',|&''', url):
                     with self.opener.open('https://api.imgur.com/2/image/{}.json'.format(i)) as w:
                         imgur = json.loads(w.read().decode('utf-8'))['image']
                     image_list.append(imgur['image'])
