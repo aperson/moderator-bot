@@ -190,7 +190,9 @@ class Reddit(object):
             'show_media': sub['show_media'], 'allow_top': sub['default_set'],
             'over_18': sub['over_18'], 'header-title': sub['header_hover_text'],
             'prev_description_id': sub['prev_description_id'],
-            'prev_public_description_id': sub['prev_public_description_id']}
+            'prev_public_description_id': sub['prev_public_description_id'],
+            'wikimode': sub['wikimode'], 'wiki_edit_age': sub['wiki_edit_age'],
+            'wiki_edit_karma': sub['wiki_edit_karma']}
         self.post('http://www.reddit.com/api/site_admin', body)
 
 
