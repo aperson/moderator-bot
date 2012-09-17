@@ -292,6 +292,8 @@ class ServerAd(Filter):
         Filter.__init__(self)
         self._update_list()
         self.tag = "[Server Spam]"
+        self.regex = re.compile(r'''(?:^|\s|ip(?:=|:)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|\$|:)''',
+            re.I)
 
     def _update_list(self):
         if (time.time() - self.last_update) >= 1800:
@@ -307,7 +309,6 @@ class ServerAd(Filter):
                 p('Removed {} domains from the online blacklist'.format(
                     len(self.domain_list) - len(domain_list)))
                 self.domain_list = domain_list
-        self.regex = re.compile(r'''(?:^|\s|ip:)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|\$|:)''', re.I)
 
     def _server_in(self, text):
         self._update_list()
