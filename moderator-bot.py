@@ -294,7 +294,7 @@ class ServerAd(Filter):
         Filter.__init__(self)
         self._update_list()
         self.tag = "[Server Spam]"
-        self.regex = re.compile(r'''(?:^|\s|ip(?:=|:)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|\$|:)''',
+        self.regex = re.compile(r'''(?:^|\s|ip(?:=|:))(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|\$|:)''',
             re.I)
 
     def _update_list(self):
