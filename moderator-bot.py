@@ -401,7 +401,7 @@ class ServerAd(Filter):
                 p(self.log_text + ":")
                 p(link)
                 return True
-        elif submission['domain'] in ('youtube.com', 'youtu.be'):
+        elif submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             if 'media' in submission:
                 if submission['media'] is not None:
                     if 'oembed' in submission['media']:
@@ -651,7 +651,7 @@ class YoutubeSpam(Filter):
 
     def filterSubmission(self, submission):
         DAY = 24 * 60 * 60
-        if submission['domain'] in ('youtube.com', 'youtu.be'):
+        if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
             # check if we've already parsed this submission
