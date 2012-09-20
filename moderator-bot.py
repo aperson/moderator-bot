@@ -83,6 +83,8 @@ def mojangStatus():
             status = json.loads(w.read().decode('utf-8'))
     except urllib.error.HTTPError:
         return None
+    except http.client.BadStatusLine:
+        return None
     text = []
     for x in status:
         for y in x:
