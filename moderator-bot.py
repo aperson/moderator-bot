@@ -743,7 +743,7 @@ class AllCaps(Filter):
 
 
 class BannedSubs(Filter):
-        def __init__(self):
+    def __init__(self):
         Filter.__init__(self)
         self.action = 'spammed'
 
