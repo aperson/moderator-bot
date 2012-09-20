@@ -45,6 +45,7 @@ except:
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
     DATABASEFILE = '/some/path'
+    BANNEDSUBS = ['some', 'list']
 
 
 def p(data, end='\n'):
@@ -741,6 +742,19 @@ class AllCaps(Filter):
             return True
 
 
+class BannedSubs(Filter):
+        def __init__(self):
+        Filter.__init__(self)
+        self.action = 'spammed'
+
+    def filterComment(self, comment):
+        if not comment['num_reports']:
+            for word in BANNEDSUBS:
+                if word in comment['body'].lower():
+                    return True
+
+
+
 
 
 def main():
@@ -751,7 +765,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(),ShortUrl(),
-        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), AllCaps()]
+        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), AllCaps(), BannedSubs()]
 
     # main loop
     while True:
