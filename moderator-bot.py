@@ -351,6 +351,8 @@ class ServerAd(Filter):
         url = url.split('#')[0]
         if url.endswith('/'):
             url = url[:-1]
+        if url.endswith('/all'):
+            url =  url[:-4]
         if '.' in url:
             return False
 
