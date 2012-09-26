@@ -488,7 +488,8 @@ class ShortUrl(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
-            r'''tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com|ht\.ly)/''', re.I)
+            r'''tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com|ht\.ly|'''
+            r'''pulse\.me)/''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or self.regex.search(submission['selftext']) \
