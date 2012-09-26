@@ -699,12 +699,12 @@ class YoutubeSpam(Filter):
                             """al people here, not sockpuppets or people you asked to go vote for"""
                             """ you -- congratulations! It's almost certainly not spam. But we're"""
                             """ serious about the "not people you asked to go vote for your part."""
-                            """\n\n* If nobody's submitted a link like yours before, give it a sh"""
-                            """ot. But don't flood the new queue; submit one or two times and see"""
-                            """ what happens.\n\nFor right now, this is just a friendly message, """
-                            """but here in /r/{0}, we take action against anyone that fits the ab"""
-                            """ove definition.\n\nIf you feel this was in error, feel free to [me"""
-                            """ssage the moderators](/message/compose/?to=/r/{0}&subject=Video%"""
+                            """"\n\n* If nobody's submitted a link like yours before, give it a s"""
+                            """hot. But don't flood the new queue; submit one or two times and se"""
+                            """e what happens.\n\nFor right now, this is just a friendly message,"""
+                            """ but here in /r/{0}, we take action against anyone that fits the a"""
+                            """bove definition.\n\nIf you feel this was in error, feel free to [m"""
+                            """essage the moderators](/message/compose/?to=/r/{0}&subject=Video%"""
                             """20Spam&message={1}).""".format(SUBREDDIT, link))
                         self.ban = False
                         self.nuke = False
