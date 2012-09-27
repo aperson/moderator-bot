@@ -298,7 +298,7 @@ class ServerAd(Filter):
         self._update_list()
         self.tag = "[Server Spam]"
         self.regex = re.compile(r'''(?:^|\s|ip(?:=|:)|\*)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|$|:|'''
-            r'''\*)''', re.I)
+            r'''\*|!|\.|\?)''', re.I)
 
     def _update_list(self):
         if (time.time() - self.last_update) >= 1800:
