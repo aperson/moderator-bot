@@ -360,7 +360,7 @@ class ServerAd(Filter):
 
         try:
             if url.startswith('a/'):
-                url = url[2:].split('1')[0]
+                url = url[2:].split('/')[0]
                 with self.opener.open('https://api.imgur.com/2/album/{}.json'.format(url)) as w:
                     imgur = json.loads(w.read().decode('utf-8'))['album']
                 image_list.append({'title': imgur['title'], 'caption': imgur['description']})
