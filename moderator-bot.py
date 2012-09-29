@@ -187,7 +187,7 @@ class Reddit(object):
             ).replace('&gt;', '>'
             ).replace('&lt;', '<')
         sidebar = re.sub(regex, text, sub['description'])
-        body = {'sr': subreddit, 'title': sub['title'],
+        body = {'sr': sub['subreddit_id'], 'title': sub['title'],
             'public_description': sub['public_description'], 'description': sidebar,
             'type': sub['subreddit_type'], 'link_type': sub['content_options'],
             'show_media': sub['show_media'], 'allow_top': sub['default_set'],
@@ -786,7 +786,8 @@ def main():
             if status != last_status:
                 p('Mojang server status changed, updating sidebar')
                 r.sidebar(SUBREDDIT, status)
-        last_status = status
+
+        if status is not None: last_status = status
 
         for i in (new_listing, modqueue_listing, comments_listing):
             feed.extend(i['data']['children'])
