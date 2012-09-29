@@ -363,6 +363,7 @@ class ServerAd(Filter):
                 url = url[2:].split('/')[0]
                 with self.opener.open('https://api.imgur.com/2/album/{}.json'.format(url)) as w:
                     imgur = json.loads(w.read().decode('utf-8'))['album']
+                    time.sleep(2)
                 image_list.append({'title': imgur['title'], 'caption': imgur['description']})
                 for i in imgur['images']:
                     image_list.append(i['image'])
@@ -370,6 +371,7 @@ class ServerAd(Filter):
                 for i in re.split(r''',|&''', url):
                     with self.opener.open('https://api.imgur.com/2/image/{}.json'.format(i)) as w:
                         imgur = json.loads(w.read().decode('utf-8'))['image']
+                        time.sleep(2)
                     image_list.append(imgur['image'])
         except urllib.error.HTTPError:
             p('Could not parse: {}'.format(original_url))
