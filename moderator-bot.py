@@ -653,7 +653,7 @@ class YoutubeSpam(Filter):
             if item['link_id'] in video_submissions:
                 comments_on_self += 1
         if len(video_authors) == 1 and video_count >= 3:
-            if (((video_count + comments_on_self) / (len(comments) + len(submitted))) * 100) > 90:
+            if (((video_count + comments_on_self) / (len(comments) + len(submitted))) * 100) > 85:
                 return True
             else:
                 return False
