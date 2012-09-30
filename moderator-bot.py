@@ -39,8 +39,8 @@ except:
     SUBREDDIT = 'subtomonitor'
     EDITSTART = '[](#mbeditstart)'
     EDITSTOP = '[](#mbeditstop)'
-    GREENTEXT = "[](#status_green '{} has been online since {}')"
-    REDTEXT = "[](#status_red '{} has been offline since {}')"
+    GREENTEXT = "[](#status_green '{} has been online since at least {}')"
+    REDTEXT = "[](#status_red '{} has been offline since at least {}')"
     BOTSUB = 'botprivatesub'
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
