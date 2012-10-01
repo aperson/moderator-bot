@@ -90,8 +90,10 @@ def mojangStatus():
         current_time = time.strftime("%X %x %Z")
         for y in x:
             if x[y] == 'green':
+                p("{} is green".format(y, end=""))
                 text.append(GREENTEXT.format(y, current_time))
             elif x[y] == 'red':
+                p("{} is red".format(y))
                 text.append(REDTEXT.format(y, current_time))
     return ''.join(text)
 
