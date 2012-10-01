@@ -39,8 +39,8 @@ except:
     SUBREDDIT = 'subtomonitor'
     EDITSTART = '[](#mbeditstart)'
     EDITSTOP = '[](#mbeditstop)'
-    GREENTEXT = "[](#status_green '{} has been online since at least {}')"
-    REDTEXT = "[](#status_red '{} has been offline since at least {}')"
+    GREENTEXT = "[](#status_green '{} is online')"
+    REDTEXT = "[](#status_red '{}' is offline')"
     BOTSUB = 'botprivatesub'
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
@@ -91,10 +91,10 @@ def mojangStatus():
         for y in x:
             if x[y] == 'green':
                 p("{} is green".format(y), end="")
-                text.append(GREENTEXT.format(y, current_time))
+                text.append(GREENTEXT.format(y)
             elif x[y] == 'red':
                 p("{} is red".format(y))
-                text.append(REDTEXT.format(y, current_time))
+                text.append(REDTEXT.format(y))
     return ''.join(text)
 
 class Database(object):
