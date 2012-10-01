@@ -786,10 +786,11 @@ def main():
         status = mojangStatus()
         p('Checking Mojang servers...', end='')
         if status:
-            if status != last_status:
-                p('Mojang server status changed, updating sidebar')
-                r.sidebar(SUBREDDIT, status)
-                last_status = status
+            if last_status:
+                if status != last_status:
+                    p('Mojang server status changed, updating sidebar')
+                    r.sidebar(SUBREDDIT, status)
+            last_status = status
 
         for i in (new_listing, modqueue_listing, comments_listing):
             feed.extend(i['data']['children'])
