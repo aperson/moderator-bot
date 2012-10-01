@@ -91,7 +91,7 @@ def mojangStatus():
         for y in x:
             if x[y] == 'green':
                 p("{} is green".format(y), end="")
-                text.append(GREENTEXT.format(y)
+                text.append(GREENTEXT.format(y))
             elif x[y] == 'red':
                 p("{} is red".format(y))
                 text.append(REDTEXT.format(y))
