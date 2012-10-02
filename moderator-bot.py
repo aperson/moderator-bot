@@ -93,7 +93,7 @@ def mojangStatus():
                 p("{} is green".format(y), end="")
                 text.append(GREENTEXT.format(y))
             elif x[y] == 'red':
-                p("{} is red".format(y))
+                p("{} is red".format(y), end="")
                 text.append(REDTEXT.format(y))
     return ''.join(text)
 
