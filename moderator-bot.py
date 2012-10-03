@@ -738,19 +738,21 @@ class AllCaps(Filter):
             """bmit').""")
 
     def filterSubmission(self, submission):
-        if submission['title'].isupper() and len(submission['title']) > 10:
-            self.log_text = "Found submission with all-caps title"
-            p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
-                submission['id']))
-            params = {'title': submission['title'].title(), 'resubmit': True}
-            if submission['selftext']:
-                params['text'] = submission['selftext']
-            else:
-                params['url'] = submission['url']
-            self.comment = self.comment_template.format(
-                link = '/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params)))
-            return True
+        if len(submission['title']) > 10:
+            if len(re.findall(r'''[A-Z]''', submission['title']
+                )) > len(re.findall(r'''[a-zA-Z]''', submisison['title'])) > .7:
+                self.log_text = "Found submission with all-caps title"
+                p(self.log_text + ":")
+                p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                    submission['id']))
+                params = {'title': submission['title'].title(), 'resubmit': True}
+                if submission['selftext']:
+                    params['text'] = submission['selftext']
+                else:
+                    params['url'] = submission['url']
+                self.comment = self.comment_template.format(
+                    link = '/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params)))
+                return True
 
 
 class BannedSubs(Filter):
