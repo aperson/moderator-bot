@@ -740,7 +740,7 @@ class AllCaps(Filter):
     def filterSubmission(self, submission):
         if len(submission['title']) > 10:
             if len(re.findall(r'''[A-Z]''', submission['title']
-                )) > len(re.findall(r'''[a-zA-Z]''', submisison['title'])) > .7:
+                )) > len(re.findall(r'''[a-zA-Z]''', submission['title'])) > .7:
                 self.log_text = "Found submission with all-caps title"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
