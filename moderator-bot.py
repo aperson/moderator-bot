@@ -802,7 +802,7 @@ class InaneTitle(Filter):
             """bmit to help you on your way]({link} 'click here to submit').""")
 
     def filterSubmission(self, submission):
-        if re.search(submission['title']):
+        if self.regex.search(submission['title']):
             self.log_text = "Found submsission with inane title"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
