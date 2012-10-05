@@ -796,7 +796,7 @@ class Meme(Filter):
 class InaneTitle(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex(r'''you(?:'?re| are) drunk|minecraft logic''', re.I)
+        self.regex = re.compile(r'''you(?:'?re| are) drunk|minecraft logic''', re.I)
         self.comment_template = ("""Hey there, you seem to be using an inane title!  You can pro"""
             """bably think of something a little more original than that.  [Here's a link to resu"""
             """bmit to help you on your way]({link} 'click here to submit').""")
