@@ -770,7 +770,7 @@ class BannedSubs(Filter):
 
 class Meme(Filter):
     def __init__(self):
-        Filter.__init__(self):
+        Filter.__init__(self)
         self.meme_sites = ('memecreator.org', 'memegenerator.net', 'quickmeme.com', 'qkme.me',
             'mememaker.net', 'knowyourmeme.com', 'weknowmemes.com')
 
@@ -793,6 +793,28 @@ class Meme(Filter):
                 return True
 
 
+class InaneTitle(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex(r'''you(?:'?re| are) drunk|minecraft logic''', re.I)
+        self.comment_template = ("""Hey there, you seem to be using an inane title!  You can pro"""
+            """bably think of something a little more original than that.  [Here's a link to resu"""
+            """bmit to help you on your way]({link} 'click here to submit').""")
+
+    def filterSubmission(self, submission):
+        if re.search(submission['title']):
+            self.log_text = "Found submsission with inane title"
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id']))
+            params = {'resubmit': True}
+            if submission['selftext']:
+                    params['text'] = submission['selftext']
+            else:
+                params['url'] = submission['url']
+            self.comment = self.comment_template.format(
+                link = '/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params)))
+            return True
 
 
 
