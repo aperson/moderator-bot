@@ -768,6 +768,32 @@ class BannedSubs(Filter):
 
 
 
+class Meme(Filter):
+    def __init__(self):
+        Filter.__init__(self):
+        self.meme_sites = ('memecreator.org', 'memegenerator.net', 'quickmeme.com', 'qkme.me',
+            'mememaker.net', 'knowyourmeme.com', 'weknowmemes.com')
+
+    def filterSubmission(self, submission):
+        link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+                submission['id'])
+        for i in self.meme_sites:
+            if i in submission['url']:
+                self.action = 'spammed'
+                self.log_text = "Found meme submission"
+                p(self.log_text + ":")
+                p(link)
+                return True
+        else:
+            if 'meme' in submission['url']:
+                self.action = 'report'
+                self.log_text = "Found suspected meme submission"
+                p(self.log_text + ":")
+                p(link)
+                return True
+
+
+
 
 
 def main():
