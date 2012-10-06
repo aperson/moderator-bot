@@ -771,8 +771,8 @@ class BannedSubs(Filter):
 class Meme(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.comment_template = self.comment_template + """\n\nYou are free to [resubmit to a m"""
-            """ore appropriate subreddit]({resubmit} 'click here to resubmit')"""
+        self.comment_template = self.comment_template + ("""\n\nYou are free to [resubmit to a """
+            """more appropriate subreddit]({resubmit} 'click here to resubmit')""")
         self.meme_sites = ('memecreator.org', 'memegenerator.net', 'quickmeme.com', 'qkme.me',
             'mememaker.net', 'knowyourmeme.com', 'weknowmemes.com')
 
