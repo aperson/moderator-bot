@@ -675,7 +675,11 @@ class YoutubeSpam(Filter):
             item = item['data']
             if item['link_id'] in video_submissions:
                 comments_on_self += 1
-        video_percent = max([video_count[i] / sum(video_count.values()) for i in video_count])
+        try:
+            video_percent = max(
+                [video_count[i] / sum(video_count.values()) for i in video_count])
+        except ValueError:
+            video_percent = 0
         if video_percent > .85 and sum(video_count.values()) >= 3:
             spammer_value = (sum(video_count.values()) + comments_on_self) / (len(
                 comments) + len(submitted))
