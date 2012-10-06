@@ -783,7 +783,7 @@ class Meme(Filter):
             for i in self.meme_sites:
                 if i in submission['url']:
                     params = {'title': submission['title'].title(), 'resubmit': True,
-                        'url' = submission['url']}
+                        'url': submission['url']}
                     resubmit = '/r/{}/submit?{}'.format('memecraft', urlencode(params)))
                     reason = "meme submissions are not allowed"
                     self.comment = self.comment_template.format(sub=submission['subreddit'],
