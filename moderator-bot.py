@@ -646,7 +646,7 @@ class YoutubeSpam(Filter):
         comments_on_self = 0
         for item in submitted:
             item = item['data']
-            video_author = _isVideo(item)
+            video_author = self._isVideo(item)
             if video_author:
                 video_count[video_author] += 1
                 video_submissions.add(item['name'])
