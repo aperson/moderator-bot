@@ -654,7 +654,7 @@ class YoutubeSpam(Filter):
             item = item['data']
             if item['link_id'] in video_submissions:
                 comments_on_self +=1
-        video_percent = max([test[i] / sum(test.values()) for i in test])
+        video_percent = max([video_count[i] / sum(video_count.values()) for i in video_count])
         if video_percent > .75 and sum(video_count.values()) >= 3:
             if ((sum(video_count.values()) + comments_on_self) / (len(comments) +
                 len(submitted))) > .85:
