@@ -771,26 +771,36 @@ class BannedSubs(Filter):
 class Meme(Filter):
     def __init__(self):
         Filter.__init__(self)
+        self.comment_template = self.comment_template + """\n\nYou are free to [resubmit to a m"""
+            """ore appropriate subreddit]({resubmit} 'click here to resubmit')"""
         self.meme_sites = ('memecreator.org', 'memegenerator.net', 'quickmeme.com', 'qkme.me',
             'mememaker.net', 'knowyourmeme.com', 'weknowmemes.com')
 
     def filterSubmission(self, submission):
-        link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
+        if 'reddit.com' not in submission['url']:
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(submission['subreddit'],
                 submission['id'])
-        for i in self.meme_sites:
-            if i in submission['url']:
-                self.action = 'spammed'
-                self.log_text = "Found meme submission"
-                p(self.log_text + ":")
-                p(link)
-                return True
-        else:
-            if 'meme' in submission['url']:
-                self.action = 'report'
-                self.log_text = "Found suspected meme submission"
-                p(self.log_text + ":")
-                p(link)
-                return True
+            for i in self.meme_sites:
+                if i in submission['url']:
+                    params = {'title': submission['title'].title(), 'resubmit': True,
+                        'url' = submission['url']}
+                    resubmit = '/r/{}/submit?{}'.format('memecraft', urlencode(params)))
+                    reason = "meme submissions are not allowed"
+                    self.comment = self.comment_template.format(sub=submission['subreddit'],
+                        reason=reason, link=link, resubmit=resubmit)
+                    self.action = 'spammed'
+                    self.log_text = "Found meme submission"
+                    p(self.log_text + ":")
+                    p(link)
+                    return True
+            else:
+                if 'meme' in submission['url']:
+                    self.comment = ""
+                    self.action = 'report'
+                    self.log_text = "Found suspected meme submission"
+                    p(self.log_text + ":")
+                    p(link)
+                    return True
 
 
 class InaneTitle(Filter):
