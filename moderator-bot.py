@@ -30,6 +30,7 @@ from urllib.parse import urlencode
 import http.cookiejar
 import shelve
 from contextlib import contextmanager
+from collections import defaultdict
 
 try:
     from credentials import *
@@ -640,26 +641,24 @@ class YoutubeSpam(Filter):
             # This is a hack to get around shadowbanned or deleted users
             p("Could not parse /u/{}, probably shadowbanned or deleted".format(user))
             return False
-        video_count = 0
-        video_authors = set()
+        video_count = defaultdict(lambda: 0)
         video_submissions = set()
         comments_on_self = 0
         for item in submitted:
             item = item['data']
-            video_author = self._isVideo(item)
+            video_author = _isVideo(item)
             if video_author:
-                video_count += 1
-                video_authors.add(video_author)
+                video_count[video_author] += 1
                 video_submissions.add(item['name'])
         for item in comments:
             item = item['data']
             if item['link_id'] in video_submissions:
-                comments_on_self += 1
-        if len(video_authors) == 1 and video_count >= 3:
-            if (((video_count + comments_on_self) / (len(comments) + len(submitted))) * 100) > 85:
+                comments_on_self +=1
+        video_percent = max([test[i] / sum(test.values()) for i in test])
+        if video_percent > .75 and sum(video_count.values()) >= 3:
+            if ((sum(video_count.values()) + comments_on_self) / (len(comments) +
+                len(submitted))) > .85:
                 return True
-            else:
-                return False
 
     def filterSubmission(self, submission):
         DAY = 24 * 60 * 60
