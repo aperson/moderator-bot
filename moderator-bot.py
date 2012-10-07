@@ -885,7 +885,7 @@ def main():
         if status:
             if last_status:
                 if status != last_status:
-                    p('Mojang server status changed, updating sidebar')
+                    p('Mojang server status changed, updating sidebar...', end='')
                     r.sidebar(SUBREDDIT, status)
             last_status = status
 
