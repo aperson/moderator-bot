@@ -923,6 +923,7 @@ def main():
                                 'action': 'add', 'type': 'banned', 'name': item['author'],
                                 'id': '#banned', 'r': item['subreddit']}
                             r.post('http://www.reddit.com/api/friend', body)
+                            processed['authors'].append(item['author'])
                         break
         for i in range(sleep_time):
             p('Next scan in {} seconds...'.format(sleep_time - i), end='')
