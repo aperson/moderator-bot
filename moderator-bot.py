@@ -638,7 +638,7 @@ class YoutubeSpam(Filter):
                             return submission['media']['oembed']['author_name'].replace(
                                 ' ', '').lower()
         if 'user' in submission['url']:
-            return re.findall(r'''user/(.*)[?/]''', submission['url'])
+            return re.findall(r'''user/(.*)[?/]''', submission['url'])[0]
 
     def _checkProfile(self, user):
         '''Returns the percentage of things that the user only contributed to themselves.
