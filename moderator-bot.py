@@ -843,11 +843,13 @@ class InaneTitle(Filter):
         self.comment_template = (
             """Hey there, you seem to be using an inane title!  You can pro"""
             """bably think of something a little more original than that.  [Here's a link to resu"""
-            """bmit to help you on your way]({link} 'click here to submit').  Here's what was in"""
-            """ your title that has been deemed inane:\n\n* {matches}""")
+            """bmit to help you on your way](/r/{sub}/submit?{params} 'click here to submit').  H"""
+            """ere's what was in your title that has been deemed inane:\n\n* {matches}""")
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']):
+        matches = self.regex.findall(submission['title'])
+        if matches:
+            matches="\n\n* ".join(matches)
             self.log_text = "Found submsission with inane title"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
@@ -858,8 +860,7 @@ class InaneTitle(Filter):
             else:
                 params['url'] = submission['url']
             self.comment = self.comment_template.format(
-                link='/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params),
-                matches="\n\n* ".join(self.regex.findall(submission['title'])))
+                sub=submission['subreddit'], params=urlencode(params), matches=matches)
             return True
 
 
