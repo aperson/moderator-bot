@@ -858,8 +858,8 @@ class InaneTitle(Filter):
             else:
                 params['url'] = submission['url']
             self.comment = self.comment_template.format(
-                link='/r/{}/submit?{}'.format(submission['subreddit'], urlencode(
-                    params), matches="\n\n* ".join(self.regex.findall(submission['title'])))
+                link='/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params),
+                matches="\n\n* ".join(self.regex.findall(submission['title'])))
             return True
 
 
