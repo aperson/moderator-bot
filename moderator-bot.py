@@ -628,7 +628,7 @@ class YoutubeSpam(Filter):
         Filter.__init__(self)
         self.database = Database(DATABASEFILE)
 
-    def _isVideo(submission):
+    def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
         if 'media' in submission:
             if submission['media'] is not None:
