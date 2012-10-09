@@ -628,7 +628,7 @@ class YoutubeSpam(Filter):
         Filter.__init__(self)
         self.database = Database(DATABASEFILE)
 
-    def _isVideo(self, submission):
+    def _isVideo(submission):
         '''Returns video author name if this is a video'''
         if 'media' in submission:
             if submission['media'] is not None:
@@ -638,7 +638,7 @@ class YoutubeSpam(Filter):
                             return submission['media']['oembed']['author_name'].replace(
                                 ' ', '').lower()
         if 'user' in submission['url']:
-            return re.findall(r'''user/(.*)[?/]''', submission['url'])[0]
+            return re.findall(r'''user/(.*)(?:\?|/|$)''', submission['url'])[0].lower()
 
     def _checkProfile(self, user):
         '''Returns the percentage of things that the user only contributed to themselves.
