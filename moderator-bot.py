@@ -630,15 +630,16 @@ class YoutubeSpam(Filter):
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
-        if 'media' in submission:
-            if submission['media'] is not None:
-                if 'oembed' in submission['media']:
-                    if 'author_name' in submission['media']['oembed']:
-                        if submission['media']['oembed']['author_name'] is not None:
-                            return submission['media']['oembed']['author_name'].replace(
-                                ' ', '').lower()
-        if 'user' in submission['url']:
-            return re.findall(r'''user/(.*)(?:\?|/|$)''', submission['url'])[0].lower()
+        if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be')
+            if 'media' in submission:
+                if submission['media'] is not None:
+                    if 'oembed' in submission['media']:
+                        if 'author_name' in submission['media']['oembed']:
+                            if submission['media']['oembed']['author_name'] is not None:
+                                return submission['media']['oembed']['author_name'].replace(
+                                    ' ', '').lower()
+            if 'user' in submission['url']:
+                return re.findall(r'''user/(.*)(?:\?|/|$)''', submission['url'])[0].lower()
 
     def _checkProfile(self, user):
         '''Returns the percentage of things that the user only contributed to themselves.
