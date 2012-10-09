@@ -701,7 +701,7 @@ class YoutubeSpam(Filter):
                 if submission['author'] in db['users']:
                     user = db['users'][submission['author']]
                 else:
-                    user = {'checked_last': 0, 'warned': False}
+                    user = {'checked_last': 0, 'warned': False, 'banned': False}
 
             if time.time() - user['checked_last'] > DAY:
                 p("Checking profile of /u/{}".format(submission['author']), end='')
@@ -714,6 +714,7 @@ class YoutubeSpam(Filter):
                         self.comment = ''
                         self.ban = True
                         self.nuke = True
+                        user['banned'] = True
                     else:
                         self.comment = (
                             """It looks like you might be skirting on the line with  """
