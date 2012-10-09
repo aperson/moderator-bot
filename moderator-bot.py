@@ -630,7 +630,7 @@ class YoutubeSpam(Filter):
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
-        if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be')
+        if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             if 'media' in submission:
                 if submission['media'] is not None:
                     if 'oembed' in submission['media']:
@@ -854,7 +854,7 @@ class InaneTitle(Filter):
     def filterSubmission(self, submission):
         matches = self.regex.findall(submission['title'])
         if matches:
-            matches="\n\n* ".join(matches)
+            matches = "\n\n* ".join(matches)
             self.log_text = "Found submsission with inane title"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
