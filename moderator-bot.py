@@ -622,7 +622,7 @@ class BadWords(Filter):
                 if word in comment['body'].lower():
                     return True
 
-derp
+
 class YoutubeSpam(Filter):
     def __init__(self):
         Filter.__init__(self)
