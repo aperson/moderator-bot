@@ -23,6 +23,7 @@
 import json
 import urllib.request
 import time
+import datetime
 import re
 import signal
 import sys
@@ -38,8 +39,8 @@ except:
     USERNAME = 'botname'
     PASSWORD = 'botpass'
     SUBREDDIT = 'subtomonitor'
-    EDITSTART = '[](#mbeditstart)'
-    EDITSTOP = '[](#mbeditstop)'
+    HEADER_TAGS = {'start': '[](#heditstart)', 'stop': '[](#heditstop)'}
+    SIDEBAR_TAGS = {'start': '[](#sbeditstart)', 'stop': '[](#sbeditstop)'}
     GREENTEXT = "[](#status_green '{} is online')"
     REDTEXT = "[](#status_red '{}' is offline')"
     BOTSUB = 'botprivatesub'
@@ -100,6 +101,39 @@ def mojangStatus():
                 p("{} is red".format(y), end="")
                 text.append(REDTEXT.format(y))
     return ''.join(text)
+
+
+def rmctMatch():
+    '''Returns the text for the /r/Minecraft sticky announcement that is a countdown to the next
+    RMCT match'''
+    # hard coding current header for now
+    old_header = (
+        "[Meme submissions are no longer allowed in /r/Minecraft - Details inside.](/10zqqn)")
+    # hard-coding match times for now
+    # format is name: time
+    matches = [
+        ("Professional Minecraft Engineers vs Blame Disco", "2012/10/10 21:00"),
+        ("EuroPP: Happy Ghast vs 404: Wool Not Found", "2012/10/13 14:00"),
+        ("Airship Aces vs EuroPP: NeverDye", "2012/10/13 16:00"),
+        ("Elite 4 vs Cobalt Crafters", "2012/10/13 19:00")]
+    matches_today = []
+    for name, stime in matches:
+        time_left = time.mktime(time.strptime(stime, '%Y/%m/%d %H:%M')) - time.time()
+        if 0 < time_left <= 12 * 60 * 60:
+            matches_today.append((name, time_left))
+
+    matches_today.sort(key=lambda x: x[1])
+
+    if matches_today:
+        time_left = str(datetime.timedelta(seconds=matches_today[0][1]))
+        header_text = "In approximately {time} the next RMCT match will start: {name}".format(
+            time=time_left[:7], name=matches_today[0][0])
+        if len(matches_today) > 1:
+            header_text += " ({count} more matches in the next 12 hours)".format(
+                count=len(matches_today))
+        return(header_text)
+    else:
+        return(old_header)
 
 
 class Database(object):
@@ -186,12 +220,12 @@ class Reddit(object):
             submission = self.post('http://www.reddit.com/api/submit', body)
             p('http://redd.it/{}'.format(submission['json']['data']['id']))
 
-    def sidebar(self, subreddit, text):
-        """Edits the sidebar in subreddit in-between the allowed tags set by EDITSTART and
-        EDITSTOP"""
+    def sidebar(self, subreddit, text, section):
+        """Edits the sidebar in subreddit in-between the allowed tags set by section['start'] and
+        section['stop']"""
         sub = self.get('http://www.reddit.com/r/{}/about/edit/.json'.format(subreddit))['data']
-        regex = r'''{}.*?{}'''.format(re.escape(EDITSTART), re.escape(EDITSTOP))
-        text = EDITSTART + text + EDITSTOP
+        regex = r'''{}.*?{}'''.format(re.escape(section['start']), re.escape(section['stop']))
+        text = section['start'] + text + section['stop']
         to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
         for i in to_replace:
             sub['description'] = sub['description'].replace(*i)
@@ -875,6 +909,7 @@ def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     last_status = None
+    last_matches = None
     processed = {'ids': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
@@ -896,8 +931,16 @@ def main():
             if last_status:
                 if status != last_status:
                     p('Mojang server status changed, updating sidebar...', end='')
-                    r.sidebar(SUBREDDIT, status)
+                    r.sidebar(SUBREDDIT, status, SIDEBAR_TAGS)
             last_status = status
+
+        matches = rmctMatch()
+        p("Checking if there's any RMCT matches today", end='')
+        if matches:
+            if last_matches:
+                if matches != last_matches:
+                    r.sidebar(SUBREDDIT, matches, HEADER_TAGS)
+            last_matches = matches
 
         for i in (new_listing, modqueue_listing, comments_listing):
             feed.extend(i['data']['children'])
