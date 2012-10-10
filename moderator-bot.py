@@ -878,7 +878,7 @@ class InaneTitle(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''you(?:'?re|r| are) drunk|minecraft logic|'''
+            r'''you(?:'?re|r| are) drunk|minecraft logic|seems legit|'''
             r'''what does (?:/?r/minecraft|reddit) think''',
             re.I)
         self.comment_template = (
