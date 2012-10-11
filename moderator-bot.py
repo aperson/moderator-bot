@@ -478,9 +478,9 @@ class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''(?:(?:free|cracked)?-?minecraft-?(?:install|get|'''
+            r'''(?:(?:(?:free|cracked)?-?minecraft-?(?:install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?|now|forever)'''
-            r'''(?:\.blogspot)?\.(?:me|info|com|net|org|ru|co\.uk|us)|epicfreeprizes\.com)''', re.I)
+            r'''(?:\.blogspot)|epicfreeprizes)?\.(?:me|info|com|net|org|ru|co\.uk|us)''', re.I)
         self.action = 'spammed'
         self.ban = True
 
