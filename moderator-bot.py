@@ -672,7 +672,7 @@ class YoutubeSpam(Filter):
                             if submission['media']['oembed']['author_name'] is not None:
                                 return submission['media']['oembed']['author_name'].replace(
                                     ' ', '').lower()
-            if 'user' in submission['url']:
+            if '/user' in submission['url']:
                 return re.findall(r'''user/(.*)(?:\?|/|$)''', submission['url'])[0].lower()
 
     def _checkProfile(self, user):
