@@ -478,9 +478,9 @@ class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''(?:(?:(?:free|cracked)?-?minecraft-?(?:install|get|'''
-            r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?|now|forever)'''
-            r'''(?:\.blogspot)|epicfreeprizes)?\.(?:me|info|com|net|org|ru|co\.uk|us)''', re.I)
+            r'''(?:(?:free|cracked)?-?minecraft-?(?:install|get|(?:gift-?)?codes?'''
+            r'''(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?|now|forever)(?:\.blogspot)|'''
+            r'''epicfreeprizes)?\.(?:me|info|com|net|org|ru|co\.uk|us)''', re.I)
         self.action = 'spammed'
         self.ban = True
 
@@ -908,7 +908,7 @@ class InaneTitle(Filter):
 class SpamNBan(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''teslabots.jimbo.com''')
+        self.regex = re.compile(r'''teslabots\.jimbo\.com''')
         self.ban = True
         self.action = 'spammed'
 
