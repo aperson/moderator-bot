@@ -905,6 +905,30 @@ class InaneTitle(Filter):
             return True
 
 
+class SpamNBan(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''teslabots.jimbo.com''')
+        self.ban = True
+        self.action = 'spammed'
+
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title']) or\
+            self.regex.search(submission['selftext']) or\
+                self.regex.search(submission['url']):
+            self.log_text = "Found spam domain in submission"
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/'.format(
+                submission['subreddit'], submission['id']))
+            return True
+
+    def filterComment(self, comment):
+        if self.regex.search(comment['body']):
+            self.log_text = "Found spam domain in comment"
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                comment['subreddit'], comment['link_id'][3:], comment['id']))
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
@@ -916,7 +940,7 @@ def main():
     filters = [
         Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
         Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), AllCaps(), BannedSubs(),
-        Meme(), InaneTitle()]
+        Meme(), InaneTitle(), SpamNBan()]
 
     # main loop
     while True:
