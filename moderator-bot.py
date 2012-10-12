@@ -460,9 +460,11 @@ class ServerAd(Filter):
             if 'media' in submission:
                 if submission['media'] is not None:
                     if 'oembed' in submission['media']:
-                        if self._server_in(submission['media']['oembed']['description']) or\
-                                self._server_in(submission['media']['oembed']['title']):
+                        if self._server_in(submission['media']['oembed']['title']):
                             return True
+                        elif 'description' in submission['media']['oembed']:
+                            if self._server_in(submission['media']['oembed']['description']):
+                                return True
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
