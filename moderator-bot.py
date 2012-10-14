@@ -115,7 +115,11 @@ def rmctMatch():
         ("Professional Minecraft Engineers vs Blame Disco", "2012/10/10 21:00"),
         ("EuroPP: Happy Ghast vs 404: Wool Not Found", "2012/10/13 14:00"),
         ("Airship Aces vs EuroPP: NeverDye", "2012/10/13 16:00"),
-        ("Elite 4 vs Cobalt Crafters", "2012/10/13 19:00")]
+        ("Elite 4 vs Cobalt Crafters", "2012/10/13 19:00"),
+        ("Lavanauts vs Whiskey Brigade", "2012/10/14 19:00"),
+        ("The Cubists vs Bulletproof", "2012/10/19 19:30"),
+        ("Team Bitlimit vs 3 Pros 1 Cup", "2012/10/20 13:00"),
+        ("The Unambiguous Subs vs Caulk Blockers", "2012/10/20 15:00")]
     matches_today = []
     for name, stime in matches:
         time_left = time.mktime(time.strptime(stime, '%Y/%m/%d %H:%M')) - time.time()
@@ -129,8 +133,8 @@ def rmctMatch():
         header_text = "In approximately {time} the next RMCT match will start: {name}".format(
             time=time_left[:7], name=matches_today[0][0])
         if len(matches_today) > 1:
-            header_text += " ({count} more matches in the next 12 hours)".format(
-                count=len(matches_today))
+            header_text += " ({count} more afterward)".format(
+                count=len(matches_today) - 1)
         return(header_text)
     else:
         return(old_header)
