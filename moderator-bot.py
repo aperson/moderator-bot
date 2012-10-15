@@ -108,7 +108,7 @@ def rmctMatch():
     RMCT match'''
     # hard coding current header for now
     old_header = (
-        "[Meme submissions are no longer allowed in /r/Minecraft - Details inside.](/10zqqn)")
+        "[Complaints, searching, and fads, oh my!](/11impu)")
     # hard-coding match times for now
     # format is name: time
     matches = [
