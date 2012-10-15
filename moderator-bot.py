@@ -885,7 +885,8 @@ class InaneTitle(Filter):
         Filter.__init__(self)
         self.regex = re.compile(
             r'''you(?:'?re|r| are) drunk|minecraft logic|seems legit|'''
-            r'''what does (?:/?r/minecraft|reddit) think|yo d(?:o|aw)g''',
+            r'''what does (?:/?r/minecraft|reddit) think|yo d(?:o|aw)g|'''
+            r'''^\.*?(?:too )?soon[.?]*?$''',
             re.I)
         self.comment_template = (
             """Hey there, you seem to be using an inane title!  You can pro"""
