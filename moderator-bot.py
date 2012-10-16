@@ -168,9 +168,13 @@ class Reddit(object):
     def _request(self, url, body=None):
         if body is not None:
             body = urlencode(body).encode('utf-8')
-        with self.opener.open(url, data=body) as w:
-            time.sleep(2)
-            return json.loads(w.read().decode('utf-8'))
+        try:
+            with self.opener.open(url, data=body) as w:
+                time.sleep(2)
+                return json.loads(w.read().decode('utf-8'))
+        except urllib.error.HTTPError:
+            # This should at least help for times when reddit derps up when we request a listing
+            return dict()
 
     def _login(self):
         p("Logging in as {}.".format(self.username))
@@ -974,7 +978,8 @@ def main():
             last_matches = matches
 
         for i in (new_listing, modqueue_listing, comments_listing):
-            feed.extend(i['data']['children'])
+            if i:
+                feed.extend(i['data']['children'])
         for item in feed:
             item = item['data']
             if item['id'] not in processed['ids']:
