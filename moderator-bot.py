@@ -441,6 +441,7 @@ class ServerAd(Filter):
         return False
 
     def filterSubmission(self, submission):
+        self.comment = ''
         if self._server_in(submission['title']) or\
             self._server_in(submission['selftext']) or\
                 self._server_in(submission['url'][7:]):
