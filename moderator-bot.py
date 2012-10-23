@@ -757,7 +757,7 @@ class YoutubeSpam(Filter):
                 user['checked_last'] = time.time()
                 if self._checkProfile(submission['author']):
                     if user['warned']:
-                        self.log_text = "Confirmed potential video spammer"
+                        self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
                         p("http://reddit.com/u/{}".format(submission['author']))
                         self.comment = ''
