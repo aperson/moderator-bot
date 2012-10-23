@@ -661,10 +661,14 @@ class BadWords(Filter):
         self.action = 'report'
 
     def filterComment(self, comment):
-        badwords = ['gay', 'fag', 'cunt', 'nigger', 'retard', 'autis']
+        badwords = ['gay', 'fag', 'cunt', 'nigger', 'nigga', 'retard', 'autis']
         if not comment['num_reports']:
             for word in badwords:
                 if word in comment['body'].lower():
+                    self.log_text = "Found comment for mod review"
+                    p(self.log_text + ":")
+                    p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                        comment['subreddit'], comment['link_id'][3:], comment['id']))
                     return True
 
 
