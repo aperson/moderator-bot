@@ -907,7 +907,7 @@ class InaneTitle(Filter):
         matches = self.regex.findall(submission['title'])
         if matches:
             matches = "\n\n* ".join(matches)
-            self.log_text = "Found submsission with inane title"
+            self.log_text = "Found submission with inane title"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
                 submission['subreddit'], submission['id']))
