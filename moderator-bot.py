@@ -666,7 +666,7 @@ class BadWords(Filter):
             for word in badwords:
                 if word in comment['body'].lower():
                     self.log_text = "Found comment for mod review"
-                    p(self.log_text + ":")
+                    p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                         comment['subreddit'], comment['link_id'][3:], comment['id']))
                     return True
@@ -895,7 +895,7 @@ class InaneTitle(Filter):
         self.regex = re.compile(
             r'''you(?:'?re|r| are) drunk|minecraft logic|seems legit|'''
             r'''what does (?:/?r/minecraft|reddit) think|yo d(?:o|aw)g|'''
-            r'''^\.*?(?:too )?soon[.?]*?$''',
+            r'''^\.*?(?:too )?soon[.?]*?$|am i the only''',
             re.I)
         self.comment_template = (
             """Hey there, you seem to be using an inane title!  You can pro"""
