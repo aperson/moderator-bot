@@ -668,7 +668,7 @@ class BadWords(Filter):
                     self.log_text = "Found comment for mod review"
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment['subreddit'], comment['link_id'][3:], comment['id']))
+                        comment['subreddit'], comment['link_id'][3:], comment['id']), end="")
                     return True
 
 
