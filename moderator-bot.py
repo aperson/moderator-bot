@@ -941,6 +941,7 @@ class SpamNBan(Filter):
             self.log_text = "Found spam domain in comment"
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment['subreddit'], comment['link_id'][3:], comment['id']))
+            return True
 
 
 class FileDownload(Filter):
