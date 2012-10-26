@@ -943,6 +943,23 @@ class SpamNBan(Filter):
                 comment['subreddit'], comment['link_id'][3:], comment['id']))
 
 
+class FileDownload(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.nuke = False
+        self.comment = (
+            """Hey, you seem to be linking directly to a file download site.  That's generally co"""
+            """nsidered rude, so you might want to consider resubmitting with a screenshot and li"""
+            """nking to the download in the comments.  Thanks!""")
+        self.regex = re.compile(
+            r'''filestube|4shared|mediafire|rapidshare|box\.net|hotfile|zshare|uploading\.com|'''
+            r'''depositfiles|fileserve|zippyshare|esnips|filefactory|uploaded\.to|2shared''')
+
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['domain']):
+            return True
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
