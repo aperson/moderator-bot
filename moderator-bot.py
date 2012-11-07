@@ -993,7 +993,7 @@ def main():
     filters = [
         Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
         Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), BannedSubs(), Meme(),
-        InaneTitle(), SpamNBan(), AllCaps(), FileDownload()]
+        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError()]
 
     # main loop
     while True:
