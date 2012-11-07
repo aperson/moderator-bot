@@ -964,6 +964,24 @@ class FileDownload(Filter):
             return True
 
 
+class ChunkError(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''terrain(?: generation)? (?:error|glitch)''')
+        self.log_text = "Found chunk error/glitch submission"
+
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['title']):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                submission['subreddit'], submission['id'])
+            reason = "terrain generation glitches/errors submissions are not allowed"
+            self.comment = self.comment_template.format(
+                sub=submission['subreddit'], reason=reason, link=link)
+            p(self.log_text + ":")
+            p(link)
+            return True
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
