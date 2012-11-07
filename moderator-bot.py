@@ -993,8 +993,8 @@ class Facebook(Filter):
             self.comment = (
                 """Hey there! I removed your post since it linked to a facebook photo, which can """
                 """be traced back to your real profile. You should re-upload the picture somewher"""
-                """e else and repost it to somewhere like [imgur](http://imgur.com) or [minus](ht"""
-                """tp://minus.com)""")
+                """e else like [imgur](http://imgur.com) or [minus](http://minus.com) and resubmi"""
+                """t""")
             p(self.log_text + ":")
             p(link)
             return True
