@@ -982,6 +982,24 @@ class ChunkError(Filter):
             return True
 
 
+class Facebook(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.regex = re.compile(r'''facebook|fbcdn''')
+        self.log_text = "Found Facebook submission"
+
+    def filterSubmission(self, submission):
+        if self.regex.search(submission['url']):
+            self.comment = (
+                """Hey there! I removed your post since it linked to a facebook photo, which can """
+                """be traced back to your real profile. You should re-upload the picture somewher"""
+                """e else and repost it to somewhere like [imgur](http://imgur.com) or [minus](ht"""
+                """tp://minus.com)""")
+            p(self.log_text + ":")
+            p(link)
+            return True
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
