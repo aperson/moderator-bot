@@ -996,7 +996,8 @@ class Facebook(Filter):
                 """e else like [imgur](http://imgur.com) or [minus](http://minus.com) and resubmi"""
                 """t""")
             p(self.log_text + ":")
-            p(link)
+            p('http://reddit.com/r/{}/comments/{}/'.format(
+                submission['subreddit'], submission['id']))
             return True
 
 
