@@ -985,7 +985,7 @@ class ChunkError(Filter):
 class Facebook(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''facebook|fbcdn''')
+        self.regex = re.compile(r'''facebook|fbcdn|picsimgesite''')
         self.log_text = "Found Facebook submission"
 
     def filterSubmission(self, submission):
