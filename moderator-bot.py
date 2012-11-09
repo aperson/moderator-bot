@@ -1001,6 +1001,20 @@ class Facebook(Filter):
             return True
 
 
+class Reditr(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.log_text = "Found Reditr app comment"
+        self.action = 'spammed'
+
+    def filterComment(self, comment):
+        if '^Sent ^from ^[Reditr](http://reditr.com)' in comment['body']:
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/'.format(
+                submission['subreddit'], submission['id']))
+            return True
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
