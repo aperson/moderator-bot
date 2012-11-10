@@ -512,7 +512,8 @@ class FreeMinecraft(Filter):
                 return True
 
     def filterComment(self, comment):
-        if self.regex.search(comment['body']):
+        result = self.regex.findall(comment['body'])
+        if result and result != [('', '')]:
             self.comment = ''
             self.log_text = "Found free minecraft link in comment"
             p(self.log_text + ":")
