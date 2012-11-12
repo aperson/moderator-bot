@@ -1013,8 +1013,9 @@ class Reditr(Filter):
     def filterComment(self, comment):
         if '^Sent ^from ^[Reditr](http://reditr.com)' in comment['body']:
             p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/'.format(
-                comment['subreddit'], comment['id']))
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                comment['subreddit'], comment['link_id'][3:], comment['id']))
+            return True
             return True
 
 
