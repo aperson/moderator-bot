@@ -1063,7 +1063,7 @@ def main():
             if item['id'] not in processed['ids']:
                 p('Processing {}'.format(item['id']), end="")
                 for f in filters:
-                    processed['ids'].append(item['id'])
+                    processed['ids'].append(item['name'])
                     # I know using 'is not True' isn't the 'right' way, but reddit's api is weird
                     # here and I wanted to explicitly show it
                     if item['banned_by'] is not True:
