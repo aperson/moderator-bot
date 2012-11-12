@@ -1014,7 +1014,7 @@ class Reditr(Filter):
         if '^Sent ^from ^[Reditr](http://reditr.com)' in comment['body']:
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']))
+                comment['subreddit'], submission['id']))
             return True
 
 
