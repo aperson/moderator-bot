@@ -494,8 +494,9 @@ class FreeMinecraft(Filter):
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
             r'''forever)?(?:\.blogspot)?|epicfreeprizes)\.(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
-        self.action = 'spammed'
-        self.ban = True
+        self.action = 'report'
+        # some bits neutered for now
+        #self.ban = True
 
     def filterSubmission(self, submission):
         for i in ('title', 'selftext', 'url'):
@@ -504,9 +505,9 @@ class FreeMinecraft(Filter):
                 link = 'http://reddit.com/r/{}/comments/{}/'.format(
                     submission['subreddit'], submission['id'])
                 self.log_text = "Found free Minecraft link in submission"
-                reason = "free minecraft links are not allowed"
-                self.comment = self.comment_template.format(
-                    sub=submission['subreddit'], reason=reason, link=link)
+                #reason = "free minecraft links are not allowed"
+                #self.comment = self.comment_template.format(
+                #    sub=submission['subreddit'], reason=reason, link=link)
                 p(self.log_text + ":")
                 p(link)
                 return True
@@ -514,7 +515,7 @@ class FreeMinecraft(Filter):
     def filterComment(self, comment):
         result = self.regex.findall(comment['body'])
         if result and result != [('', '')]:
-            self.comment = ''
+            #self.comment = ''
             self.log_text = "Found free minecraft link in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
@@ -1028,7 +1029,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Suggestion(), Fixed(), ServerAd(), AmazonReferral(), ShortUrl(),
+        Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
         Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), BannedSubs(), Meme(),
         InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
 
