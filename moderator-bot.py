@@ -1028,7 +1028,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
+        Suggestion(), Fixed(), ServerAd(), AmazonReferral(), ShortUrl(),
         Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), BannedSubs(), Meme(),
         InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
 
