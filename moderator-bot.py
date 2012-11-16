@@ -427,9 +427,9 @@ class ServerAd(Filter):
                 with self.opener.open('http://imgur.com/gallery/{}.json'.format(url)) as w:
                     imgur = json.loads(w.read().decode('utf-8'))['data']['image']
                     time.sleep(2)
-                image_list.append({'title': imgur['title']})
+                image_list.append({'title': imgur['title'], 'caption': ''})
                 for i in imgur['album_images']['images']:
-                    image_list.append(i)
+                    image_list.append({'title': i['title'], 'caption': i['description']})
             else:
                 for i in re.split(r''',|&''', url):
                     with self.opener.open('https://api.imgur.com/2/image/{}.json'.format(i)) as w:
