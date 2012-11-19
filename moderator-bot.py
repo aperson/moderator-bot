@@ -835,7 +835,7 @@ class AllCaps(Filter):
         title = re.findall(r'''[a-zA-Z]''', submission['title'])
         title_caps = re.findall(r'''[A-Z]''', submission['title'])
         if len(title) > 10:
-            if title_caps / title > .7:
+            if len(title_caps) / len(title) > .7:
                 self.log_text = "Found submission with all-caps title"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
