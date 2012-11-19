@@ -832,10 +832,10 @@ class AllCaps(Filter):
             """bmit').""")
 
     def filterSubmission(self, submission):
-        if len(submission['title']) > 10:
-            if len(re.findall(
-                r'''[A-Z]''', submission['title'])) / len(re.findall(
-                    r'''[a-zA-Z]''', submission['title'])) > .7:
+        title = re.findall(r'''[a-zA-Z]''', submission['title'])
+        title_caps = re.findall(r'''[A-Z]''', submission['title'])
+        if len(title) > 10:
+            if title_caps / title > .7:
                 self.log_text = "Found submission with all-caps title"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
@@ -906,7 +906,7 @@ class InaneTitle(Filter):
         self.regex = re.compile(
             r'''you(?:'?re|r| are) drunk|minecraft logic|seems legit|'''
             r'''what does (?:/?r/minecraft|reddit) think|yo,? d(?:o|aw)g|'''
-            r'''^\.*?(?:too )?(?:soon|late)[.?]*?$|am i the only(?: one)?|you had one job|'''
+            r'''^\.*?(?:too )?(?:soon|late)[.!?]*?$|am i the only(?: one)?|you had one job|'''
             r'''^\S*ception$''',
             re.I)
         self.comment_template = (
