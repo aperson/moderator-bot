@@ -1076,7 +1076,7 @@ def main():
                 feed.extend(i['data']['children'])
         for item in feed:
             item = item['data']
-            if item['id'] not in processed['ids']:
+            if item['name'] not in processed['ids']:
                 p('Processing {}'.format(item['id']), end="")
                 for f in filters:
                     processed['ids'].append(item['name'])
