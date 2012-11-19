@@ -268,6 +268,7 @@ class Filter(object):
         self.nuke = True
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+        self.database = Database(DATABASEFILE)
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -412,33 +413,39 @@ class ServerAd(Filter):
             return False
 
         image_list = []
-
         try:
-            if url.startswith('a/'):
-                url = url[2:].split('/')[0]
-                with self.opener.open('https://api.imgur.com/2/album/{}.json'.format(url)) as w:
-                    imgur = json.loads(w.read().decode('utf-8'))['album']
-                    time.sleep(2)
-                image_list.append({'title': imgur['title'], 'caption': imgur['description']})
-                for i in imgur['images']:
-                    image_list.append(i['image'])
-            elif url.startswith('gallery/'):
-                url = url[8:].split('/')[0]
-                with self.opener.open('http://imgur.com/gallery/{}.json'.format(url)) as w:
-                    imgur = json.loads(w.read().decode('utf-8'))['data']['image']
-                    time.sleep(2)
-                image_list.append({'title': imgur['title'], 'caption': ''})
-                for i in imgur['album_images']['images']:
-                    image_list.append({'title': i['title'], 'caption': i['description']})
-            else:
-                for i in re.split(r''',|&''', url):
-                    with self.opener.open('https://api.imgur.com/2/image/{}.json'.format(i)) as w:
-                        imgur = json.loads(w.read().decode('utf-8'))['image']
+            with self.database.open() as db:
+                image_list = db['imgur']['url']
+        except KeyError:
+            try:
+                if url.startswith('a/'):
+                    url = url[2:].split('/')[0]
+                    with self.opener.open('https://api.imgur.com/2/album/{}.json'.format(url)) as w:
+                        imgur = json.loads(w.read().decode('utf-8'))['album']
                         time.sleep(2)
-                    image_list.append(imgur['image'])
-        except urllib.error.HTTPError:
-            p('Could not parse: {}'.format(original_url))
-            return None
+                    image_list.append({'title': imgur['title'], 'caption': imgur['description']})
+                    for i in imgur['images']:
+                        image_list.append(i['image'])
+                elif url.startswith('gallery/'):
+                    url = url[8:].split('/')[0]
+                    with self.opener.open('http://imgur.com/gallery/{}.json'.format(url)) as w:
+                        imgur = json.loads(w.read().decode('utf-8'))['data']['image']
+                        time.sleep(2)
+                    image_list.append({'title': imgur['title'], 'caption': ''})
+                    for i in imgur['album_images']['images']:
+                        image_list.append({'title': i['title'], 'caption': i['description']})
+                else:
+                    for i in re.split(r''',|&''', url):
+                        imgur_api = 'https://api.imgur.com/2/image/{}.json'
+                        with self.opener.open(imgur_api.format(i)) as w:
+                            imgur = json.loads(w.read().decode('utf-8'))['image']
+                            time.sleep(2)
+                        image_list.append(imgur['image'])
+                with self.database.open() as db:
+                    db['imgur'][url] = image_list
+            except urllib.error.HTTPError:
+                p('Could not parse: {}'.format(original_url))
+                return None
 
         for i in image_list:
             if i['caption']:
@@ -687,7 +694,6 @@ class BadWords(Filter):
 class YoutubeSpam(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.database = Database(DATABASEFILE)
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
