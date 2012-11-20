@@ -1031,7 +1031,6 @@ class Reditr(Filter):
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment['subreddit'], comment['link_id'][3:], comment['id']))
             return True
-            return True
 
 
 def main():
