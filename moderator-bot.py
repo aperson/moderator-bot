@@ -509,33 +509,35 @@ class FreeMinecraft(Filter):
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
             r'''forever)?(?:\.blogspot)?|epicfreeprizes)\.(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
-        self.action = 'report'
-        # some bits neutered for now
-        #self.ban = True
+        self.action = 'spammed'
 
     def filterSubmission(self, submission):
         for i in ('title', 'selftext', 'url'):
             result = self.regex.findall(submission[i])
-            if result and result != [('', '')]:
-                link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id'])
-                self.log_text = "Found free Minecraft link in submission"
-                #reason = "free minecraft links are not allowed"
-                #self.comment = self.comment_template.format(
-                #    sub=submission['subreddit'], reason=reason, link=link)
-                p(self.log_text + ":")
-                p(link)
-                return True
+            if result:
+                for i in result:
+                    if result != ('', ''):
+                        link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                            submission['subreddit'], submission['id'])
+                        self.log_text = "Found free Minecraft link in submission"
+                        reason = "free minecraft links are not allowed"
+                        self.comment = self.comment_template.format(
+                            sub=submission['subreddit'], reason=reason, link=link)
+                        p(self.log_text + ":")
+                        p(link)
+                        return True
 
     def filterComment(self, comment):
         result = self.regex.findall(comment['body'])
-        if result and result != [('', '')]:
-            #self.comment = ''
-            self.log_text = "Found free minecraft link in comment"
-            p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']))
-            return True
+        if result:
+            for i in result:
+                if result != ('', ''):
+                    self.comment = ''
+                    self.log_text = "Found free minecraft link in comment"
+                    p(self.log_text + ":")
+                    p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                        comment['subreddit'], comment['link_id'][3:], comment['id']))
+                    return True
 
 
 class AmazonReferral(Filter):
