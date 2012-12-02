@@ -85,22 +85,21 @@ def mojangStatus():
     '''Returns the status indicator for /r/Minecraft's sidebar'''
     opener = urllib.request.build_opener()
     try:
-        with opener.open('http://status.mojang.com/check') as w:
+        with opener.open('http://xpaw.ru./mcstatus/realtime.json') as w:
             status = json.loads(w.read().decode('utf-8'))
     except urllib.error.HTTPError:
         return None
     except http.client.BadStatusLine:
         return None
     text = []
-    for x in status:
-        for y in x:
-            if x[y] == 'green':
-                p("{} is green".format(y), end="")
-                text.append(GREENTEXT.format(y))
-            elif x[y] == 'red':
-                p("{} is red".format(y), end="")
-                text.append(REDTEXT.format(y))
-    return ''.join(text)
+    for i in ('website', 'login', 'session', 'skins'):
+        if status[i]['status'].startswith('Online'):
+            text.append("[{server} is online](#status_green '{status}')".format(
+                server=i, status=status[i]['title']))
+        elif status[i]['status'].startswith('Server Error'):
+            text.append("[{server} is offline](#status_red '{status}')".format(
+                server=i, status=status[i]['title']))
+    return ''.join(text) + '^server ^status ^provided ^by ^[xpaw.ru](http://xpaw.ru/mcstatus)'
 
 
 def rmctMatch():
