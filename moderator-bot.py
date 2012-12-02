@@ -99,7 +99,7 @@ def mojangStatus():
         elif status[i]['status'].startswith('Server Error'):
             text.append("[{server} is offline](#status_red '{status}')".format(
                 server=i, status=status[i]['title']))
-    return ''.join(text) + '^server ^status ^provided ^by ^[xpaw.ru](http://xpaw.ru/mcstatus)'
+    return ''.join(text) + '\n\n^server ^status ^provided ^by ^[xpaw.ru](http://xpaw.ru/mcstatus)'
 
 
 def rmctMatch():
