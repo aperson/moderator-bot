@@ -92,7 +92,7 @@ def mojangStatus():
     except http.client.BadStatusLine:
         return None
     text = []
-    for i in ('website', 'login', 'session', 'skins'):
+    for i in ('website', 'login', 'account', 'session', 'skins'):
         if status[i]['status'].startswith('Online'):
             text.append("[{server} is online](#status_green '{status}')".format(
                 server=i, status=status[i]['title']))
