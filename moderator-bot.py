@@ -94,14 +94,14 @@ def mojangStatus():
     text = []
     for i in ('website', 'login', 'account', 'session', 'skins'):
         if status[i]['status'] == 'up':
-            text.append("[{server} is online](#status_green '{server} - {status}')".format(
+            text.append("[{server} is online.  ](#status_green '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title'].split()[0]))
         elif status[i]['status'] == 'problem':
             text.append(
-                "[{server} is experiencing a problem](#status_green '{server} - {status}')".format(
+                "[{server} is having a problem.  ](#status_green '{server} - {status}')".format(
                     server=i.title(), status=status[i]['title']))
         elif status[i]['status'] == 'down':
-            text.append("[{server} is offline](#status_red '{server} - {status}')".format(
+            text.append("[{server} is offline.  ](#status_red '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title']))
     return ''.join(text)
 
@@ -519,7 +519,7 @@ class FreeMinecraft(Filter):
             result = self.regex.findall(submission[i])
             if result:
                 for i in result:
-                    if result != ('', ''):
+                    if result != ('', '') and result != [('', '')]:
                         link = 'http://reddit.com/r/{}/comments/{}/'.format(
                             submission['subreddit'], submission['id'])
                         self.log_text = "Found free Minecraft link in submission"
@@ -534,7 +534,7 @@ class FreeMinecraft(Filter):
         result = self.regex.findall(comment['body'])
         if result:
             for i in result:
-                if result != ('', ''):
+                if result != ('', '') and result != [('', '')]:
                     self.comment = ''
                     self.log_text = "Found free minecraft link in comment"
                     p(self.log_text + ":")
