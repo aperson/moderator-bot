@@ -86,7 +86,7 @@ def mojangStatus():
     opener = urllib.request.build_opener()
     try:
         with opener.open('http://xpaw.ru./mcstatus/realtime.json') as w:
-            status = json.loads(w.read().decode('utf-8'))
+            status = json.loads(w.read().decode('utf-8'))['report']
     except urllib.error.HTTPError:
         return None
     except http.client.BadStatusLine:
