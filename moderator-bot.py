@@ -94,16 +94,17 @@ def mojangStatus():
     text = []
     for i in ('website', 'login', 'account', 'session', 'skins'):
         if status[i]['status'] == 'up':
-            text.append("[{server} is online.  ](#status_green '{server} - {status}')".format(
+            text.append("> # [{server} is online.  ](#status_green '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title'].split()[0]))
         elif status[i]['status'] == 'problem':
             text.append(
-                "[{server} is having a problem.  ](#status_green '{server} - {status}')".format(
+                "> # [{server} is having a problem.  ](#status_green '{server} - {status}')".format(
                     server=i.title(), status=status[i]['title']))
         elif status[i]['status'] == 'down':
-            text.append("[{server} is offline.  ](#status_red '{server} - {status}')".format(
+            text.append("> # [{server} is offline.  ](#status_red '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title']))
-    return ''.join(text)
+    sidebar_text = '\n'.join(text)
+    return '\n{}\n'.format(sidebar_text)
 
 
 def rmctMatch():
