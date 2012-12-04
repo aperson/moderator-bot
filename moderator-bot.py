@@ -96,7 +96,7 @@ def mojangStatus():
         if status[i]['status'] == 'up':
             text.append("[{server} is online](#status_green '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title'].split()[0]))
-        elif status[i]['problem'] == 'problem':
+        elif status[i]['status'] == 'problem':
             text.append(
                 "[{server} is experiencing a problem](#status_green '{server} - {status}')".format(
                     server=i.title(), status=status[i]['title']))
