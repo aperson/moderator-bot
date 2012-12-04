@@ -93,7 +93,7 @@ def mojangStatus():
         return None
     text = []
     for i in ('website', 'login', 'account', 'session', 'skins'):
-        if status[i]['status'] == 'up' or status[i]['status'] == 'problem':
+        if status['report'][i]['status'] == 'up' or status[i]['status'] == 'problem':
             text.append("[{server} is online](#status_green '{status}')".format(
                 server=i, status=status[i]['title']))
         elif status[i]['status'] == 'down':
