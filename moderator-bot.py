@@ -48,6 +48,7 @@ except:
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
     DATABASEFILE = '/some/path'
     BANNEDSUBS = ['some', 'list']
+    STATUS_JSON = 'http://somesite.com/some.json'
 
 
 def p(data, end='\n'):
@@ -85,7 +86,7 @@ def mojangStatus():
     '''Returns the status indicator for /r/Minecraft's sidebar'''
     opener = urllib.request.build_opener()
     try:
-        with opener.open('http://xpaw.ru./mcstatus/realtime.json') as w:
+        with opener.open(STATUS_JSON) as w:
             status = json.loads(w.read().decode('utf-8'))['report']
     except urllib.error.HTTPError:
         return None
