@@ -519,7 +519,7 @@ class FreeMinecraft(Filter):
             result = self.regex.findall(submission[i])
             if result:
                 for i in result:
-                    if result != ('', ''):
+                    if result != ('', '') and result != [('', '')]:
                         link = 'http://reddit.com/r/{}/comments/{}/'.format(
                             submission['subreddit'], submission['id'])
                         self.log_text = "Found free Minecraft link in submission"
@@ -534,7 +534,7 @@ class FreeMinecraft(Filter):
         result = self.regex.findall(comment['body'])
         if result:
             for i in result:
-                if result != ('', ''):
+                if result != ('', '') and result != [('', '')]:
                     self.comment = ''
                     self.log_text = "Found free minecraft link in comment"
                     p(self.log_text + ":")
