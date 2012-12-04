@@ -86,14 +86,14 @@ def mojangStatus():
     opener = urllib.request.build_opener()
     try:
         with opener.open('http://xpaw.ru./mcstatus/realtime.json') as w:
-            status = json.loads(w.read().decode('utf-8'))
+            status = json.loads(w.read().decode('utf-8'))['report']
     except urllib.error.HTTPError:
         return None
     except http.client.BadStatusLine:
         return None
     text = []
     for i in ('website', 'login', 'account', 'session', 'skins'):
-        if status['report'][i]['status'] == 'up' or status[i]['status'] == 'problem':
+        if status[i]['status'] == 'up' or status[i]['status'] == 'problem':
             text.append("[{server} is online](#status_green '{status}')".format(
                 server=i, status=status[i]['title']))
         elif status[i]['status'] == 'down':
