@@ -85,6 +85,7 @@ def sigint_handler(signal, frame):
 def mojangStatus():
     '''Returns the status indicator for /r/Minecraft's sidebar'''
     opener = urllib.request.build_opener()
+    opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
     try:
         with opener.open(STATUS_JSON) as w:
             status = json.loads(w.read().decode('utf-8'))['report']
