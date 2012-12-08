@@ -703,6 +703,7 @@ class BadWords(Filter):
 class YoutubeSpam(Filter):
     def __init__(self):
         Filter.__init__(self)
+        self.tag = "[Youtube Spam]"
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
@@ -766,6 +767,7 @@ class YoutubeSpam(Filter):
                 return True
 
     def filterSubmission(self, submission):
+        self.report_subreddit = None
         DAY = 24 * 60 * 60
         if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
@@ -825,6 +827,7 @@ class YoutubeSpam(Filter):
                         p(self.log_text + ":")
                         p("http://reddit.com/u/{}".format(submission['author']))
                         user['warned'] = True
+                        self.report_subreddit = 'reportthespammers'
                     with self.database.open() as db:
                         db['users'][submission['author']] = user
                         db['submissions'].append(submission['id'])
@@ -1106,7 +1109,7 @@ def main():
                                 comment)['json']['data']['things'][0]['data']['id']
                             distinguish = {'id': submission, 'executed': 'distinguishing...'}
                             r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
-                        if f.tag:
+                        if f.report_subreddit:
                             r.rts(item['author'], tag=f.tag, subreddit=f.report_subreddit)
                         if f.ban and item['author'] not in processed['authors']:
                             p('Banning http://reddit.com/u/{}'.format(item['author']))
