@@ -789,6 +789,7 @@ class YoutubeSpam(Filter):
                         self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
                         self.comment = ''
+                        self.report_subreddit = 'reportthespammers'
                         self.ban = True
                         self.nuke = True
                         user['banned'] = True
@@ -827,7 +828,6 @@ class YoutubeSpam(Filter):
                         p(self.log_text + ":")
                         p("http://reddit.com/u/{}".format(submission['author']))
                         user['warned'] = True
-                        self.report_subreddit = 'reportthespammers'
                     with self.database.open() as db:
                         db['users'][submission['author']] = user
                         db['submissions'].append(submission['id'])
