@@ -244,7 +244,8 @@ class Reddit(object):
         to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
         for i in to_replace:
             sub['description'] = sub['description'].replace(*i)
-        sidebar = re.sub(regex, text, sub['description'])
+        replace = re.findall(regex, sub['description'], re.DOTALL)[0]
+        sidebar = sub['description'].replace(replace, text)
         body = {
             'sr': sub['subreddit_id'], 'title': sub['title'],
             'public_description': sub['public_description'], 'description': sidebar,
