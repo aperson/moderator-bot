@@ -105,7 +105,7 @@ def mojangStatus():
                     server=i.title(), status=status[i]['title']))
         elif status[i]['status'] == 'down':
             text.append("> ## [{server} is offline.](#status_red '{server} - {status}')".format(
-                server=i.title(), status=status[i]['title']))
+                server=i.title(), status=status[i]['title'].split('•')[0].strip()))
     sidebar_text = '\n'.join(text)
     return '\n{}\n'.format(sidebar_text)
 
