@@ -944,7 +944,7 @@ class InaneTitle(Filter):
                 submission['subreddit'], submission['id']))
             params = {'resubmit': True}
             if submission['selftext']:
-                    params['text'] = submission['selftext']
+                params['text'] = submission['selftext']
             else:
                 params['url'] = submission['url']
             self.comment = self.comment_template.format(
