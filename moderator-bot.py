@@ -220,15 +220,20 @@ class Reddit(object):
             hide = {'id': post['name']}
             self.post('http://www.reddit.com/api/hide', hide)
 
-    def rts(self, username, tag='', subreddit=None):
+    def rts(self, username, tag='', subreddit=None, check_age=True):
         """Checks the account age of a user and rts' them if they are less than a day old."""
+        submit = False
         if not subreddit:
             subreddit = BOTSUB
         DAY = 60 * 60 * 24
 
         user = self.get("http://reddit.com/user/{}/about.json".format(username))
-
-        if (time.time() - user['data']['created_utc']) <= DAY:
+        if Check_age:
+            if (time.time() - user['data']['created_utc']) <= DAY:
+                submit = True
+        else:
+            submit = True
+        if submit:
             p('{} is less than a day old. Submitting to /r/moderator_bot:'.format(username))
             body = {'title': '{} {}'.format(username, tag), 'sr': subreddit,
                     'url': 'http://reddit.com/u/' + username, 'kind': 'link'}
@@ -277,6 +282,7 @@ class Filter(object):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
         self.database = Database(DATABASEFILE)
+        self.check_age = True
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -339,7 +345,7 @@ class Fixed(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''[\[|<\({\*]fixed[\]|>\):}\*]|i see you'?re? .*? and raise you''', re.I)
+            r'''[\[|<\({\*]fixed[\]|>\):}\*]|i(?:'?ll)? see you'?re? .*? and raise you''', re.I)
         self.log_text = "Found [Fixed] submission"
 
     def filterSubmission(self, submission):
@@ -705,6 +711,7 @@ class YoutubeSpam(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.tag = "[Youtube Spam]"
+        self.check_age = False
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
@@ -1111,7 +1118,9 @@ def main():
                             distinguish = {'id': submission, 'executed': 'distinguishing...'}
                             r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
                         if f.report_subreddit:
-                            r.rts(item['author'], tag=f.tag, subreddit=f.report_subreddit)
+                            r.rts(
+                                item['author'], tag=f.tag, subreddit=f.report_subreddit,
+                                check_age=f.check_age)
                         if f.ban and item['author'] not in processed['authors']:
                             p('Banning http://reddit.com/u/{}'.format(item['author']))
                             body = {
