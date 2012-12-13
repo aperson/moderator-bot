@@ -535,8 +535,10 @@ class FreeMinecraft(Filter):
                     return False
             else:
                 return True
-        else:
+        elif not thing:
             return False
+        else:
+            return True
 
     def filterSubmission(self, submission):
         for i in ('title', 'selftext', 'url'):
