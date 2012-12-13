@@ -526,7 +526,7 @@ class FreeMinecraft(Filter):
         self.action = 'spammed'
         self.ban = True
 
-    def empty(thing):
+    def empty(self, thing):
         if thing == ('', ''):
             return True
         elif isinstance(thing, list):
