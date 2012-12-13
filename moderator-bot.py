@@ -523,20 +523,33 @@ class FreeMinecraft(Filter):
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
             r'''forever)?(?:\.blogspot)?|epicfreeprizes)\.(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
-        self.action = 'report'
+        self.action = 'spammed'
+        self.ban = True
+
+    def empty(thing):
+        if thing == ('', ''):
+            return True
+        elif isinstance(thing, list):
+            for i in thing:
+                if i != ('', ''):
+                    return False
+            else:
+                return True
+        else:
+            return False
 
     def filterSubmission(self, submission):
         for i in ('title', 'selftext', 'url'):
             result = self.regex.findall(submission[i])
             if result:
                 for i in result:
-                    if result != ('', '') and result != [('', '')]:
+                    if empty(result):
                         link = 'http://reddit.com/r/{}/comments/{}/'.format(
                             submission['subreddit'], submission['id'])
                         self.log_text = "Found free Minecraft link in submission"
-                        #reason = "free minecraft links are not allowed"
-                        #self.comment = self.comment_template.format(
-                        #    sub=submission['subreddit'], reason=reason, link=link)
+                        reason = "free minecraft links are not allowed"
+                        self.comment = self.comment_template.format(
+                            sub=submission['subreddit'], reason=reason, link=link)
                         p(self.log_text + ":")
                         p(link)
                         return True
@@ -545,7 +558,7 @@ class FreeMinecraft(Filter):
         result = self.regex.findall(comment['body'])
         if result:
             for i in result:
-                if result != ('', '') and result != [('', '')]:
+                if empty(result):
                     self.comment = ''
                     self.log_text = "Found free minecraft link in comment"
                     p(self.log_text + ":")
@@ -693,7 +706,7 @@ class SelfLinks(Filter):
 class BadWords(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.action = 'report'
+        self.action = 'spammed'
 
     def filterComment(self, comment):
         badwords = ['gay', 'fag', 'cunt', 'nigger', 'nigga', 'retard', 'autis']
