@@ -235,7 +235,7 @@ class Reddit(object):
         else:
             submit = True
         if submit:
-            p('{} is less than a day old. Submitting to /r/moderator_bot:'.format(username))
+            p('{} is less than a day old. Submitting to /r/{}:'.format(username, subreddit))
             body = {'title': '{} {}'.format(username, tag), 'sr': subreddit,
                     'url': 'http://reddit.com/u/' + username, 'kind': 'link'}
             submission = self.post('http://www.reddit.com/api/submit', body)
