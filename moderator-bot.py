@@ -235,7 +235,7 @@ class Reddit(object):
         else:
             submit = True
         if submit:
-            p('{} is less than a day old. Submitting to /r/moderator_bot:'.format(username))
+            p('Submitting to /r/{}:'.format(subreddit))
             body = {'title': '{} {}'.format(username, tag), 'sr': subreddit,
                     'url': 'http://reddit.com/u/' + username, 'kind': 'link'}
             submission = self.post('http://www.reddit.com/api/submit', body)
@@ -1046,9 +1046,8 @@ class Facebook(Filter):
         if self.regex.search(submission['domain']):
             self.comment = (
                 """Hey there! I removed your post since it linked to a facebook photo, which can """
-                """be traced back to your real profile. You should re-upload the picture somewher"""
-                """e else like [imgur](http://imgur.com) or [minus](http://minus.com) and resubmi"""
-                """t.""")
+                """be traced back to a user profile. You should re-upload the picture somewhere e"""
+                """lse like [imgur](http://imgur.com) or [minus](http://minus.com) and resubmit.""")
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
                 submission['subreddit'], submission['id']))
