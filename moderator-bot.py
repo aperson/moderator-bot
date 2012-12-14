@@ -229,7 +229,7 @@ class Reddit(object):
         DAY = 60 * 60 * 24
 
         user = self.get("http://reddit.com/user/{}/about.json".format(username))
-        if Check_age:
+        if check_age:
             if (time.time() - user['data']['created_utc']) <= DAY:
                 submit = True
         else:
