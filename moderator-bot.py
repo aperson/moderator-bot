@@ -700,9 +700,9 @@ class SelfLinks(Filter):
                     "ve only included links in your self-post with no explanatory text.  Please res"
                     "ubmit or edit your post accordingly.")
                 self.log_text = "Found self-post that only contained links"
-                p(self.log_text + ":")
+                p(self.log_text + ":", end="")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id']))
+                    submission['subreddit'], submission['id']), end="")
                 return True
 
 
