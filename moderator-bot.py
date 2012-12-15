@@ -709,7 +709,7 @@ class SelfLinks(Filter):
 class BadWords(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.action = 'spammed'
+        self.action = 'report'
 
     def filterComment(self, comment):
         badwords = ['gay', 'fag', 'cunt', 'nigger', 'nigga', 'retard', 'autis']
