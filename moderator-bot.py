@@ -717,9 +717,9 @@ class BadWords(Filter):
             for word in badwords:
                 if word in comment['body'].lower():
                     self.log_text = "Found comment for mod review"
-                    p(self.log_text + ":", end="")
+                    p(self.log_text + ":")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment['subreddit'], comment['link_id'][3:], comment['id']), end="")
+                        comment['subreddit'], comment['link_id'][3:], comment['id']))
                     return True
 
 
