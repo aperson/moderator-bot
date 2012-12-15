@@ -700,9 +700,9 @@ class SelfLinks(Filter):
                     "ve only included links in your self-post with no explanatory text.  Please res"
                     "ubmit or edit your post accordingly.")
                 self.log_text = "Found self-post that only contained links"
-                p(self.log_text + ":", end="")
+                p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id']), end="")
+                    submission['subreddit'], submission['id']))
                 return True
 
 
@@ -717,9 +717,9 @@ class BadWords(Filter):
             for word in badwords:
                 if word in comment['body'].lower():
                     self.log_text = "Found comment for mod review"
-                    p(self.log_text + ":")
+                    p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment['subreddit'], comment['link_id'][3:], comment['id']))
+                        comment['subreddit'], comment['link_id'][3:], comment['id']), end="")
                     return True
 
 
