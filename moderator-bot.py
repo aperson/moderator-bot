@@ -700,16 +700,16 @@ class SelfLinks(Filter):
                     "ve only included links in your self-post with no explanatory text.  Please res"
                     "ubmit or edit your post accordingly.")
                 self.log_text = "Found self-post that only contained links"
-                p(self.log_text + ":")
+                p(self.log_text + ":", end="")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id']))
+                    submission['subreddit'], submission['id']), end="")
                 return True
 
 
 class BadWords(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.action = 'spammed'
+        self.action = 'report'
 
     def filterComment(self, comment):
         badwords = ['gay', 'fag', 'cunt', 'nigger', 'nigga', 'retard', 'autis']
