@@ -187,7 +187,7 @@ class Reddit(object):
     def _login(self):
         p("Logging in as {}.".format(self.username))
         body = {'user': self.username, 'passwd': self.password, 'api_type': 'json'}
-        resp = self._request('https://www.reddit.com/api/login', body)
+        resp = self._request('http://www.reddit.com/api/login', body)
         self.modhash = resp['json']['data']['modhash']
 
     def post(self, url, body):
