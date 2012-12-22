@@ -52,10 +52,16 @@ except:
     STATUS_JSON = 'http://somesite.com/some.json'
 
 
-def p(data, end='\n'):
+def p(data, end='\n', color_seed=None):
+    if color_seed:
+        random.seed(color_seed)
+        color = '\033[0;3{}m'.format(random.randint(1, 6))
+    else:
+        color = ''
     print(time.strftime(
         '\r\033[K\033[2K[\033[31m%y\033[39m/\033[31m%m\033[39m/\033[31m%d'
-        '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ') + data, end=end)
+        '\033[39m][\033[31m%H\033[39m:\033[31m%M\033[39m:\033[31m%S\033[39m] ')
+        + color + data + '\033[39m', end=end)
 
 
 def logToDisk(log_text):
@@ -328,7 +334,7 @@ class Suggestion(Filter):
                 self.comment = self.comment_template.format(
                     sub=submission['subreddit'], reason=reason, link=link)
                 p(self.log_text + ":")
-                p(link)
+                p(link, color_seed=submission['name'])
                 return True
             elif not submission['selftext']:
                 self.log_text = "Found [Suggestion] submission that has no self text"
@@ -338,7 +344,7 @@ class Suggestion(Filter):
                 self.comment = self.comment_template.format(
                     sub=submission['subreddit'], reason=reason, link=link)
                 p(self.log_text + ":")
-                p(link)
+                p(link, color_seed=submission['name'])
                 return True
 
 
@@ -357,7 +363,7 @@ class Fixed(Filter):
             self.comment = self.comment_template.format(
                 sub=submission['subreddit'], reason=reason, link=link)
             p(self.log_text + ":")
-            p(link)
+            p(link, color_seed=submission['name'])
             return True
 
 
@@ -483,7 +489,7 @@ class ServerAd(Filter):
             self.comment = self.comment_template.format(
                 sub=submission['subreddit'], reason=reason, link=link)
             p(self.log_text + ":")
-            p(link)
+            p(link, color_seed=submission['name'])
             return True
         #elif submission['domain'] == 'imgur.com':
             #if self._imgur_check(submission['url']):
@@ -512,7 +518,8 @@ class ServerAd(Filter):
             self.log_text = "Found server advertisement in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']))
+                comment['subreddit'], comment['link_id'][3:], comment['id']),
+                color_seed=comment['name'])
             return True
 
 
@@ -554,7 +561,7 @@ class FreeMinecraft(Filter):
                         self.comment = self.comment_template.format(
                             sub=submission['subreddit'], reason=reason, link=link)
                         p(self.log_text + ":")
-                        p(link)
+                        p(link, color_seed=submission['name'])
                         return True
 
     def filterComment(self, comment):
@@ -566,7 +573,8 @@ class FreeMinecraft(Filter):
                     self.log_text = "Found free minecraft link in comment"
                     p(self.log_text + ":")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment['subreddit'], comment['link_id'][3:], comment['id']))
+                        comment['subreddit'], comment['link_id'][3:], comment['id']),
+                        color_seed=comment['name'])
                     return True
 
 
@@ -587,7 +595,7 @@ class AmazonReferral(Filter):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
                 submission['subreddit'], submission['id'])
             p(self.log_text + ":")
-            p(link)
+            p(link, color_seed=submission['name'])
             return True
 
     def filterComment(self, comment):
@@ -595,7 +603,8 @@ class AmazonReferral(Filter):
             self.log_text = "Found Amazon referral link in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']))
+                comment['subreddit'], comment['link_id'][3:], comment['id']),
+                color_seed=comment['name'])
             return True
 
 
@@ -618,7 +627,7 @@ class ShortUrl(Filter):
             self.comment = self.comment_template.format(
                 sub=submission['subreddit'], reason=reason, link=link)
             p(self.log_text + ":")
-            p(link)
+            p(link, color_seed=submission['name'])
             return True
 
     def filterComment(self, comment):
@@ -627,7 +636,8 @@ class ShortUrl(Filter):
             self.log_text = "Found short url in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']))
+                comment['subreddit'], comment['link_id'][3:], comment['id']),
+                color_seed=comment['name'])
             return True
 
 
@@ -647,7 +657,7 @@ class Failed(Filter):
                 "n, please only enter the bare link in the url field.\n\nFeel free to try submitti"
                 "ng again.")
             p(self.log_text + ":")
-            p(link)
+            p(link, color_seed=submission['name'])
             return True
         elif '.' not in submission['domain']:
             self.log_text = "Found submission with invalid url"
@@ -656,7 +666,7 @@ class Failed(Filter):
                 "ry resubmitting and pay special attention to what you're typing/pasting in the ur"
                 "l field.")
             p(self.log_text + ":")
-            p(link)
+            p(link, color_seed=submission['name'])
             return True
 
 
@@ -673,7 +683,7 @@ class Minebook(Filter):
             self.log_text = "Found minebook in submission"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']))
+                submission['subreddit'], submission['id']), color_seed=submission['name'])
             return True
 
     def filterComment(self, comment):
@@ -681,7 +691,8 @@ class Minebook(Filter):
             self.log_text = "Found minebook in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']))
+                comment['subreddit'], comment['link_id'][3:], comment['id']),
+                color_seed=submission['name'])
 
 
 class SelfLinks(Filter):
@@ -702,7 +713,7 @@ class SelfLinks(Filter):
                 self.log_text = "Found self-post that only contained links"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id']))
+                    submission['subreddit'], submission['id']), color_seed=submission['name'])
                 return True
 
 
@@ -719,7 +730,8 @@ class BadWords(Filter):
                     self.log_text = "Found comment for mod review"
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment['subreddit'], comment['link_id'][3:], comment['id']), end="")
+                        comment['subreddit'], comment['link_id'][3:], comment['id']),
+                        color_seed=comment['name'], end="")
                     return True
 
 
@@ -850,7 +862,8 @@ class YoutubeSpam(Filter):
                         self.nuke = False
                         self.log_text = "Found potential video spammer"
                         p(self.log_text + ":")
-                        p("http://reddit.com/u/{}".format(submission['author']))
+                        p("http://reddit.com/u/{}".format(submission['author']),
+                            color_seed=submission['name'])
                         user['warned'] = True
                     with self.database.open() as db:
                         db['users'][submission['author']] = user
@@ -881,7 +894,7 @@ class AllCaps(Filter):
                 self.log_text = "Found submission with all-caps title"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id']))
+                    submission['subreddit'], submission['id']), color_seed=submission['name'])
                 params = {'title': submission['title'].title(), 'resubmit': True}
                 if submission['selftext']:
                     params['text'] = submission['selftext']
@@ -930,7 +943,7 @@ class Meme(Filter):
                     self.action = 'spammed'
                     self.log_text = "Found meme submission"
                     p(self.log_text + ":")
-                    p(link)
+                    p(link, color_seed=submission['name'])
                     return True
             else:
                 if 'meme' in submission['url']:
@@ -964,7 +977,7 @@ class InaneTitle(Filter):
             self.log_text = "Found submission with inane title"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']))
+                submission['subreddit'], submission['id']), color_seed=submission['name'])
             params = {'resubmit': True}
             if submission['selftext']:
                 params['text'] = submission['selftext']
@@ -989,7 +1002,7 @@ class SpamNBan(Filter):
             self.log_text = "Found spam domain in submission"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']))
+                submission['subreddit'], submission['id']), color_seed=submission['name'])
             return True
 
     def filterComment(self, comment):
@@ -997,7 +1010,8 @@ class SpamNBan(Filter):
             self.log_text = "Found spam domain in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']))
+                comment['subreddit'], comment['link_id'][3:], comment['id']),
+                color_seed=comment['name'])
             return True
 
 
@@ -1033,7 +1047,7 @@ class ChunkError(Filter):
             self.comment = self.comment_template.format(
                 sub=submission['subreddit'], reason=reason, link=link)
             p(self.log_text + ":")
-            p(link)
+            p(link, color_seed=submission['name'])
             return True
 
 
@@ -1051,7 +1065,7 @@ class Facebook(Filter):
                 """lse like [imgur](http://imgur.com) or [minus](http://minus.com) and resubmit.""")
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']))
+                submission['subreddit'], submission['id']), color_seed=submission['name'])
             return True
 
 
@@ -1065,7 +1079,8 @@ class Reditr(Filter):
         if '^Sent ^from ^[Reditr](http://reditr.com)' in comment['body']:
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']))
+                comment['subreddit'], comment['link_id'][3:], comment['id']),
+                color_seed=comment['name'])
             return True
 
 
