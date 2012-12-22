@@ -1128,7 +1128,7 @@ def main():
         for item in feed:
             item = item['data']
             if item['name'] not in processed['ids']:
-                p('Processing {}'.format(item['id']), end="")
+                p('Processing {}'.format(item['id']), color_seed=item['name'], end="")
                 for f in filters:
                     processed['ids'].append(item['name'])
                     # I know using 'is not True' isn't the 'right' way, but reddit's api is weird
