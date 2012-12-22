@@ -33,6 +33,7 @@ import http.cookiejar
 import shelve
 from contextlib import contextmanager
 from collections import defaultdict
+import random
 
 try:
     from credentials import *  # NOQA
