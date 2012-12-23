@@ -246,7 +246,8 @@ class Reddit(object):
             body = {'title': '{} {}'.format(username, tag), 'sr': subreddit,
                     'url': 'http://reddit.com/u/' + username, 'kind': 'link'}
             submission = self.post('http://www.reddit.com/api/submit', body)
-            p('http://redd.it/{}'.format(submission['json']['data']['id']))
+            p('http://redd.it/{}'.format(submission['json']['data']['id']),
+                color_seed=submission['name'])
 
     def sidebar(self, subreddit, text, section):
         """Edits the sidebar in subreddit in-between the allowed tags set by section['start'] and
