@@ -521,7 +521,7 @@ class ServerAd(Filter):
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['name'])
+                color_seed=comment['link_id'])
             return True
 
 
@@ -576,7 +576,7 @@ class FreeMinecraft(Filter):
                     p(self.log_text + ":")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                         comment['subreddit'], comment['link_id'][3:], comment['id']),
-                        color_seed=comment['name'])
+                        color_seed=comment['link_id'])
                     return True
 
 
@@ -606,7 +606,7 @@ class AmazonReferral(Filter):
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['name'])
+                color_seed=comment['link_id'])
             return True
 
 
@@ -639,7 +639,7 @@ class ShortUrl(Filter):
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['name'])
+                color_seed=comment['link_id'])
             return True
 
 
@@ -733,7 +733,7 @@ class BadWords(Filter):
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                         comment['subreddit'], comment['link_id'][3:], comment['id']),
-                        color_seed=comment['name'], end="")
+                        color_seed=comment['link_id'], end="")
                     return True
 
 
@@ -1013,7 +1013,7 @@ class SpamNBan(Filter):
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['name'])
+                color_seed=comment['link_id'])
             return True
 
 
@@ -1082,7 +1082,7 @@ class Reditr(Filter):
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['name'])
+                color_seed=comment['link_id'])
             return True
 
 
