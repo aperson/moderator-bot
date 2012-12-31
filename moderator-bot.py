@@ -1028,7 +1028,7 @@ class FileDownload(Filter):
         self.regex = re.compile(
             r'''filestube|4shared|mediafire|rapidshare|box\.net|hotfile|zshare|uploading\.com|'''
             r'''depositfiles|fileserve|zippyshare|esnips|filefactory|uploaded\.to|2shared|'''
-            r'''fileswap''')
+            r'''fileswap|filehosting''')
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['domain']):
