@@ -961,7 +961,7 @@ class InaneTitle(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''you(?:'?re|r| are) drunk|minecraft logic|seems legit|'''
+            r'''(?:you(?:'?re|r| are)|ur) drunk|minecraft logic|seems legit|'''
             r'''what does (?:/?r/minecraft|reddit) think|yo,? d(?:o|aw)g|'''
             r'''^\.*?(?:too )?(?:soon|late)[.!?]*?$|am i the only(?: one)?|you had one job|'''
             r'''^\S*ception$|when suddenly|first post|am i doin(?:g|')? this this ri(?:te|ght)''',
