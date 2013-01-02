@@ -964,7 +964,7 @@ class InaneTitle(Filter):
             r'''you(?:'?re|r| are) drunk|minecraft logic|seems legit|'''
             r'''what does (?:/?r/minecraft|reddit) think|yo,? d(?:o|aw)g|'''
             r'''^\.*?(?:too )?(?:soon|late)[.!?]*?$|am i the only(?: one)?|you had one job|'''
-            r'''^\S*ception$|when suddenly|first post''',
+            r'''^\S*ception$|when suddenly|first post|am i doin(?g|')? this this ri(?:te|ght)''',
             re.I)
         self.comment_template = (
             """Hey there, you seem to be using an inane title!  You can pro"""
@@ -1028,7 +1028,7 @@ class FileDownload(Filter):
         self.regex = re.compile(
             r'''filestube|4shared|mediafire|rapidshare|box\.net|hotfile|zshare|uploading\.com|'''
             r'''depositfiles|fileserve|zippyshare|esnips|filefactory|uploaded\.to|2shared|'''
-            r'''fileswap''')
+            r'''fileswap|filehosting''')
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['domain']):
