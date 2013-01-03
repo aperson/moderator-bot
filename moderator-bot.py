@@ -991,7 +991,8 @@ class FileDownload(Filter):
         self.regex = re.compile(
             r'''filestube|4shared|mediafire|rapidshare|box\.net|hotfile|zshare|uploading\.com|'''
             r'''depositfiles|fileserve|zippyshare|esnips|filefactory|uploaded\.to|2shared|'''
-            r'''fileswap|filehosting''')
+            r'''fileswap|filehosting|assets\.minecraft\.net|\.jar$|\.exe$|\.zip$|\.tar\.gz|'''
+            r'''\.tar\bz2''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['domain']):
@@ -1055,7 +1056,8 @@ class SnapshotHeader(Filter):
         self.nuke = False
 
     def filterSubmission(self, submission):
-        if 'snapshot' in submission['title'] and 'minecraft.net' in submission['url']:
+        if 'snapshot' in submission['title'].lower() and \
+            'minecraft.net' in submission['url'].lower():
             pass
 
 
