@@ -995,7 +995,7 @@ class FileDownload(Filter):
             r'''\.tar\bz2$''', re.I)
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['domain']):
+        if self.regex.search(submission['url']):
             return True
 
 
