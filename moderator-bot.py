@@ -1049,6 +1049,16 @@ class Reditr(Filter):
             return True
 
 
+class SnapshotHeader(Filter):
+    def __init__(self):
+        Filter.__init__(self)
+        self.nuke = False
+
+    def filterSubmission(self, submission):
+        if 'snapshot' in submission['title'] and 'minecraft.net' in submission['url']:
+            pass
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
