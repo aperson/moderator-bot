@@ -118,43 +118,6 @@ def mojangStatus():
     return '\n{}\n'.format(sidebar_text)
 
 
-def rmctMatch():
-    '''Returns the text for the /r/Minecraft sticky announcement that is a countdown to the next
-    RMCT match'''
-    # hard coding current header for now
-    old_header = (
-        "[Complaints, searching, and fads, oh my!](/11impu)")
-    # hard-coding match times for now
-    # format is name: time
-    matches = [
-        ("Professional Minecraft Engineers vs Blame Disco", "2012/10/10 21:00"),
-        ("EuroPP: Happy Ghast vs 404: Wool Not Found", "2012/10/13 14:00"),
-        ("Airship Aces vs EuroPP: NeverDye", "2012/10/13 16:00"),
-        ("Elite 4 vs Cobalt Crafters", "2012/10/13 19:00"),
-        ("Lavanauts vs Whiskey Brigade", "2012/10/14 19:00"),
-        ("The Cubists vs Bulletproof", "2012/10/19 19:30"),
-        ("Team Bitlimit vs 3 Pros 1 Cup", "2012/10/20 13:00"),
-        ("The Unambiguous Subs vs Caulk Blockers", "2012/10/20 15:00")]
-    matches_today = []
-    for name, stime in matches:
-        time_left = time.mktime(time.strptime(stime, '%Y/%m/%d %H:%M')) - time.time()
-        if 0 < time_left <= 12 * 60 * 60:
-            matches_today.append((name, time_left))
-
-    matches_today.sort(key=lambda x: x[1])
-
-    if matches_today:
-        time_left = str(datetime.timedelta(seconds=matches_today[0][1]))
-        header_text = "In approximately {time} the next RMCT match will start: {name}".format(
-            time=time_left[:7], name=matches_today[0][0])
-        if len(matches_today) > 1:
-            header_text += " ({count} more afterward)".format(
-                count=len(matches_today) - 1)
-        return(header_text)
-    else:
-        return(old_header)
-
-
 class Database(object):
     '''Handles reading and writing from a shelve 'database'.'''
     def __init__(self, path):
@@ -1114,14 +1077,6 @@ def main():
                     p('Mojang server status changed, updating sidebar...', end='')
                     r.sidebar(SUBREDDIT, status, SIDEBAR_TAGS)
             last_status = status
-
-        matches = rmctMatch()
-        p("Checking if there's any RMCT matches today", end='')
-        if matches:
-            if last_matches:
-                if matches != last_matches:
-                    r.sidebar(SUBREDDIT, matches, HEADER_TAGS)
-            last_matches = matches
 
         for i in (new_listing, modqueue_listing, comments_listing):
             if i:
