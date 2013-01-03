@@ -865,7 +865,7 @@ class YoutubeSpam(Filter):
                         self.log_text = "Found potential video spammer"
                         p(self.log_text + ":")
                         p("http://reddit.com/u/{}".format(submission['author']),
-                            color_seed=submission['name'])
+                            color_seed=submission['author'])
                         user['warned'] = True
                     with self.database.open() as db:
                         db['users'][submission['author']] = user
@@ -1155,7 +1155,9 @@ def main():
                                 item['author'], tag=f.tag, subreddit=f.report_subreddit,
                                 check_age=f.check_age)
                         if f.ban and item['author'] not in processed['authors']:
-                            p('Banning http://reddit.com/u/{}'.format(item['author']))
+                            p(
+                                'Banning http://reddit.com/u/{}'.format(item['author']),
+                                color_seed=item['author'])
                             body = {
                                 'action': 'add', 'type': 'banned', 'name': item['author'],
                                 'id': '#banned', 'r': item['subreddit']}
