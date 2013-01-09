@@ -898,7 +898,7 @@ class Meme(Filter):
             "to resubmit')")
         self.meme_sites = (
             'memecreator.org', 'memegenerator.net', 'quickmeme.com', 'qkme.me', 'mememaker.net',
-            'knowyourmeme.com', 'weknowmemes.com')
+            'knowyourmeme.com', 'weknowmemes.com', 'elol.com')
 
     def filterSubmission(self, submission):
         if 'reddit.com' not in submission['url']:
