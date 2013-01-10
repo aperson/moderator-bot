@@ -935,7 +935,7 @@ class InaneTitle(Filter):
             r'''(?:you(?:'?re|r| are)|ur) drunk|minecraft logic|seems legit|'''
             r'''what does (?:/?r/minecraft|reddit) think|yo,? d(?:o|aw)g|'''
             r'''^\.*?(?:too )?(?:soon|late)[.!?]*?$|am i the only(?: one)?|you had one job|'''
-            r'''^\S*ception$|when suddenly|first post|am i doin(?:g|')? this this ri(?:te|ght)''',
+            r'''^\S*ception$|when suddenly|first post|am i doin(?:g|')? (?:this|it) ri(?:te|ght)''',
             re.I)
         self.comment_template = (
             """Hey there, you seem to be using an inane title!  You can pro"""
