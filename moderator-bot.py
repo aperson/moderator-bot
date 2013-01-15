@@ -587,7 +587,7 @@ class ShortUrl(Filter):
         self.regex = re.compile(
             r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
             r'''tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com|ht\.ly|'''
-            r'''pulse\.me|lmgtfy\.com)/''', re.I)
+            r'''pulse\.me|lmgtfy\.com|d129\.tk)/''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or\
