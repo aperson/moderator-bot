@@ -1109,7 +1109,7 @@ def main():
                     processed['ids'].append(item['name'])
                     # I know using 'is not True' isn't the 'right' way, but reddit's api is weird
                     # here and I wanted to explicitly show it
-                    if item['banned_by'] is not True:
+                    if item['banned_by'] is not None:
                         break
                     if item['author'] in (USERNAME, 'tweet_poster'):
                         break
