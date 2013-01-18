@@ -238,7 +238,7 @@ class Reddit(object):
 
 class Filter():
     """Base filter class"""
-    def __init__(self, reddit):
+    def __init__(self):
         self.regex = None
         self.comment_template = (
             "##This submission has been removed automatically.\nAccording to our [subreddit rules]("
@@ -251,7 +251,7 @@ class Filter():
         self.ban = False
         self.report_subreddit = None
         self.nuke = True
-        self.reddit = reddit
+        self.reddit = None
         self.database = Database(DATABASEFILE)
         self.check_age = True
 
@@ -332,7 +332,7 @@ class Fixed(Filter):
 
 
 class ServerAd(Filter):
-    def __init__(self):
+    def __init__(self, reddit):
         self.last_update = 0
         self.domain_list = []
         Filter.__init__(self)
@@ -340,6 +340,7 @@ class ServerAd(Filter):
         self.tag = "[Server Spam]"
         self.regex = re.compile(
             r'''(?:^|\s|ip(?:=|:)|\*)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|$|:|\*|!|\.|,|;|\?)''', re.I)
+        self.reddit = reddit
 
     def _update_list(self):
         if (time.time() - self.last_update) >= 1800:
@@ -708,10 +709,11 @@ class BadWords(Filter):
 
 
 class YoutubeSpam(Filter):
-    def __init__(self):
+    def __init__(self, reddit):
         Filter.__init__(self)
         self.tag = "[Youtube Spam]"
         self.check_age = False
+        self.reddit = reddit
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
@@ -1073,10 +1075,9 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Suggestion(r), Fixed(r), ServerAd(r), FreeMinecraft(r), AmazonReferral(r), ShortUrl(r),
-        Failed(r), Minebook(r), SelfLinks(r), BadWords(r), YoutubeSpam(r), BannedSubs(r), Meme(r),
-        InaneTitle(r), SpamNBan(r), AllCaps(r), FileDownload(r), ChunkError(r), Facebook(r),
-        Reditr(r)]
+        Suggestion(), Fixed(), ServerAd(r), FreeMinecraft(), AmazonReferral(), ShortUrl(),
+        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r), BannedSubs(), Meme(),
+        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
 
     # main loop
     while True:
