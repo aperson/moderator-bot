@@ -236,9 +236,9 @@ class Reddit(object):
         self.post('http://www.reddit.com/api/site_admin', body)
 
 
-class Filter(object):
+class Filter():
     """Base filter class"""
-    def __init__(self):
+    def __init__(self, reddit):
         self.regex = None
         self.comment_template = (
             "##This submission has been removed automatically.\nAccording to our [subreddit rules]("
@@ -251,8 +251,7 @@ class Filter(object):
         self.ban = False
         self.report_subreddit = None
         self.nuke = True
-        self.opener = urllib.request.build_opener()
-        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+        self.reddit = reddit
         self.database = Database(DATABASEFILE)
         self.check_age = True
 
@@ -346,9 +345,8 @@ class ServerAd(Filter):
         if (time.time() - self.last_update) >= 1800:
             self.last_update = time.time()
             p('Updating domain blacklist...', end='')
-            with self.opener.open(SERVERDOMAINS) as w:
-                blacklist = json.loads(w.read().decode('utf-8'))['data']['content_md'].strip()
-                domain_list = re.split(r'''\n*''', blacklist)
+            blacklist = self.reddit.get(SERVERDOMAINS)['data']['content_md'].strip()
+            domain_list = re.split(r'''\n*''', blacklist)
             if len(self.domain_list) < len(domain_list):
                 p('Found {} new domains in online blacklist.'.format(
                     len(domain_list) - len(self.domain_list)))
@@ -737,17 +735,13 @@ class YoutubeSpam(Filter):
         check against the last 100 items on the user's profile.'''
 
         try:
-            with self.opener.open(
-                'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(
-                    user)) as w:
-                comments = json.loads(w.read().decode('utf-8'))
-                comments = comments['data']['children']
-                time.sleep(2)
-            with self.opener.open(
+            comments = self.reddit.get(
+                'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user))
+            comments = comments['data']['children']
+            subitted = self.reddit.get(
                 'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(
-                    user)) as w:
-                submitted = json.loads(w.read().decode('utf-8'))['data']['children']
-                time.sleep(2)
+                    user))
+            submitted = json.loads(w.read().decode('utf-8'))['data']['children']
         except urllib.error.HTTPError:
             # This is a hack to get around shadowbanned or deleted users
             p("Could not parse /u/{}, probably shadowbanned or deleted".format(user))
@@ -1079,9 +1073,10 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Suggestion(), Fixed(), ServerAd(), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(), BannedSubs(), Meme(),
-        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
+        Suggestion(r), Fixed(r), ServerAd(r), FreeMinecraft(r), AmazonReferral(r), ShortUrl(r),
+        Failed(r), Minebook(r), SelfLinks(r), BadWords(r), YoutubeSpam(r), BannedSubs(r), Meme(r),
+        InaneTitle(r), SpamNBan(r), AllCaps(r), FileDownload(r), ChunkError(r), Facebook(r),
+        Reditr(r)]
 
     # main loop
     while True:
