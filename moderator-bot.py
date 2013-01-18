@@ -743,7 +743,7 @@ class YoutubeSpam(Filter):
             subitted = self.reddit.get(
                 'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(
                     user))
-            submitted = json.loads(w.read().decode('utf-8'))['data']['children']
+            submitted = submitted['data']['children']
         except urllib.error.HTTPError:
             # This is a hack to get around shadowbanned or deleted users
             p("Could not parse /u/{}, probably shadowbanned or deleted".format(user))
