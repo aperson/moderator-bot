@@ -335,12 +335,12 @@ class ServerAd(Filter):
     def __init__(self, reddit):
         self.last_update = 0
         self.domain_list = []
+        self.reddit = reddit
         Filter.__init__(self)
         self._update_list()
         self.tag = "[Server Spam]"
         self.regex = re.compile(
             r'''(?:^|\s|ip(?:=|:)|\*)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|$|:|\*|!|\.|,|;|\?)''', re.I)
-        self.reddit = reddit
 
     def _update_list(self):
         if (time.time() - self.last_update) >= 1800:
