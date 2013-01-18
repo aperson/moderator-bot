@@ -347,7 +347,8 @@ class ServerAd(Filter):
             self.last_update = time.time()
             p('Updating domain blacklist...', end='')
             with self.opener.open(SERVERDOMAINS) as w:
-                domain_list = w.read().decode('utf-8').split('\n')
+                blacklist = json.loads(w.read().decode('utf-8'))['data']['content_md'].strip()
+                domain_list = re.split(r'''\n*''', blacklist)
             if len(self.domain_list) < len(domain_list):
                 p('Found {} new domains in online blacklist.'.format(
                     len(domain_list) - len(self.domain_list)))
