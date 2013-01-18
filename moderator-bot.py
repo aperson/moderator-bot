@@ -740,7 +740,7 @@ class YoutubeSpam(Filter):
             comments = self.reddit.get(
                 'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user))
             comments = comments['data']['children']
-            subitted = self.reddit.get(
+            submitted = self.reddit.get(
                 'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(
                     user))
             submitted = submitted['data']['children']
