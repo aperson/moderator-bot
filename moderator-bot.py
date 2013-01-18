@@ -335,8 +335,8 @@ class ServerAd(Filter):
     def __init__(self, reddit):
         self.last_update = 0
         self.domain_list = []
-        self.reddit = reddit
         Filter.__init__(self)
+        self.reddit = reddit
         self._update_list()
         self.tag = "[Server Spam]"
         self.regex = re.compile(
