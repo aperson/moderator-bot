@@ -961,7 +961,7 @@ class InaneTitle(Filter):
 class SpamNBan(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''teslabots\.jimbo\.com|(?:6|9)minecraft\.net''')
+        self.regex = re.compile(r'''teslabots\.jimbo\.com''')
         self.ban = True
         self.action = 'spammed'
 
