@@ -902,7 +902,7 @@ class Meme(Filter):
             submission['subreddit'], submission['id'])
         selflink = "self.{}".format(submission['subreddit'])
         for i in self.meme_sites:
-            if submission['domain'] not selflink and i in submission['domain']:
+            if submission['domain'] != selflink and i in submission['domain']:
                 params = {
                     'title': submission['title'].title(), 'resubmit': True,
                     'url': submission['url']}
