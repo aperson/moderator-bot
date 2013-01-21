@@ -415,8 +415,10 @@ class ServerAd(Filter):
                         time.sleep(2)
                     image_list.append(
                         {'title': imgur['title'], 'description': imgur['description']})
-                    for i in imgur['images']:
-                        image_list.append(i['image'])
+                    with self.opener.open(
+                        'https://api.imgur.com/3/album/{}/images.json'.format(url)) as w:
+                        imgur = json.loads(w.read().decode('utf-8'))['data']
+                    image_list.extend(imgur)
                 elif url.startswith('gallery/'):
                     url = url[8:].split('/')[0]
                     with self.opener.open(
