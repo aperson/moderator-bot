@@ -411,7 +411,7 @@ class ServerAd(Filter):
                 if url.startswith('a/'):
                     url = url[2:].split('/')[0]
                     with self.opener.open('https://api.imgur.com/3/album/{}.json'.format(url)) as w:
-                        imgur = json.loads(w.read().decode('utf-8'))['album']
+                        imgur = json.loads(w.read().decode('utf-8'))['data']
                         time.sleep(2)
                     image_list.append(
                         {'title': imgur['title'], 'description': imgur['description']})
@@ -421,16 +421,16 @@ class ServerAd(Filter):
                     url = url[8:].split('/')[0]
                     with self.opener.open(
                         'https://api.imgur.com/3/gallery/album/{}.json'.format(url)) as w:
-                        imgur = json.loads(w.read().decode('utf-8'))['data']['image']
+                        imgur = json.loads(w.read().decode('utf-8'))['data']
                         time.sleep(2)
                     image_list.append({'title': imgur['title'], 'description': ''})
-                    for i in imgur['album_images']['images']:
+                    for i in imgur['album_images']:
                         image_list.append({'title': i['title'], 'description': i['description']})
                 else:
                     for i in re.split(r''',|&''', url):
                         imgur_api = 'https://api.imgur.com/3/image/{}.json'
                         with self.opener.open(imgur_api.format(i)) as w:
-                            imgur = json.loads(w.read().decode('utf-8'))['image']
+                            imgur = json.loads(w.read().decode('utf-8'))['data']
                             time.sleep(2)
                         image_list.append(imgur['image'])
                 with self.database.open() as db:
