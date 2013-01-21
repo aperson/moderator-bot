@@ -1104,7 +1104,10 @@ def main():
                 p('Processing {}'.format(item['id']), color_seed=item['name'], end="")
                 for f in filters:
                     processed['ids'].append(item['name'])
-                    if item['banned_by'] is not None:
+                    # Reddit's api is still a little weird here. Things are None if they're not
+                    # removed by anyone, but they're True if the spam filter removed it.
+                    # otherwise, it's the username of the mod.
+                    if item['banned_by'] is not None and item['banned_by'] is not True:
                         break
                     if item['author'] in (USERNAME, 'tweet_poster'):
                         break
