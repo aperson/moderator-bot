@@ -339,9 +339,9 @@ class ServerAd(Filter):
         Filter.__init__(self)
         self.reddit = reddit
         self.opener = urllib.request.build_opener()
-        self.opener.addheaders([
+        self.opener.addheaders = [
             ('User-agent', 'moderator-bot.py v2'),
-            ('Authorization', 'Client-id {}'.format(IMGUR_CLIENT_ID))])
+            ('Authorization', 'Client-id {}'.format(IMGUR_CLIENT_ID))]
         self.tag = "[Server Spam]"
         self.regex = re.compile(
             r'''(?:^|\s|ip(?:=|:)|\*)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|$|:|\*|!|\.|,|;|\?)''', re.I)
