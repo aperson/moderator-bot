@@ -434,7 +434,7 @@ class ServerAd(Filter):
                         with self.opener.open(imgur_api.format(i)) as w:
                             imgur = json.loads(w.read().decode('utf-8'))['data']
                             time.sleep(2)
-                        image_list.append(imgur['image'])
+                        image_list.append(imgur)
                 with self.database.open() as db:
                     db['imgur'][url] = image_list
             except urllib.error.HTTPError:
