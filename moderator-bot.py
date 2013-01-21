@@ -51,6 +51,7 @@ except:
     DATABASEFILE = '/some/path'
     BANNEDSUBS = ['some', 'list']
     STATUS_JSON = 'http://somesite.com/some.json'
+    IMGUR_CLIENT_ID = 'someid'
 
 
 def p(data, end='\n', color_seed=None):
@@ -337,7 +338,10 @@ class ServerAd(Filter):
         self.domain_list = []
         Filter.__init__(self)
         self.reddit = reddit
-        self._update_list()
+        self.opener = urllib.request.build_opener()
+        self.opener.addheaders([
+            ('User-agent', 'moderator-bot.py v2'),
+            ('Authorization', 'Client-id {}'.format(IMGUR_CLIENT_ID)])
         self.tag = "[Server Spam]"
         self.regex = re.compile(
             r'''(?:^|\s|ip(?:=|:)|\*)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|$|:|\*|!|\.|,|;|\?)''', re.I)
@@ -384,63 +388,65 @@ class ServerAd(Filter):
                     return False
             return True
 
-    #def _imgur_check(self, url):
-        #'''Takes a imgur url and returns True if a server ad is found in the title or description'''
-        #url = url.replace('&amp;', '&')
-        #original_url = url
-        #p("Checking {}".format(original_url), end='')
-        #url = url.split('imgur.com/')[1]
-        #url = url.split('#')[0]
-        #if url.endswith('/'):
-            #url = url[:-1]
-        #if url.endswith('/all'):
-            #url = url[:-4]
-        #if '.' in url:
-            #return False
+    def _imgur_check(self, url):
+        '''Takes a imgur url and returns True if a server ad is found in the title or description'''
+        url = url.replace('&amp;', '&')
+        original_url = url
+        p("Checking {}".format(original_url), end='')
+        url = url.split('imgur.com/')[1]
+        url = url.split('#')[0]
+        if url.endswith('/'):
+            url = url[:-1]
+        if url.endswith('/all'):
+            url = url[:-4]
+        if '.' in url:
+            return False
 
-        #image_list = []
-        #try:
-            #with self.database.open() as db:
-                #image_list = db['imgur']['url']
-        #except KeyError:
-            #try:
-                #if url.startswith('a/'):
-                    #url = url[2:].split('/')[0]
-                    #with self.opener.open('https://api.imgur.com/2/album/{}.json'.format(url)) as w:
-                        #imgur = json.loads(w.read().decode('utf-8'))['album']
-                        #time.sleep(2)
-                    #image_list.append({'title': imgur['title'], 'caption': imgur['description']})
-                    #for i in imgur['images']:
-                        #image_list.append(i['image'])
-                #elif url.startswith('gallery/'):
-                    #url = url[8:].split('/')[0]
-                    #with self.opener.open('http://imgur.com/gallery/{}.json'.format(url)) as w:
-                        #imgur = json.loads(w.read().decode('utf-8'))['data']['image']
-                        #time.sleep(2)
-                    #image_list.append({'title': imgur['title'], 'caption': ''})
-                    #for i in imgur['album_images']['images']:
-                        #image_list.append({'title': i['title'], 'caption': i['description']})
-                #else:
-                    #for i in re.split(r''',|&''', url):
-                        #imgur_api = 'https://api.imgur.com/2/image/{}.json'
-                        #with self.opener.open(imgur_api.format(i)) as w:
-                            #imgur = json.loads(w.read().decode('utf-8'))['image']
-                            #time.sleep(2)
-                        #image_list.append(imgur['image'])
-                #with self.database.open() as db:
-                    #db['imgur'][url] = image_list
-            #except urllib.error.HTTPError:
-                #p('Could not parse: {}'.format(original_url))
-                #return None
+        image_list = []
+        try:
+            with self.database.open() as db:
+                image_list = db['imgur']['url']
+        except KeyError:
+            try:
+                if url.startswith('a/'):
+                    url = url[2:].split('/')[0]
+                    with self.opener.open('https://api.imgur.com/3/album/{}.json'.format(url)) as w:
+                        imgur = json.loads(w.read().decode('utf-8'))['album']
+                        time.sleep(2)
+                    image_list.append(
+                        {'title': imgur['title'], 'description': imgur['description']})
+                    for i in imgur['images']:
+                        image_list.append(i['image'])
+                elif url.startswith('gallery/'):
+                    url = url[8:].split('/')[0]
+                    with self.opener.open(
+                        'https://api.imgur.com/3/gallery/album/{}.json'.format(url)) as w:
+                        imgur = json.loads(w.read().decode('utf-8'))['data']['image']
+                        time.sleep(2)
+                    image_list.append({'title': imgur['title'], 'description': ''})
+                    for i in imgur['album_images']['images']:
+                        image_list.append({'title': i['title'], 'description': i['description']})
+                else:
+                    for i in re.split(r''',|&''', url):
+                        imgur_api = 'https://api.imgur.com/3/image/{}.json'
+                        with self.opener.open(imgur_api.format(i)) as w:
+                            imgur = json.loads(w.read().decode('utf-8'))['image']
+                            time.sleep(2)
+                        image_list.append(imgur['image'])
+                with self.database.open() as db:
+                    db['imgur'][url] = image_list
+            except urllib.error.HTTPError:
+                p('Could not parse: {}'.format(original_url))
+                return None
 
-        #for i in image_list:
-            #if i['caption']:
-                #if self._server_in(i['caption']):
-                    #return True
-            #if i['title']:
-                #if self._server_in(i['title']):
-                    #return True
-        #return False
+        for i in image_list:
+            if i['description']:
+                if self._server_in(i['description']):
+                    return True
+            if i['title']:
+                if self._server_in(i['title']):
+                    return True
+        return False
 
     def filterSubmission(self, submission):
         self.comment = ''
@@ -456,17 +462,17 @@ class ServerAd(Filter):
             p(self.log_text + ":")
             p(link, color_seed=submission['name'])
             return True
-        #elif submission['domain'] == 'imgur.com':
-            #if self._imgur_check(submission['url']):
-                #self.log_text = "Found server advertisement in submission"
-                #link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                    #submission['subreddit'], submission['id'])
-                #reason = "server advertisements are not allowed"
-                #self.comment = self.comment_template.format(
-                    #sub=submission['subreddit'], reason=reason, link=link)
-                #p(self.log_text + ":")
-                #p(link)
-                #return True
+        elif submission['domain'] == 'imgur.com':
+            if self._imgur_check(submission['url']):
+                self.log_text = "Found server advertisement in submission"
+                link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                    submission['subreddit'], submission['id'])
+                reason = "server advertisements are not allowed"
+                self.comment = self.comment_template.format(
+                    sub=submission['subreddit'], reason=reason, link=link)
+                p(self.log_text + ":")
+                p(link)
+                return True
         elif submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             if 'media' in submission:
                 if submission['media'] is not None:
