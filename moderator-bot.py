@@ -892,7 +892,7 @@ class Meme(Filter):
         Filter.__init__(self)
         self.comment_template = self.comment_template + (
             "\n\nYou are free to [resubmit to a more appropriate subreddit]({resubmit} 'click here "
-            "to resubmit')")
+            "to resubmit').")
         self.meme_sites = (
             'memecreator.org', 'memegenerator.net', 'quickmeme.com', 'qkme.me', 'mememaker.net',
             'knowyourmeme.com', 'weknowmemes.com', 'elol.com')
@@ -900,8 +900,9 @@ class Meme(Filter):
     def filterSubmission(self, submission):
         link = 'http://reddit.com/r/{}/comments/{}/'.format(
             submission['subreddit'], submission['id'])
+        selflink = "self.{}".format(submission['subreddit'])
         for i in self.meme_sites:
-            if i in submission['domain']:
+            if submission['domain'] not selflink and i in submission['domain']:
                 params = {
                     'title': submission['title'].title(), 'resubmit': True,
                     'url': submission['url']}
