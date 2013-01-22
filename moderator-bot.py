@@ -392,7 +392,7 @@ class ServerAd(Filter):
         '''Takes a imgur url and returns True if a server ad is found in the title or description'''
         url = url.replace('&amp;', '&')
         original_url = url
-        p("Checking {}".format(original_url), end='')
+        p("Checking {}".format(original_url), end='', color_seed=url)
         url = url.split('imgur.com/')[1]
         url = url.split('#')[0]
         if url.endswith('/'):
@@ -406,7 +406,7 @@ class ServerAd(Filter):
         try:
             with self.database.open() as db:
                 image_list = db['imgur'][url]
-            print("{} is cached".format(url))
+            p("{} is cached".format(url), end='', color_seed=url)
         except KeyError:
             try:
                 if url.startswith('a/'):
