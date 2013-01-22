@@ -441,6 +441,9 @@ class ServerAd(Filter):
             except urllib.error.HTTPError:
                 p('Could not parse: {}'.format(original_url))
                 return None
+            except urllib.error.URLError:
+                p('Could not parse: {}'.format(original_url))
+                return None
 
         for i in image_list:
             if i['description']:
