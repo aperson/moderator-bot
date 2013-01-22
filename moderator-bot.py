@@ -405,7 +405,8 @@ class ServerAd(Filter):
         image_list = []
         try:
             with self.database.open() as db:
-                image_list = db['imgur']['url']
+                image_list = db['imgur'][url]
+            print("{} is cached".format(url))
         except KeyError:
             try:
                 if url.startswith('a/'):
