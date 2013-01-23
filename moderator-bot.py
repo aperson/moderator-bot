@@ -445,7 +445,7 @@ class ServerAd(Filter):
                 p('Could not parse: {}'.format(original_url))
                 return None
 
-        for i in image_list:
+        for i in image_list:d
             if i['description']:
                 if self._server_in(i['description']):
                     return True
@@ -1078,6 +1078,27 @@ class SnapshotHeader(Filter):
             pass
 
 
+class Flair(Filter):
+    def __init__(self, reddit):
+        Filter.__init__(self)
+        self.reddit = reddit
+        self.nuke = False
+
+    def filterSubmission(self, submission):
+        if not submission['link_flair_css_class']:
+            xbox = re.compile(r'''(?:\s|^|[\[\(\{])xbox(?:\s|$|[\]\)\}])''')
+            pe = re.compile(r'''(?:\s|^|[\[\(\{])(?:(?:MC)?PE|Pocket Edition)(?:\s|$|[\]\)\}])''')
+            body = {'link': submission['name'], 'name': submission['name'], 'text': ''}
+            if xbox.search(submission['title']):
+                body['flair_template_id'] = 'be349730-0660-11e2-942a-12313b088941'
+            elif pe.search(submission['pe']):
+                body['flair_template_id'] = 'c14d511e-0660-11e2-a2db-12313b0ce1e2'
+            else:
+                body['flair_template_id'] = '3a838fd2-065f-11e2-a15c-12313d14a568'
+            self.reddit.post('http://www.reddit.com/api/selectflair', body)
+
+
+
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
@@ -1089,7 +1110,8 @@ def main():
     filters = [
         Suggestion(), Fixed(), ServerAd(r), FreeMinecraft(), AmazonReferral(), ShortUrl(),
         Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r), BannedSubs(), Meme(),
-        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
+        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr(),
+        Flair(r)]
 
     # main loop
     while True:
