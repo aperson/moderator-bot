@@ -445,7 +445,7 @@ class ServerAd(Filter):
                 p('Could not parse: {}'.format(original_url))
                 return None
 
-        for i in image_list:d
+        for i in image_list:
             if i['description']:
                 if self._server_in(i['description']):
                     return True
