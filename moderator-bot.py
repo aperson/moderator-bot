@@ -1091,7 +1091,7 @@ class Flair(Filter):
             body = {'link': submission['name'], 'name': submission['name'], 'text': ''}
             if xbox.search(submission['title']):
                 body['flair_template_id'] = 'be349730-0660-11e2-942a-12313b088941'
-            elif pe.search(submission['pe']):
+            elif pe.search(submission['title']):
                 body['flair_template_id'] = 'c14d511e-0660-11e2-a2db-12313b0ce1e2'
             else:
                 body['flair_template_id'] = '3a838fd2-065f-11e2-a15c-12313d14a568'
