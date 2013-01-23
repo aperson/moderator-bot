@@ -428,7 +428,12 @@ class ServerAd(Filter):
                         time.sleep(2)
                     image_list.append({'title': imgur['title'], 'description': ''})
                     for i in imgur['album_images']:
-                        image_list.append({'title': i['title'], 'description': i['description']})
+                        image = {title: i['title']}
+                        if 'description' in i:
+                            image['description'] = i['description']
+                        else:
+                            image['description'] = ''
+                        image_list.append(image)
                 else:
                     for i in re.split(r''',|&''', url):
                         imgur_api = 'https://api.imgur.com/3/image/{}.json'
@@ -1108,10 +1113,9 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Suggestion(), Fixed(), ServerAd(r), FreeMinecraft(), AmazonReferral(), ShortUrl(),
+        Flair(r), Suggestion(), Fixed(), ServerAd(r), FreeMinecraft(), AmazonReferral(), ShortUrl(),
         Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r), BannedSubs(), Meme(),
-        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr(),
-        Flair(r)]
+        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
 
     # main loop
     while True:
