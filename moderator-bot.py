@@ -428,7 +428,7 @@ class ServerAd(Filter):
                         time.sleep(2)
                     image_list.append({'title': imgur['title'], 'description': ''})
                     for i in imgur['album_images']:
-                        image = {title: i['title']}
+                        image = {'title': i['title']}
                         if 'description' in i:
                             image['description'] = i['description']
                         else:
@@ -1095,10 +1095,16 @@ class Flair(Filter):
             pe = re.compile(r'''(?:\s|^|[\[\(\{])(?:(?:MC)?PE|Pocket Edition)(?:\s|$|[\]\)\}])''')
             body = {'link': submission['name'], 'name': submission['name'], 'text': ''}
             if xbox.search(submission['title']):
+                p("Giving {} xbox flair...".format(
+                    submission['name']), color_seed=submission['name'])
                 body['flair_template_id'] = 'be349730-0660-11e2-942a-12313b088941'
             elif pe.search(submission['title']):
+                p("Giving {} pe flair...".format(
+                    submission['name']), color_seed=submission['name'])
                 body['flair_template_id'] = 'c14d511e-0660-11e2-a2db-12313b0ce1e2'
             else:
+                p("Giving {} pc flair...".format(
+                    submission['name']), color_seed=submission['name'])
                 body['flair_template_id'] = '3a838fd2-065f-11e2-a15c-12313d14a568'
             self.reddit.post('http://www.reddit.com/api/selectflair', body)
 
