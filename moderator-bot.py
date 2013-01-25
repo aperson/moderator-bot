@@ -1048,7 +1048,7 @@ class Facebook(Filter):
     def filterSubmission(self, submission):
         if self.regex.search(submission['domain']):
             self.comment = (
-                """Hey there! I removed your post since it linked to a facebook photo, which can """
+                """Hey there! I removed your post since it linked to a facebook page, which can """
                 """be traced back to a user profile. You should re-upload the picture somewhere e"""
                 """lse like [imgur](http://imgur.com) or [minus](http://minus.com) and resubmit.""")
             p(self.log_text + ":")
