@@ -255,6 +255,7 @@ class Imgur(object):
 
         try:
             with self.opener.open(url) as w:
+                time.sleep(2)
                 imgur = w.read().decode('utf-8')
         except:
             return None
@@ -281,6 +282,8 @@ class Imgur(object):
         """Returns a list containing a dicts of titles/descriptions for images and galleries."""
         """We try the imgur_id as a album first, and if that fails we assume it's an individual"""
         """image.  If force_single is True, we skip the initial album try."""
+
+        p("Checking imgur id {}...".format(imgur_id), end="", color_seed=imgur_id)
 
         if use_gallery:
             urls = {
