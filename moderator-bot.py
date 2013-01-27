@@ -237,6 +237,94 @@ class Reddit(object):
         self.post('http://www.reddit.com/api/site_admin', body)
 
 
+
+class Imgur(object):
+    def __init__(self, client_id):
+        self.opener = urllib.request.build_opener()
+        self.opener.addheaders = [
+            ('User-agent', 'moderator-bot.py v2'),
+            ('Authorization', 'Client-id {}'.format(client_id))]
+        # self.database = Database(DATABASEFILE)
+
+    def _request(self, url):
+        print('Grabbing: {}'.format(url))
+        try:
+            with self.opener.open(url) as w:
+                imgur = w.read().decode('utf-8')
+        except:
+            return None
+
+        imgur = json.loads(imgur)['data']
+
+        if not 'error' in imgur:
+            print(imgur)
+            return imgur
+
+    def _get_ids(self, url):
+        """Turns a url into a set of imgur ids"""
+        url = url.split('#')[0]
+        if url.endswith('/'):
+            url = url[:-1]
+        if url.endswith('/all'):
+            url = url[:-4]
+        url = re.split(r'''(?i)imgur.com(?:/gallery|/a)?/''', url)[1]
+        ids = set(re.split(r''',|&''', url))
+        return ids
+
+    def _get(self, imgur_id, use_gallery, force_single=False):
+        """Returns a list containing a dicts of titles/descriptions for images and galleries."""
+        """We try the imgur_id as a album first, and if that fails we assume it's an individual"""
+        """image.  If force_single is True, we skip the initial album try."""
+
+        if use_gallery:
+            urls = {
+                'album': 'https://api.imgur.com/3/gallery/album/{}.json',
+                'image': 'https://api.imgur.com/3/gallery/image/{}.json'}
+        else:
+            urls = {
+                'album': 'https://api.imgur.com/3/album/{}.json',
+                'image': 'https://api.imgur.com/3/image/{}.json'}
+
+        if not force_single:
+            output = list()
+            imgur = self._request(urls['album'].format(imgur_id))
+            if imgur:
+                output.add({'title': imgur['title'], 'description': imgur['description']})
+                for i in imgur['images']:
+                    output.add({'title': i['title'], 'description': i['description']})
+                return output
+
+        imgur = self._request(urls['image'].format(imgur_id))
+
+        if imgur:
+            return [{'title': imgur['title'], 'description': imgur['description']}]
+
+    def get(self, url):
+        """Returns a list of dicts of the title/description of images/galleries"""
+
+        output = list()
+        ids = self._get_ids(url)
+
+        if 'gallery' in url.lower():
+            use_g = True
+        else:
+            use_g = False
+
+        # we can assume that if we have a list, that they're all individual images
+        if len(ids) > 1:
+            for i in ids:
+                imgur = self._get(i, use_g)
+                if imgur:
+                    output.extend(imgur)
+        else:
+            imgur = self._get(ids.pop(), use_g)
+            if imgur:
+                output = imgur
+
+        return output
+
+
+
 class Filter():
     """Base filter class"""
     def __init__(self):
@@ -333,15 +421,12 @@ class Fixed(Filter):
 
 
 class ServerAd(Filter):
-    def __init__(self, reddit):
+    def __init__(self, reddit, imgur):
         self.last_update = 0
         self.domain_list = []
         Filter.__init__(self)
         self.reddit = reddit
-        self.opener = urllib.request.build_opener()
-        self.opener.addheaders = [
-            ('User-agent', 'moderator-bot.py v2'),
-            ('Authorization', 'Client-id {}'.format(IMGUR_CLIENT_ID))]
+        self.imgur = imgur
         self.tag = "[Server Spam]"
         self.regex = re.compile(
             r'''(?:^|\s|ip(?:=|:)|\*)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|$|:|\*|!|\.|,|;|\?)''', re.I)
@@ -391,65 +476,7 @@ class ServerAd(Filter):
     def _imgur_check(self, url):
         '''Takes a imgur url and returns True if a server ad is found in the title or description'''
         url = url.replace('&amp;', '&')
-        original_url = url
-        p("Checking {}".format(original_url), end='', color_seed=url)
-        url = url.split('imgur.com/')[1]
-        url = url.split('#')[0]
-        if url.endswith('/'):
-            url = url[:-1]
-        if url.endswith('/all'):
-            url = url[:-4]
-        if '.' in url:
-            return False
-
-        image_list = []
-        try:
-            with self.database.open() as db:
-                image_list = db['imgur'][url]
-            p("{} is cached".format(url), end='', color_seed=url)
-        except KeyError:
-            try:
-                if url.startswith('a/'):
-                    url = url[2:].split('/')[0]
-                    with self.opener.open('https://api.imgur.com/3/album/{}.json'.format(url)) as w:
-                        imgur = json.loads(w.read().decode('utf-8'))['data']
-                        time.sleep(2)
-                    image_list.append(
-                        {'title': imgur['title'], 'description': imgur['description']})
-                    with self.opener.open(
-                        'https://api.imgur.com/3/album/{}/images.json'.format(url)) as w:
-                        imgur = json.loads(w.read().decode('utf-8'))['data']
-                    image_list.extend(imgur)
-                elif url.startswith('gallery/'):
-                    url = url[8:].split('/')[0]
-                    with self.opener.open(
-                        'https://api.imgur.com/3/gallery/album/{}.json'.format(url)) as w:
-                        imgur = json.loads(w.read().decode('utf-8'))['data']
-                        time.sleep(2)
-                    image_list.append({'title': imgur['title'], 'description': ''})
-                    for i in imgur['album_images']:
-                        image = {'title': i['title']}
-                        if 'description' in i:
-                            image['description'] = i['description']
-                        else:
-                            image['description'] = ''
-                        image_list.append(image)
-                else:
-                    for i in re.split(r''',|&''', url):
-                        imgur_api = 'https://api.imgur.com/3/image/{}.json'
-                        with self.opener.open(imgur_api.format(i)) as w:
-                            imgur = json.loads(w.read().decode('utf-8'))['data']
-                            time.sleep(2)
-                        image_list.append(imgur)
-                with self.database.open() as db:
-                    db['imgur'][url] = image_list
-            except urllib.error.HTTPError:
-                p('Could not parse: {}'.format(original_url))
-                return None
-            except urllib.error.URLError:
-                p('Could not parse: {}'.format(original_url))
-                return None
-
+        image_list = self.imgur.get(url)
         for i in image_list:
             if i['description']:
                 if self._server_in(i['description']):
@@ -1114,15 +1141,17 @@ class Flair(Filter):
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
+    imgur = Imgur(IMGUR_CLIENT_ID)
     last_status = None
     last_matches = None
     processed = {'ids': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Flair(r), Suggestion(), Fixed(), ServerAd(r), FreeMinecraft(), AmazonReferral(), ShortUrl(),
-        Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r), BannedSubs(), Meme(),
-        InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
+        Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur), FreeMinecraft(), AmazonReferral(),
+        ShortUrl(), Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r), BannedSubs(),
+        Meme(), InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(),
+        Reditr()]
 
     # main loop
     while True:
