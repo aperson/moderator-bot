@@ -325,7 +325,7 @@ class Imgur(object):
 
 
 
-class Filter():
+class Filter(object):
     """Base filter class"""
     def __init__(self):
         self.regex = None
