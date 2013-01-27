@@ -251,6 +251,7 @@ class Imgur(object):
             if not 'imgur' in db:
                 db['imgur'] = dict()
             if url in db['imgur']:
+                p("Image data already cached", end="")
                 return db['imgur'][url]
 
         try:
