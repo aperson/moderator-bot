@@ -244,10 +244,15 @@ class Imgur(object):
         self.opener.addheaders = [
             ('User-agent', 'moderator-bot.py v2'),
             ('Authorization', 'Client-id {}'.format(client_id))]
-        # self.database = Database(DATABASEFILE)
+        self.database = Database(DATABASEFILE)
 
     def _request(self, url):
-        print('Grabbing: {}'.format(url))
+        with self.database.open() as db:
+            if not 'imgur' in db:
+                db['imgur'] = dict()
+            if url in db['imgur']:
+                return db['imgur'][url]
+
         try:
             with self.opener.open(url) as w:
                 imgur = w.read().decode('utf-8')
@@ -257,7 +262,8 @@ class Imgur(object):
         imgur = json.loads(imgur)['data']
 
         if not 'error' in imgur:
-            print(imgur)
+            with self.database.open() as db:
+                db['imgur'][url] = imgur
             return imgur
 
     def _get_ids(self, url):
