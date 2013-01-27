@@ -295,9 +295,9 @@ class Imgur(object):
             output = list()
             imgur = self._request(urls['album'].format(imgur_id))
             if imgur:
-                output.add({'title': imgur['title'], 'description': imgur['description']})
+                output.append({'title': imgur['title'], 'description': imgur['description']})
                 for i in imgur['images']:
-                    output.add({'title': i['title'], 'description': i['description']})
+                    output.append({'title': i['title'], 'description': i['description']})
                 return output
 
         imgur = self._request(urls['image'].format(imgur_id))
