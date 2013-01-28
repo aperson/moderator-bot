@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# flake8: noqa
 # -*- coding: utf-8 -*-
 #
 #  moderator-bot.py
@@ -24,7 +23,6 @@
 import json
 import urllib.request
 import time
-import datetime
 import re
 import signal
 import sys
@@ -237,7 +235,6 @@ class Reddit(object):
         self.post('http://www.reddit.com/api/site_admin', body)
 
 
-
 class Imgur(object):
     def __init__(self, client_id):
         self.opener = urllib.request.build_opener()
@@ -333,6 +330,11 @@ class Imgur(object):
 
         return output
 
+
+class Youtube(object):
+    def __init__(self):
+        self.opener = urllib.request.build_opener()
+        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
 
 
 class Filter(object):
@@ -1109,17 +1111,6 @@ class Reditr(Filter):
             return True
 
 
-class SnapshotHeader(Filter):
-    def __init__(self):
-        Filter.__init__(self)
-        self.nuke = False
-
-    def filterSubmission(self, submission):
-        if 'snapshot' in submission['title'].lower() and \
-            'minecraft.net' in submission['url'].lower():
-            pass
-
-
 class Flair(Filter):
     def __init__(self, reddit):
         Filter.__init__(self)
@@ -1147,13 +1138,11 @@ class Flair(Filter):
             self.reddit.post('http://www.reddit.com/api/selectflair', body)
 
 
-
 def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
     last_status = None
-    last_matches = None
     processed = {'ids': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
