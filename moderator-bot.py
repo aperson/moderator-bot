@@ -360,20 +360,21 @@ class Youtube(object):
             'profile': 'http://gdata.youtube.com/feeds/api/users/{}?v=2&alt=json',
             'video': 'http://gdata.youtube.com/feeds/api/videos/{}?v=2&alt=json'}
 
-        if 'user/' in url.lower():
-            username = re.findall(r'''(?i)user/(.*)(?:/|$)''', url)[0]
-            return self._request(urls['profile'].format(username))
+        yt_id = self._get_id(url)
+
+        if yt_id:
+            return self._request(urls['video'].format(yt_id))
         else:
-            yt_id = self._get_id(url)
-            if yt_id:
-                return self._request(urls['video'].format(yt_id))
+            username = re.findall(r'''(?i)\.com\/(?:user\/)?(.*?)(?:\/|\?|$)''', url)
+            if username:
+                return self._request(urls['profile'].format(username[0]))
 
     def get_author(self, url):
-        """Returns the author name of the youtube url"""
+        """Returns the author id of the youtube url"""
         output = self._get(url)
         if output:
             # There has to be a reason for the list in there...
-            return output['author'][0]['name']['$t']
+            return output['author'][0]['yt$userId']['$t']
 
     def get_info(self, url):
         """Returns the title and description of a video."""
