@@ -47,6 +47,7 @@ except:
     LOGFILE = '/some/file/to/log/to.html'
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
     DATABASEFILE = '/some/path'
+    CACHEFILE = '/some/other/path'
     BANNEDSUBS = ['some', 'list']
     STATUS_JSON = 'http://somesite.com/some.json'
     IMGUR_CLIENT_ID = 'someid'
