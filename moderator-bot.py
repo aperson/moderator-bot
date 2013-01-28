@@ -1117,7 +1117,7 @@ class FileDownload(Filter):
             r'''filestube|4shared|mediafire|rapidshare|box\.net|hotfile|zshare|uploading\.com|'''
             r'''depositfiles|fileserve|zippyshare|esnips|filefactory|uploaded\.to|2shared|'''
             r'''fileswap|filehosting|assets\.minecraft\.net|\.jar$|\.exe$|\.zip$|\.tar\.gz$|'''
-            r'''\.tar\bz2$''', re.I)
+            r'''\.tar\bz2$|dl\.dropbox\.com''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['url']):
