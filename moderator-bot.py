@@ -573,15 +573,15 @@ class ServerAd(Filter):
                 return True
         elif submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             yt = self.y.get_info(submission['url'])
-            self.log_text = "Found server advertisement in submission"
-            link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
-            reason = "server advertisements are not allowed"
-            self.comment = self.comment_template.format(
-                sub=submission['subreddit'], reason=reason, link=link)
-            p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
             if self._server_in(yt['title']) or self._server_in(yt['description']):
+                self.log_text = "Found server advertisement in submission"
+                link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                    submission['subreddit'], submission['id'])
+                reason = "server advertisements are not allowed"
+                self.comment = self.comment_template.format(
+                    sub=submission['subreddit'], reason=reason, link=link)
+                p(self.log_text + ":")
+                p(link, color_seed=submission['name'])
                 return True
 
     def filterComment(self, comment):
