@@ -135,6 +135,10 @@ class Database(object):
 def cache_url(function):
     """Url caching decorator.  For decorating class functions that take a single url as an arg"""
     """and return the response."""
+
+    #expire time (seconds)
+    expire_after = 60 * 60
+
     db = Database(CACHEFILE)
 
     def new_function(self, url):
@@ -142,12 +146,17 @@ def cache_url(function):
             if not 'cache' in d:
                 d['cache'] = dict()
             if url in d['cache']:
-                return d['cache'][url]
-            else:
-                output = function(self, url)
-                if output:
-                    d['cache'][url] = output
-                    return output
+                output = d['cache'][url]
+                expire_time = output['time'] + expire_after
+                if time.time() < expire_time:
+                    return output['data']
+                else:
+                    del d['cache'][url]
+            output = function(self, url)
+            if output:
+                to_cache = {'time': time.time(), 'data': output}
+                d['cache'][url] = to_cache
+                return output
     return new_function
 
 
