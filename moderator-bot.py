@@ -480,12 +480,13 @@ class Fixed(Filter):
 
 
 class ServerAd(Filter):
-    def __init__(self, reddit, imgur):
+    def __init__(self, reddit, imgur, youtube):
         self.last_update = 0
         self.domain_list = []
         Filter.__init__(self)
         self.reddit = reddit
         self.imgur = imgur
+        self.y = youtube
         self.tag = "[Server Spam]"
         self.regex = re.compile(
             r'''(?:^|\s|ip(?:=|:)|\*)(\d{1,3}(?:\.\d{1,3}){3})\.?(?:\s|$|:|\*|!|\.|,|;|\?)''', re.I)
@@ -571,22 +572,17 @@ class ServerAd(Filter):
                 p(link)
                 return True
         elif submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
-            if 'media' in submission:
-                if submission['media'] is not None:
-                    if 'oembed' in submission['media']:
-                        if self._server_in(submission['media']['oembed']['title']):
-                            return True
-                        elif 'description' in submission['media']['oembed']:
-                            if self._server_in(submission['media']['oembed']['description']):
-                                self.log_text = "Found server advertisement in submission"
-                                link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                                    submission['subreddit'], submission['id'])
-                                reason = "server advertisements are not allowed"
-                                self.comment = self.comment_template.format(
-                                    sub=submission['subreddit'], reason=reason, link=link)
-                                p(self.log_text + ":")
-                                p(link, color_seed=submission['name'])
-                                return True
+            yt = self.y.get_info(submission['url'])
+            self.log_text = "Found server advertisement in submission"
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                submission['subreddit'], submission['id'])
+            reason = "server advertisements are not allowed"
+            self.comment = self.comment_template.format(
+                sub=submission['subreddit'], reason=reason, link=link)
+            p(self.log_text + ":")
+            p(link, color_seed=submission['name'])
+            if self._server_in(yt['title']) or self._server_in(yt['description']):
+                return True
 
     def filterComment(self, comment):
         if self._server_in(comment['body']):
@@ -812,24 +808,17 @@ class BadWords(Filter):
 
 
 class YoutubeSpam(Filter):
-    def __init__(self, reddit):
+    def __init__(self, reddit, youtube):
         Filter.__init__(self)
         self.tag = "[Youtube Spam]"
         self.check_age = False
         self.reddit = reddit
+        self.y = youtube
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
         if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
-            if 'media' in submission:
-                if submission['media'] is not None:
-                    if 'oembed' in submission['media']:
-                        if 'author_name' in submission['media']['oembed']:
-                            if submission['media']['oembed']['author_name'] is not None:
-                                return submission['media']['oembed']['author_name'].replace(
-                                    ' ', '').lower()
-            if '/user' in submission['url']:
-                return re.findall(r'''user/(.*)(?:\?|/|$)''', submission['url'])[0].lower()
+            return self.y.get_author(submission['url'])
 
     def _checkProfile(self, user):
         '''Returns the percentage of things that the user only contributed to themselves.
@@ -1189,13 +1178,14 @@ def main():
     sleep_time = 60 * 3
     r = Reddit(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
+    y = Youtube()
     last_status = None
     processed = {'ids': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur), FreeMinecraft(), AmazonReferral(),
-        ShortUrl(), Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r), BannedSubs(),
+        Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur, y), FreeMinecraft(), AmazonReferral(),
+        ShortUrl(), Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r, y), BannedSubs(),
         Meme(), InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(),
         Reditr()]
 
