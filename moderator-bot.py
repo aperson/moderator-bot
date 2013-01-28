@@ -342,9 +342,7 @@ class Youtube(object):
             yt_json = json.loads(youtube)
 
         if not 'errors' in yt_json:
-            if 'data' in yt_json:
-                yt_json = yt_json['data']
-            return yt_json
+            return yt_json['entry']
 
     def _get_id(self, url):
         # regex via: http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
