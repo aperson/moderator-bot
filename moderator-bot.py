@@ -360,7 +360,7 @@ class Youtube(object):
             'video': 'http://gdata.youtube.com/feeds/api/videos/{}?v=2&alt=json'}
 
         if 'user/' in url.lower():
-            username = re.findall(r'''url/(.*)/''')[0]
+            username = re.findall(r'''user/(.*)/''')[0]
             return self._request(urls['profile'].format(username))
         else:
             yt_id = self._get_id(url)
