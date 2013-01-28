@@ -1183,7 +1183,7 @@ class Flair(Filter):
 
     def filterSubmission(self, submission):
         if not submission['link_flair_css_class']:
-            xbox = re.compile(r'''(?:\s|^|[\[\(\{])xbox(?:\s|$|[\]\)\}])''', re.I)
+            xbox = re.compile(r'''(?:\s|^|[\[\(\{])(?:xbox )?360(?:\s|$|[\]\)\}])''', re.I)
             pe = re.compile(
                 r'''(?:\s|^|[\[\(\{])(?:(?:MC)?PE|Pocket Edition)(?:\s|$|[\]\)\}])''', re.I)
             body = {'link': submission['name'], 'name': submission['name'], 'text': ''}
