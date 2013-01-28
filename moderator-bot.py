@@ -344,6 +344,15 @@ class Youtube(object):
         if not 'errors' in yt_json:
             return yt_json['data']
 
+    def _get_id(self, url):
+        # regex via: http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
+        regex = re.compile(
+            r'''(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|'''
+            r'''(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+''', re.I)
+        yt_id = regex.findall(url)
+        if yt_id:
+            return yt_id[0]
+
 
 class Filter(object):
     """Base filter class"""
