@@ -131,6 +131,25 @@ class Database(object):
             s.close()
 
 
+def cache_url(function):
+    db = Database(CACHEFILE)
+
+    def new_function(self, url):
+        with db.open() as d:
+            if not 'cache' in d:
+                d['cache'] = dict()
+            if url in d['cache']:
+                print('In cache')
+                return d['cache'][url]
+            else:
+                print('not in cache')
+                output = function(self, url)
+                if output:
+                    d['cache'][url] = output
+                    return output
+    return new_function
+
+
 class Reddit(object):
     """Base class to perform the tasks of a redditor."""
 
@@ -336,6 +355,7 @@ class Youtube(object):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
 
+    @cache_url
     def _request(self, url):
         with self.opener.open(url) as w:
             youtube = w.read().decode('utf-8')
