@@ -284,8 +284,6 @@ class Imgur(object):
         imgur = json.loads(imgur)['data']
 
         if not 'error' in imgur:
-            with self.database.open() as db:
-                db['imgur'][url] = imgur
             return imgur
 
     def _get_ids(self, url):
