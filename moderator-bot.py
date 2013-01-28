@@ -338,7 +338,7 @@ class Youtube(object):
 
     def _request(self, url):
         with self.opener.open(url) as w:
-            youtube = w.read.decode('utf-8')
+            youtube = w.read().decode('utf-8')
             yt_json = json.loads(youtube)
 
         if not 'errors' in yt_json:
@@ -360,12 +360,24 @@ class Youtube(object):
             'video': 'http://gdata.youtube.com/feeds/api/videos/{}?v=2&alt=json'}
 
         if 'user/' in url.lower():
-            username = re.findall(r'''user/(.*)/''')[0]
+            username = re.findall(r'''(?i)user/(.*)(?:/|$)''', url)[0]
             return self._request(urls['profile'].format(username))
         else:
             yt_id = self._get_id(url)
             if yt_id:
-                return self._request(urls['video'].format(yt_id[0]))
+                return self._request(urls['video'].format(yt_id))
+
+    def get_author(self, url):
+        """Returns the author name of the youtube url"""
+        output = self._get(url)
+        if output:
+            # There has to be a reason for the list in there...
+            return output['author'][0]['name']['$t']
+
+    def get_description(self, url):
+        output = self._get(url)
+        if output:
+            return output['media$group']['media$description']['$t']
 
 
 class Filter(object):
