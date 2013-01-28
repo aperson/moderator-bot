@@ -342,6 +342,7 @@ class Youtube(object):
             yt_json = json.loads(youtube)
 
         if not 'errors' in yt_json:
+            time.sleep(2)
             return yt_json['entry']
 
     def _get_id(self, url):
@@ -374,10 +375,13 @@ class Youtube(object):
             # There has to be a reason for the list in there...
             return output['author'][0]['name']['$t']
 
-    def get_description(self, url):
+    def get_info(self, url):
+        """Returns the title and description of a video."""
         output = self._get(url)
         if output:
-            return output['media$group']['media$description']['$t']
+            title = output['title']['$t']
+            description = output['media$group']['media$description']['$t']
+            return {'title': title, 'description': description}
 
 
 class Filter(object):
