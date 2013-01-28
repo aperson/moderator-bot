@@ -359,9 +359,12 @@ class Youtube(object):
 
     @cache_url
     def _request(self, url):
-        with self.opener.open(url) as w:
-            youtube = w.read().decode('utf-8')
-            yt_json = json.loads(youtube)
+        try:
+            with self.opener.open(url) as w:
+                youtube = w.read().decode('utf-8')
+                yt_json = json.loads(youtube)
+        except:
+            return None
 
         if not 'errors' in yt_json:
             time.sleep(2)
