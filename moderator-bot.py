@@ -342,7 +342,9 @@ class Youtube(object):
             yt_json = json.loads(youtube)
 
         if not 'errors' in yt_json:
-            return yt_json['data']
+            if 'data' in yt_json:
+                yt_json = yt_json['data']
+            return yt_json
 
     def _get_id(self, url):
         # regex via: http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
@@ -352,6 +354,20 @@ class Youtube(object):
         yt_id = regex.findall(url)
         if yt_id:
             return yt_id[0]
+
+    def _get(self, url):
+        """Decides if we're grabbing video info or a profile."""
+        urls = {
+            'profile': 'http://gdata.youtube.com/feeds/api/users/{}?v=2&alt=json',
+            'video': 'http://gdata.youtube.com/feeds/api/videos/{}?v=2&alt=json'}
+
+        if 'user/' in url.lower():
+            username = re.findall(r'''url/(.*)/''')[0]
+            return self._request(urls['profile'].format(username))
+        else:
+            yt_id = self._get_id(url)
+            if yt_id:
+                return self._request(urls['video'].format(yt_id[0]))
 
 
 class Filter(object):
