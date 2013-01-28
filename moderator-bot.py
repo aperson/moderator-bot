@@ -336,6 +336,14 @@ class Youtube(object):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
 
+    def _request(self, url):
+        with self.opener.open(url) as w:
+            youtube = w.read.decode('utf-8')
+            yt_json = json.loads(youtube)
+
+        if not 'errors' in yt_json:
+            return yt_json['data']
+
 
 class Filter(object):
     """Base filter class"""
