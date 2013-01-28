@@ -376,8 +376,10 @@ class Youtube(object):
             r'''(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|'''
             r'''(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+''', re.I)
         yt_id = regex.findall(url)
+        # temp fix:
+        yt_id = yt_id[0].split('#')[0]
         if yt_id:
-            return yt_id[0]
+            return yt_id
 
     def _get(self, url):
         """Decides if we're grabbing video info or a profile."""
