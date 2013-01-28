@@ -132,6 +132,8 @@ class Database(object):
 
 
 def cache_url(function):
+    """Url caching decorator.  For decorating class functions that take a single url as an arg"""
+    """and return the response."""
     db = Database(CACHEFILE)
 
     def new_function(self, url):
@@ -139,10 +141,8 @@ def cache_url(function):
             if not 'cache' in d:
                 d['cache'] = dict()
             if url in d['cache']:
-                print('In cache')
                 return d['cache'][url]
             else:
-                print('not in cache')
                 output = function(self, url)
                 if output:
                     d['cache'][url] = output
