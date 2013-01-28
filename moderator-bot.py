@@ -262,14 +262,8 @@ class Imgur(object):
             ('Authorization', 'Client-id {}'.format(client_id))]
         self.database = Database(DATABASEFILE)
 
+    @cache_url
     def _request(self, url):
-        with self.database.open() as db:
-            if not 'imgur' in db:
-                db['imgur'] = dict()
-            if url in db['imgur']:
-                p("Image data already cached", end="")
-                return db['imgur'][url]
-
         try:
             with self.opener.open(url) as w:
                 time.sleep(2)
