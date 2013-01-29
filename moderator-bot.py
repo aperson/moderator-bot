@@ -376,9 +376,10 @@ class Youtube(object):
             r'''(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|'''
             r'''(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+''', re.I)
         yt_id = regex.findall(url)
-        # temp fix:
-        yt_id = yt_id[0].split('#')[0]
+
         if yt_id:
+            # temp fix:
+            yt_id = yt_id[0].split('#')[0]
             return yt_id
 
     def _get(self, url):
@@ -1183,7 +1184,7 @@ class Flair(Filter):
 
     def filterSubmission(self, submission):
         if not submission['link_flair_css_class']:
-            xbox = re.compile(r'''(?:\s|^|[\[\(\{])(?:xbox\s?)?360(?:\s|$|[\]\)\}])''', re.I)
+            xbox = re.compile(r'''(?:\s|^|[\[\(\{])(?:xbox|360)(?:\s|$|[\]\)\}])''', re.I)
             pe = re.compile(
                 r'''(?:\s|^|[\[\(\{])(?:(?:MC)?PE|Pocket Edition)(?:\s|$|[\]\)\}])''', re.I)
             body = {'link': submission['name'], 'name': submission['name'], 'text': ''}
