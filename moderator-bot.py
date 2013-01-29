@@ -393,7 +393,7 @@ class Youtube(object):
         if yt_id:
             return self._request(urls['video'].format(yt_id))
         else:
-            username = re.findall(r'''(?i)\.com\/(?:user\/)?(.*?)(?:\/|\?|$)''', url)
+            username = re.findall(r'''(?i)\.com\/(?:user\/|channel\/)?(.*?)(?:\/|\?|$)''', url)
             if username:
                 return self._request(urls['profile'].format(username[0]))
 
