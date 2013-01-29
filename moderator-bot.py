@@ -408,9 +408,10 @@ class Youtube(object):
         """Returns the title and description of a video."""
         output = self._get(url)
         if output:
-            title = output['title']['$t']
-            description = output['media$group']['media$description']['$t']
-            return {'title': title, 'description': description}
+            if 'media$group' in output:
+                title = output['title']['$t']
+                description = output['media$group']['media$description']['$t']
+                return {'title': title, 'description': description}
 
 
 class Filter(object):
