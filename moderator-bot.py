@@ -380,6 +380,7 @@ class Youtube(object):
         if yt_id:
             # temp fix:
             yt_id = yt_id[0].split('#')[0]
+            yt_id = yt_id.split('?')[0]
             return yt_id
 
     def _get(self, url):
