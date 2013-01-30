@@ -270,7 +270,6 @@ class Imgur(object):
         self.opener.addheaders = [
             ('User-agent', 'moderator-bot.py v2'),
             ('Authorization', 'Client-id {}'.format(client_id))]
-        self.database = Database(DATABASEFILE)
 
     @cache_url
     def _request(self, url):
@@ -278,10 +277,9 @@ class Imgur(object):
             with self.opener.open(url) as w:
                 time.sleep(2)
                 imgur = w.read().decode('utf-8')
+                imgur = json.loads(imgur)['data']
         except:
             return None
-
-        imgur = json.loads(imgur)['data']
 
         if not 'error' in imgur:
             return imgur
