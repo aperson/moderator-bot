@@ -97,9 +97,7 @@ def mojangStatus():
     try:
         with opener.open(STATUS_JSON) as w:
             status = json.loads(w.read().decode('utf-8'))['report']
-    except urllib.error.HTTPError:
-        return None
-    except http.client.BadStatusLine:
+    except:
         return None
     text = []
     for i in ('website', 'login', 'account', 'session', 'skins'):
