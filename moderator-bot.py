@@ -523,7 +523,7 @@ class ServerAd(Filter):
             self.last_update = time.time()
             p('Updating domain blacklist...', end='')
             blacklist = self.reddit.get(SERVERDOMAINS)['data']['content_md'].strip()
-            domain_list = [i for i in re.split(r'''[\r\n]*''', blacklist) if not i.startswith("#")]
+            domain_list = [i for i in re.split(r'''[\r\n]*''', blacklist) if not i.startswith("!")]
             if len(self.domain_list) < len(domain_list):
                 p('Found {} new domains in online blacklist.'.format(
                     len(domain_list) - len(self.domain_list)))
