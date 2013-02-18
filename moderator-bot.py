@@ -527,11 +527,10 @@ class ServerAd(Filter):
             if len(self.domain_list) < len(domain_list):
                 p('Found {} new domains in online blacklist.'.format(
                     len(domain_list) - len(self.domain_list)))
-                self.domain_list = domain_list
             elif len(self.domain_list) > len(domain_list):
                 p('Removed {} domains from the online blacklist'.format(
                     len(self.domain_list) - len(domain_list)))
-                self.domain_list = domain_list
+            self.domain_list = [i for i in domain_list if not i.startswith("#")]
 
     def _server_in(self, text):
         self._update_list()
@@ -861,8 +860,7 @@ class YoutubeSpam(Filter):
                 'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user))
             comments = comments['data']['children']
             submitted = self.reddit.get(
-                'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(
-                    user))
+                'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(user))
             submitted = submitted['data']['children']
         except urllib.error.HTTPError:
             # This is a hack to get around shadowbanned or deleted users
