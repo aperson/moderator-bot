@@ -135,7 +135,7 @@ def cache_url(function):
     """and return the response."""
 
     #expire time (seconds)
-    expire_after = 60 * 60
+    expire_after = 60 * 60 * 48
 
     db = Database(CACHEFILE)
 
