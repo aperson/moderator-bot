@@ -241,25 +241,18 @@ class Reddit(object):
     def sidebar(self, subreddit, text, section):
         """Edits the sidebar in subreddit in-between the allowed tags set by section['start'] and
         section['stop']"""
-        sub = self.get('http://www.reddit.com/r/{}/about/edit/.json'.format(subreddit))['data']
+        sub = self.get(
+            'http://www.reddit.com/r/{}/wiki/config/sidebar.json'.format(subreddit))['data']
         regex = r'''{}.*?{}'''.format(re.escape(section['start']), re.escape(section['stop']))
         text = section['start'] + text + section['stop']
         to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
         for i in to_replace:
-            sub['description'] = sub['description'].replace(*i)
-        replace = re.findall(regex, sub['description'], re.DOTALL)[0]
-        sidebar = sub['description'].replace(replace, text)
-        body = {
-            'sr': sub['subreddit_id'], 'title': sub['title'],
-            'public_description': sub['public_description'], 'description': sidebar,
-            'type': sub['subreddit_type'], 'link_type': sub['content_options'],
-            'show_media': sub['show_media'], 'allow_top': sub['default_set'],
-            'over_18': sub['over_18'], 'header-title': sub['header_hover_text'],
-            'prev_description_id': sub['prev_description_id'],
-            'prev_public_description_id': sub['prev_public_description_id'],
-            'wikimode': sub['wikimode'], 'wiki_edit_age': sub['wiki_edit_age'],
-            'wiki_edit_karma': sub['wiki_edit_karma']}
-        self.post('http://www.reddit.com/api/site_admin', body)
+            sub['content_md'] = sub['content_md'].replace(*i)
+        replace = re.findall(regex, sub['content_md'], re.DOTALL)[0]
+        sidebar = sub['content_md'].replace(replace, text)
+        body = {'content': sidebar, 'page': 'config/sidebar', 'reason': 'automated edit {}'.format(
+            time.time())}
+        self.post('http://www.reddit.com/r/{}/api/wiki/edit'.format(subreddit), body)
 
 
 class Imgur(object):
