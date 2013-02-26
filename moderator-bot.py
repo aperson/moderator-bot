@@ -353,7 +353,7 @@ class Youtube(object):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
 
-    @cache_url
+    #@cache_url
     def _request(self, url):
         try:
             with self.opener.open(url) as w:
@@ -713,7 +713,7 @@ class ShortUrl(Filter):
         self.regex = re.compile(
             r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
             r'''tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com|ht\.ly|'''
-            r'''pulse\.me|lmgtfy\.com|\.tk)/''', re.I)
+            r'''pulse\.me|lmgtfy\.com|\.tk)''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or\
