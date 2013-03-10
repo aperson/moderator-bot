@@ -621,7 +621,8 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(
             r'''(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?|epicfreeprizes)\.(?:me|info|com|net|org|ru|co\.uk|us)''',
+            r'''forever)?(?:\.blogspot)?|epicfreeprizes)[\[\(\{\.]*[\]\)\}]*?'''
+            r'''(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
         self.action = 'spammed'
         self.ban = True
