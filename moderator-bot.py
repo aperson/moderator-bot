@@ -1007,7 +1007,7 @@ class Meme(Filter):
             "to resubmit').")
         self.meme_sites = (
             'memecreator.org', 'memegenerator.net', 'quickmeme.com', 'qkme.me', 'mememaker.net',
-            'knowyourmeme.com', 'weknowmemes.com', 'elol.com')
+            'knowyourmeme.com', 'weknowmemes.com', 'elol.com', 'memecdn.com')
 
     def filterSubmission(self, submission):
         link = 'http://reddit.com/r/{}/comments/{}/'.format(
