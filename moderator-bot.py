@@ -130,31 +130,29 @@ class Database(object):
             s.close()
 
 
-def cache_url(function):
+def cache_url(expire_after):
     """Url caching decorator.  For decorating class functions that take a single url as an arg"""
     """and return the response."""
 
-    #expire time (seconds)
-    expire_after = 60 * 60 * 48
-
     db = Database(CACHEFILE)
 
-    def new_function(self, url):
-        with db.open() as d:
-            if not 'cache' in d:
-                d['cache'] = dict()
-            if url in d['cache']:
-                output = d['cache'][url]
-                expire_time = output['time'] + expire_after
-                if time.time() < expire_time:
-                    return output['data']
-                else:
-                    del d['cache'][url]
-            output = function(self, url)
-            if output:
-                to_cache = {'time': time.time(), 'data': output}
-                d['cache'][url] = to_cache
-                return output
+    def wrap(function):
+        def new_function(self, url):
+            with db.open() as d:
+                if not 'cache' in d:
+                    d['cache'] = dict()
+                if url in d['cache']:
+                    output = d['cache'][url]
+                    expire_time = output['time'] + expire_after
+                    if time.time() < expire_time:
+                        return output['data']
+                    else:
+                        del d['cache'][url]
+                output = function(self, url)
+                if output:
+                    to_cache = {'time': time.time(), 'data': output}
+                    d['cache'][url] = to_cache
+                    return output
     return new_function
 
 
@@ -262,7 +260,7 @@ class Imgur(object):
             ('User-agent', 'moderator-bot.py v2'),
             ('Authorization', 'Client-id {}'.format(client_id))]
 
-    @cache_url
+    @cache_url(60 * 60 * 24)
     def _request(self, url):
         try:
             with self.opener.open(url) as w:
@@ -346,7 +344,7 @@ class Youtube(object):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
 
-    #@cache_url
+    @cache_url(60 * 60 * 72)
     def _request(self, url):
         try:
             with self.opener.open(url) as w:
