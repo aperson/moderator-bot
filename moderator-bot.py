@@ -153,7 +153,8 @@ def cache_url(expire_after):
                     to_cache = {'time': time.time(), 'data': output}
                     d['cache'][url] = to_cache
                     return output
-    return new_function
+        return new_function
+    return wrap
 
 
 class Reddit(object):
