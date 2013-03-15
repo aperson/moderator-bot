@@ -837,6 +837,7 @@ class YoutubeSpam(Filter):
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
         if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
+            p('Checking {}'.format(submission['url']), end='')
             return self.y.get_author(submission['url'])
 
     def _checkProfile(self, user):
