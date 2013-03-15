@@ -95,7 +95,7 @@ def mojangStatus():
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
     try:
-        with opener.open(STATUS_JSON) as w:
+        with opener.open(STATUS_JSON, timeout=30) as w:
             status = json.loads(w.read().decode('utf-8'))['report']
     except:
         return None
@@ -172,7 +172,7 @@ class Reddit(object):
         if body is not None:
             body = urlencode(body).encode('utf-8')
         try:
-            with self.opener.open(url, data=body) as w:
+            with self.opener.open(url, data=body, timeout=30) as w:
                 time.sleep(2)
                 return json.loads(w.read().decode('utf-8'))
         except urllib.error.HTTPError:
@@ -264,7 +264,7 @@ class Imgur(object):
     @cache_url(60 * 60 * 24)
     def _request(self, url):
         try:
-            with self.opener.open(url) as w:
+            with self.opener.open(url, timeout=30) as w:
                 time.sleep(2)
                 imgur = w.read().decode('utf-8')
                 imgur = json.loads(imgur)['data']
@@ -348,7 +348,7 @@ class Youtube(object):
     @cache_url(60 * 60 * 72)
     def _request(self, url):
         try:
-            with self.opener.open(url) as w:
+            with self.opener.open(url, timeout=30) as w:
                 youtube = w.read().decode('utf-8')
                 yt_json = json.loads(youtube)
         except:
