@@ -355,7 +355,6 @@ class Youtube(object):
             return None
 
         if not 'errors' in yt_json:
-            time.sleep(2)
             return yt_json['entry']
 
     def _get_id(self, url):
