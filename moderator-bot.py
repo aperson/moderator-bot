@@ -813,7 +813,8 @@ class BadWords(Filter):
         self.action = 'report'
 
     def filterComment(self, comment):
-        badwords = ['gay', 'fag', 'fgt', 'cunt', 'nigger', 'nigga', 'retard', 'autis']
+        badwords = [
+            'gay', 'fag', 'fgt', 'cunt', 'nigger', 'nigga', 'retard', 'autis', 'unedditreddit']
         if not comment['num_reports']:
             for word in badwords:
                 if word in comment['body'].lower():
