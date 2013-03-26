@@ -811,12 +811,22 @@ class BadWords(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.action = 'report'
+        self.badwords = [
+            'gay', 'fag', 'fgt', 'cunt', 'nigger', 'nigga', 'retard', 'autis', 'unedditreddit']
+
+    def filterSubmission(self, submission):
+        if not submission['num_reports']:
+            for word in self.badwords:
+                if word in submission['selftext'].lower() or submission['title'].lower():
+                    self.log_text = "Found submission for mod review"
+                    p(self.log_text + ":", end="")
+                    p('http://reddit.com/r/{}/comments/{}/'.format(
+                        submission['subreddit'], submission['id']), color_seed=submission['name'])
+                    return True
 
     def filterComment(self, comment):
-        badwords = [
-            'gay', 'fag', 'fgt', 'cunt', 'nigger', 'nigga', 'retard', 'autis', 'unedditreddit']
         if not comment['num_reports']:
-            for word in badwords:
+            for word in self.badwords:
                 if word in comment['body'].lower():
                     self.log_text = "Found comment for mod review"
                     p(self.log_text + ":", end="")
