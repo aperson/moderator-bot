@@ -817,7 +817,7 @@ class BadWords(Filter):
     def filterSubmission(self, submission):
         if not submission['num_reports']:
             for word in self.badwords:
-                if word in submission['selftext'].lower() or submission['title'].lower():
+                if word in submission['selftext'].lower() or word in submission['title'].lower():
                     self.log_text = "Found submission for mod review"
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/'.format(
