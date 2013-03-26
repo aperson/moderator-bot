@@ -990,6 +990,12 @@ class BannedSubs(Filter):
         Filter.__init__(self)
         self.action = 'spammed'
 
+    def filterSubmission(self, submission):
+        if not submission['num_reports']:
+            for word in BANNEDSUBS:
+                if word in submission['selftext'].lower() or submission['title'].lower():
+                    return True
+
     def filterComment(self, comment):
         if not comment['num_reports']:
             for word in BANNEDSUBS:
