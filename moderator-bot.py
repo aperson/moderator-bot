@@ -821,7 +821,8 @@ class BadWords(Filter):
                     self.log_text = "Found submission for mod review"
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/'.format(
-                        submission['subreddit'], submission['id']), color_seed=submission['name'])
+                        submission['subreddit'], submission['id']), color_seed=submission['name'],
+                        end="")
                     return True
 
     def filterComment(self, comment):
