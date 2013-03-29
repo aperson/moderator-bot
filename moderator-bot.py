@@ -1248,7 +1248,7 @@ def main():
                     r.sidebar(SUBREDDIT, status, SIDEBAR_TAGS)
             last_status = status
 
-        for i in (new_listing, modqueue_listing, comments_listing):
+        for i in (comments_listing, modqueue_listing, new_listing):
             if i:
                 feed.extend(i['data']['children'])
         for item in feed:
