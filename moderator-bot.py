@@ -630,20 +630,20 @@ class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''(?:(free|cracked)?-?minecraft-?(install|get|'''
+            r'''(?:(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?|epicfreeprizes|freemspointsforever)[\[\(\{]*?'''
-            '''(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
+            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever))[\[\(\{]*?'''
+            r'''(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
         self.action = 'spammed'
         self.ban = True
 
     def empty(self, thing):
-        if thing == ('', ''):
+        if thing == ('', '', '', ''):
             return True
         elif isinstance(thing, list):
             for i in thing:
-                if i != ('', ''):
+                if i != ('', '', '', ''):
                     return False
             else:
                 return True
