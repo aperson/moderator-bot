@@ -632,8 +632,8 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(
             r'''(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?|epicfreeprizes|freemspointsforever)[\[\(\{\.]*[\]\)\}]*?'''
-            r'''(?:me|info|com|net|org|ru|co\.uk|us)''',
+            r'''forever)?(?:\.blogspot)?|epicfreeprizes|freemspointsforever)[\[\(\{]*?'''
+            '''(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
         self.action = 'spammed'
         self.ban = True
@@ -716,7 +716,7 @@ class ShortUrl(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|'''
+            r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|linkbitty\.com'''
             r'''tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com|ht\.ly|'''
             r'''pulse\.me|lmgtfy\.com|\.tk)/''', re.I)
 
