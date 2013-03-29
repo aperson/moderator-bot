@@ -289,7 +289,7 @@ class Imgur(object):
             url = url[:-1]
         if url.endswith('/all'):
             url = url[:-4]
-        url = re.split(r'''(?i)imgur.com(?:/gallery|/a)?/''', url)[1]
+        url = re.split(r'''imgur.com(?:/gallery|/a|/r/.*?)?/''', url)[1]
         ids = set(re.split(r''',|&''', url))
         return ids
 
