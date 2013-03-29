@@ -167,13 +167,17 @@ class Reddit(object):
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cj))
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
         self._login()
+        self.last_request = 0
 
     def _request(self, url, body=None):
         if body is not None:
             body = urlencode(body).encode('utf-8')
         try:
+            since_last = time.time() - self.last_request
+            if not since_last >= 2:
+                time.sleep(2 - since_last)
             with self.opener.open(url, data=body, timeout=30) as w:
-                time.sleep(2)
+                self.last_request = time.time()
                 return json.loads(w.read().decode('utf-8'))
         except urllib.error.HTTPError:
             # This should at least help for times when reddit derps up when we request a listing
@@ -260,14 +264,19 @@ class Imgur(object):
         self.opener.addheaders = [
             ('User-agent', 'moderator-bot.py v2'),
             ('Authorization', 'Client-id {}'.format(client_id))]
+        self.last_request = 0
 
     @cache_url(60 * 60 * 24)
     def _request(self, url):
         try:
+            since_last = time.time() - self.last_request
+            if not since_last >= 2:
+                time.sleep(2 - since_last)
             with self.opener.open(url, timeout=30) as w:
                 imgur = w.read().decode('utf-8')
                 imgur = json.loads(imgur)['data']
         except:
+            self.last_request = 0
             return None
 
         if not 'error' in imgur:
@@ -343,14 +352,19 @@ class Youtube(object):
     def __init__(self):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+        self.last_request = 0
 
     @cache_url(60 * 60 * 72)
     def _request(self, url):
         try:
+            since_last = time.time() - self.last_request
+            if not since_last >= 2:
+                time.sleep(2 - since_last)
             with self.opener.open(url, timeout=30) as w:
                 youtube = w.read().decode('utf-8')
                 yt_json = json.loads(youtube)
         except:
+            self.last_request = time.time()
             return None
 
         if not 'errors' in yt_json:
