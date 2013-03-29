@@ -166,8 +166,8 @@ class Reddit(object):
         self.cj = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cj))
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
-        self._login()
         self.last_request = 0
+        self._login()
 
     def _request(self, url, body=None):
         if body is not None:
