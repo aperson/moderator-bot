@@ -716,24 +716,23 @@ class ShortUrl(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|t\.co|tinyurl\.com|j\.mp|linkbitty\.com'''
-            r'''tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co|qvvo\.com|ht\.ly|'''
-            r'''pulse\.me|lmgtfy\.com|\.tk)''', re.I)
+            r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|(?<!reddi)(?:t\.co)(?!m)|tinyurl\.com|j\.mp|'''
+            r'''linkbitty\.com|tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co'''
+            r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk)''', re.I)
 
     def filterSubmission(self, submission):
-        if not submission['domain'].startswith('self.{}'.format(submission['subreddit'])):
-            if self.regex.search(submission['title']) or\
-                self.regex.search(submission['selftext']) or\
-                    self.regex.search(submission['url']):
-                link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id'])
-                self.log_text = "Found short url in submission"
-                reason = "short urls are not allowed"
-                self.comment = self.comment_template.format(
-                    sub=submission['subreddit'], reason=reason, link=link)
-                p(self.log_text + ":")
-                p(link, color_seed=submission['name'])
-                return True
+        if self.regex.search(submission['title']) or\
+            self.regex.search(submission['selftext']) or\
+                self.regex.search(submission['url']):
+            link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                submission['subreddit'], submission['id'])
+            self.log_text = "Found short url in submission"
+            reason = "short urls are not allowed"
+            self.comment = self.comment_template.format(
+                sub=submission['subreddit'], reason=reason, link=link)
+            p(self.log_text + ":")
+            p(link, color_seed=submission['name'])
+            return True
 
     def filterComment(self, comment):
         if self.regex.search(comment['body']):
