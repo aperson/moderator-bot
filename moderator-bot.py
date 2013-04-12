@@ -422,7 +422,9 @@ class Filter(object):
         self.comment_template = (
             "##This submission has been removed automatically.\nAccording to our [subreddit rules]("
             "/r/{sub}/wiki/rules/) {reason}.  If you feel this was in error, please [message the mo"
-            "derators](/message/compose/?to=/r/{sub}&subject=Removal%20Dispute&message={link}).")
+            "derators](/message/compose/?to=/r/{sub}&subject=Removal%20Dispute&message={link}).  If"
+            "this submission was removed in error, do not delete it.  The moderators will fix this "
+            "submission.")
         self.comment = ""
         self.tag = ""
         self.action = 'remove'
