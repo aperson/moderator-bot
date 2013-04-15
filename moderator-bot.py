@@ -828,7 +828,8 @@ class BadWords(Filter):
         Filter.__init__(self)
         self.action = 'report'
         self.badwords = [
-            'gay', 'fag', 'fgt', 'cunt', 'nigger', 'nigga', 'retard', 'autis', 'unedditreddit']
+            'gay', 'fag', 'fgt', 'cunt', 'slut', 'nigger', 'nigga', 'retard', 'autis',
+            'unedditreddit']
 
     def filterSubmission(self, submission):
         if not submission['num_reports']:
