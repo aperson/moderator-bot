@@ -527,7 +527,7 @@ class ServerAd(Filter):
         if (time.time() - self.last_update) >= 1800:
             self.last_update = time.time()
             p('Updating domain blacklist...', end='')
-            blacklist = self.reddit.get(SERVERDOMAINS)['data']['content_md'].strip()
+            blacklist = self.reddit.get_wiki_page(SUBREDDIT, 'domain_blacklist')
             domain_list = [i for i in re.split(r'''[\r\n]*''', blacklist) if not i.startswith("//")]
             if len(self.domain_list) < len(domain_list):
                 p('Found {} new domains in online blacklist.'.format(
@@ -860,7 +860,7 @@ class YoutubeSpam(Filter):
 
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
-        if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
+        if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             return self.y.get_author(submission['url'])
 
     def _checkProfile(self, user):
@@ -872,12 +872,9 @@ class YoutubeSpam(Filter):
         check against the last 100 items on the user's profile.'''
 
         try:
-            comments = self.reddit.get(
-                'http://www.reddit.com/user/{}/comments/.json?limit=100&sort=new'.format(user))
-            comments = comments['data']['children']
-            submitted = self.reddit.get(
-                'http://www.reddit.com/user/{}/submitted/.json?limit=100&sort=new'.format(user))
-            submitted = submitted['data']['children']
+            redditor = self.reddit.get_redditor(user)
+            comments = [i for i in redditor.get_comments(limit=100)]
+            submitted = [i for i in redditor.get_submitted(limit=100)]
         except urllib.error.HTTPError:
             # This is a hack to get around shadowbanned or deleted users
             p("Could not parse /u/{}, probably shadowbanned or deleted".format(user))
@@ -886,14 +883,12 @@ class YoutubeSpam(Filter):
         video_submissions = set()
         comments_on_self = 0
         for item in submitted:
-            item = item['data']
             video_author = self._isVideo(item)
             if video_author:
                 video_count[video_author] += 1
-                video_submissions.add(item['name'])
+                video_submissions.add(item.name)
         for item in comments:
-            item = item['data']
-            if item['link_id'] in video_submissions:
+            if item.link_id in video_submissions:
                 comments_on_self += 1
         try:
             video_percent = max(
@@ -1201,20 +1196,19 @@ class Flair(Filter):
             xbox = re.compile(r'''(?:\W|^)(?:xbox|360|xbla)(?:\W|$)''', re.I)
             pe = re.compile(
                 r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
-            body = {'link': submission['name'], 'name': submission['name'], 'text': ''}
-            if xbox.search(submission['title']):
+            if xbox.search(submission.title):
                 p("Giving {} xbox flair...".format(
                     submission['name']), color_seed=submission['name'], end='')
-                body['flair_template_id'] = 'be349730-0660-11e2-942a-12313b088941'
-            elif pe.search(submission['title']):
+                flair = 'xbox'
+            elif pe.search(submission.title):
                 p("Giving {} pe flair...".format(
                     submission['name']), color_seed=submission['name'], end='')
-                body['flair_template_id'] = 'c14d511e-0660-11e2-a2db-12313b0ce1e2'
+                flair = 'pe'
             else:
                 p("Giving {} pc flair...".format(
                     submission['name']), color_seed=submission['name'], end='')
-                body['flair_template_id'] = '3a838fd2-065f-11e2-a15c-12313d14a568'
-            self.reddit.post('http://www.reddit.com/api/selectflair', body)
+                flair = 'pc'
+            submission.set_flair(flair)
 
 
 def main():
