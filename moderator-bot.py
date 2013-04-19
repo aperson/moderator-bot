@@ -1181,21 +1181,21 @@ def main():
                                 except AttributeError:
                                     pass
 
-                        if f.comment:
-                            comment = item.add_comment(f.comment)
-                            comment.distinguish()
-                        if f.report_subreddit:
-                            r.submit(
-                                f.report_subreddit,
-                                '{} {}'.format(item.author.name, f.tag),
-                                url=item.author._url)
-                        if f.ban and item.author.name not in processed['authors']:
-                            p(
-                                'Banning http://reddit.com/u/{}'.format(item.author.name),
-                                color_seed=item.author.name)
-                            subreddits.add_ban(item.author)
-                            processed['authors'].append(item.author.name)
-                        break
+                            if f.comment:
+                                comment = item.add_comment(f.comment)
+                                comment.distinguish()
+                            if f.report_subreddit:
+                                r.submit(
+                                    f.report_subreddit,
+                                    '{} {}'.format(item.author.name, f.tag),
+                                    url=item.author._url)
+                            if f.ban and item.author.name not in processed['authors']:
+                                p(
+                                    'Banning http://reddit.com/u/{}'.format(item.author.name),
+                                    color_seed=item.author.name)
+                                subreddits.add_ban(item.author)
+                                processed['authors'].append(item.author.name)
+                            break
 
         for i in range(sleep_time):
             p('Next scan in {} seconds...'.format(sleep_time - i), end='')
