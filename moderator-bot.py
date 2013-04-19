@@ -1143,7 +1143,7 @@ def main():
                     r.sidebar(SUBREDDIT, status, SIDEBAR_TAGS)
             last_status = status
         for listing in feed:
-            for item in feed:
+            for item in listing:
                 if item.name not in processed['names']:
                     p('Processing {}'.format(item.id), color_seed=item.name, end="")
                     for f in filters:
