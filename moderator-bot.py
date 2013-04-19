@@ -1148,7 +1148,7 @@ def main():
                     to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
                     for i in to_replace:
                         sidebar_text = sidebar_text.replace(*i)
-                    replace = re.findall(regex, sidebar_text['content_md'], re.DOTALL)[0]
+                    replace = re.findall(regex, sidebar_text, re.DOTALL)[0]
                     sidebar_text = sidebar_text.replace(replace, text)
                     sidebar.edit(content=sidebar_text)
 
