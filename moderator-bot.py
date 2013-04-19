@@ -910,7 +910,7 @@ class BannedSubs(Filter):
         self.action = 'spammed'
 
     def filterComment(self, comment):
-        if not comment['num_reports']:
+        if not comment.num_reports:
             for word in BANNEDSUBS:
                 if word in comment.body.lower():
                     return True
