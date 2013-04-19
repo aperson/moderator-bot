@@ -341,7 +341,7 @@ class Filter(object):
         raise NotImplementedError
 
     def runFilter(self, post):
-        if 'title' in post:
+        if 'title' in vars(post):
             try:
                 if self.filterSubmission(post):
                     if self.log_text:
@@ -349,7 +349,7 @@ class Filter(object):
                     return True
             except NotImplementedError:
                 pass
-        elif 'body' in post:
+        elif 'body' in vars(post):
             try:
                 if self.filterComment(post):
                     if self.log_text:
