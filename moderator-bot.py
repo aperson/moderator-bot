@@ -729,7 +729,7 @@ class BadWords(Filter):
             'unedditreddit']
 
     def filterSubmission(self, submission):
-        if not submission['num_reports']:
+        if not submission.num_reports:
             for word in self.badwords:
                 if word in submission.selftext.lower() or word in submission.title.lower():
                     self.log_text = "Found submission for mod review"
@@ -740,7 +740,7 @@ class BadWords(Filter):
                     return True
 
     def filterComment(self, comment):
-        if not comment['num_reports']:
+        if not comment.num_reports:
             for word in self.badwords:
                 if word in comment.body.lower():
                     self.log_text = "Found comment for mod review"
