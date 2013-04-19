@@ -1208,7 +1208,7 @@ class Flair(Filter):
                 p("Giving {} pc flair...".format(
                     submission['name']), color_seed=submission['name'], end='')
                 flair = 'pc'
-            submission.set_flair(flair)
+            submission.set_flair(flair_css=flair, flair_text=flair)
 
 
 def main():
