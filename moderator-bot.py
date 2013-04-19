@@ -554,7 +554,7 @@ class FreeMinecraft(Filter):
             return True
 
     def filterSubmission(self, submission):
-        for i in ('title', 'selftext', 'url'):
+        for i in (submission.title, submission.selftext, submission.url):
             result = self.regex.findall(submission[i])
             if result:
                 for i in result:
