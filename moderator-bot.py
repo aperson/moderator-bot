@@ -1260,7 +1260,17 @@ def main():
                             break
                         if f.runFilter(item):
                             if f.nuke(nuke):
-                                pass  # IMPLEMENT ME
+                                if f.action == 'remove':
+                                    item.remove()
+                                if f.action == 'spammed':
+                                    item.remove(spam=True)
+                                if f.action == 'report':
+                                    item.report()
+                                try:
+                                    item.hide()
+                                except AttributeError:
+                                    pass
+
                         if f.comment:
                             comment = item.add_comment(f.comment)
                             comment.distinguish()
