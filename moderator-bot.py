@@ -555,19 +555,18 @@ class FreeMinecraft(Filter):
 
     def filterSubmission(self, submission):
         for i in (submission.title, submission.selftext, submission.url):
-            result = self.regex.findall(submission[i])
+            result = self.regex.findall(i)
             if result:
-                for i in result:
-                    if not self.empty(result):
-                        link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                            submission.subreddit, submission.id)
-                        self.log_text = "Found free Minecraft link in submission"
-                        reason = "free minecraft links are not allowed"
-                        self.comment = self.comment_template.format(
-                            sub=submission.subreddit, reason=reason, link=link)
-                        p(self.log_text + ":")
-                        p(link, color_seed=submission.name)
-                        return True
+                if not self.empty(result):
+                    link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                        submission.subreddit, submission.id)
+                    self.log_text = "Found free Minecraft link in submission"
+                    reason = "free minecraft links are not allowed"
+                    self.comment = self.comment_template.format(
+                        sub=submission.subreddit, reason=reason, link=link)
+                    p(self.log_text + ":")
+                    p(link, color_seed=submission.name)
+                    return True
 
     def filterComment(self, comment):
         result = self.regex.findall(comment.body)
