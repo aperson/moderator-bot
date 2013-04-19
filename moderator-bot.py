@@ -516,7 +516,7 @@ class ServerAd(Filter):
                     return True
 
     def filterComment(self, comment):
-        if self._server_in(comment['body']):
+        if self._server_in(comment.body):
             self.comment = ''
             self.log_text = "Found server advertisement in comment"
             p(self.log_text + ":")
@@ -569,7 +569,7 @@ class FreeMinecraft(Filter):
                         return True
 
     def filterComment(self, comment):
-        result = self.regex.findall(comment['body'])
+        result = self.regex.findall(comment.body)
         if result:
             for i in result:
                 if not self.empty(result):
@@ -601,7 +601,7 @@ class AmazonReferral(Filter):
             return True
 
     def filterComment(self, comment):
-        if self.regex.search(comment['body']):
+        if self.regex.search(comment.body):
             self.log_text = "Found Amazon referral link in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
@@ -633,7 +633,7 @@ class ShortUrl(Filter):
             return True
 
     def filterComment(self, comment):
-        if self.regex.search(comment['body']):
+        if self.regex.search(comment.body):
             self.comment = ''
             self.log_text = "Found short url in comment"
             p(self.log_text + ":")
@@ -689,7 +689,7 @@ class Minebook(Filter):
             return True
 
     def filterComment(self, comment):
-        if self.regex.search(comment['body']):
+        if self.regex.search(comment.body):
             self.log_text = "Found minebook in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
@@ -741,7 +741,7 @@ class BadWords(Filter):
     def filterComment(self, comment):
         if not comment['num_reports']:
             for word in self.badwords:
-                if word in comment['body'].lower():
+                if word in comment.body.lower():
                     self.log_text = "Found comment for mod review"
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
@@ -810,15 +810,15 @@ class YoutubeSpam(Filter):
             with self.database.open() as db:
                 if submission.id in db['submissions']:
                     return False
-                if submission['author'] in db['users']:
-                    user = db['users'][submission['author']]
+                if submission.author.name in db['users']:
+                    user = db['users'][submission.author.name]
                 else:
                     user = {'checked_last': 0, 'warned': False, 'banned': False}
 
             if time.time() - user['checked_last'] > DAY:
-                p("Checking profile of /u/{}".format(submission['author']), end='')
+                p("Checking profile of /u/{}".format(submission.author.name), end='')
                 user['checked_last'] = time.time()
-                if self._checkProfile(submission['author']):
+                if self._checkProfile(submission.author.name):
                     if user['warned']:
                         self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
@@ -860,17 +860,17 @@ class YoutubeSpam(Filter):
                         self.nuke = False
                         self.log_text = "Found potential video spammer"
                         p(self.log_text + ":")
-                        p("http://reddit.com/u/{}".format(submission['author']),
-                            color_seed=submission['author'])
+                        p("http://reddit.com/u/{}".format(submission.author.name),
+                            color_seed=submission.author.name)
                         user['warned'] = True
                     with self.database.open() as db:
-                        db['users'][submission['author']] = user
+                        db['users'][submission.author.name] = user
                         db['submissions'].append(submission.id)
                     output = True
                 else:
                     output = False
                 with self.database.open() as db:
-                    db['users'][submission['author']] = user
+                    db['users'][submission.author.name] = user
                     db['submissions'].append(submission.id)
                 return output
 
@@ -911,7 +911,7 @@ class BannedSubs(Filter):
     def filterComment(self, comment):
         if not comment['num_reports']:
             for word in BANNEDSUBS:
-                if word in comment['body'].lower():
+                if word in comment.body.lower():
                     return True
 
 
@@ -1005,7 +1005,7 @@ class SpamNBan(Filter):
             return True
 
     def filterComment(self, comment):
-        if self.regex.search(comment['body']):
+        if self.regex.search(comment.body):
             self.log_text = "Found spam domain in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
@@ -1076,7 +1076,7 @@ class Reditr(Filter):
         self.action = 'spammed'
 
     def filterComment(self, comment):
-        if '^Sent ^from ^[Reditr](http://reditr.com)' in comment['body']:
+        if '^Sent ^from ^[Reditr](http://reditr.com)' in comment.body:
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment.subreddit.display_name, comment.link_id[3:], comment.id),
@@ -1107,7 +1107,7 @@ class Flair(Filter):
                 p("Giving {} pc flair...".format(
                     submission.name), color_seed=submission.name, end='')
                 flair = 'pc'
-            submission.set_flair(flair_css=flair, flair_text=flair)
+            submission.set_flair(flair_css_class=flair, flair_text=flair)
 
 
 def main():
