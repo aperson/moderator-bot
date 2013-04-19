@@ -1170,7 +1170,7 @@ def main():
                         if item.approved_by:
                             break
                         if f.runFilter(item):
-                            if f.nuke(nuke):
+                            if f.nuke:
                                 if f.action == 'remove':
                                     item.remove()
                                 if f.action == 'spammed':
