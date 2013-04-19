@@ -367,27 +367,27 @@ class Suggestion(Filter):
             r''')|(?:^|\[|<|\(|{|\*|\|)ideas?(?:\]|>|\)|:|}|\*|\|))''', re.I)
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']):
+        if self.regex.search(submission.title):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
+                submission.subreddit, submission.id)
 
-            if submission['domain'] != 'self.{}'.format(submission['subreddit']):
+            if submission.domain != 'self.{}'.format(submission.subreddit):
                 reason = "suggestions must be self-post only"
                 self.log_text = "Found [Suggestion] submission that is not a self post"
                 self.comment = self.comment_template.format(
-                    sub=submission['subreddit'], reason=reason, link=link)
+                    sub=submission.subreddit, reason=reason, link=link)
                 p(self.log_text + ":")
-                p(link, color_seed=submission['name'])
+                p(link, color_seed=submission.name)
                 return True
-            elif not submission['selftext']:
+            elif not submission.selftext:
                 self.log_text = "Found [Suggestion] submission that has no self text"
                 reason = (
                     "suggestion posts must have a description along with them, which is something y"
                     "ou cannot convey with only a title")
                 self.comment = self.comment_template.format(
-                    sub=submission['subreddit'], reason=reason, link=link)
+                    sub=submission.subreddit, reason=reason, link=link)
                 p(self.log_text + ":")
-                p(link, color_seed=submission['name'])
+                p(link, color_seed=submission.name)
                 return True
 
 
@@ -399,14 +399,14 @@ class Fixed(Filter):
         self.log_text = "Found [Fixed] submission"
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']):
+        if self.regex.search(submission.title):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
+                submission.subreddit, submission.id)
             reason = "[Fixed] submissions are not allowed"
             self.comment = self.comment_template.format(
-                sub=submission['subreddit'], reason=reason, link=link)
+                sub=submission.subreddit, reason=reason, link=link)
             p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
+            p(link, color_seed=submission.name)
             return True
 
 
@@ -478,41 +478,41 @@ class ServerAd(Filter):
 
     def filterSubmission(self, submission):
         self.comment = ''
-        if self._server_in(submission['title']) or\
-            self._server_in(submission['selftext']) or\
-                self._server_in(submission['url'][7:]):
+        if self._server_in(submission.title) or\
+            self._server_in(submission.selftext) or\
+                self._server_in(submission.url[7:]):
             self.log_text = "Found server advertisement in submission"
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
+                submission.subreddit, submission.id)
             reason = "server advertisements are not allowed"
             self.comment = self.comment_template.format(
-                sub=submission['subreddit'], reason=reason, link=link)
+                sub=submission.subreddit, reason=reason, link=link)
             p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
+            p(link, color_seed=submission.name)
             return True
-        elif submission['domain'] == 'imgur.com':
-            if self._imgur_check(submission['url']):
+        elif submission.domain == 'imgur.com':
+            if self._imgur_check(submission.url):
                 self.log_text = "Found server advertisement in submission"
                 link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id'])
+                    submission.subreddit, submission.id)
                 reason = "server advertisements are not allowed"
                 self.comment = self.comment_template.format(
-                    sub=submission['subreddit'], reason=reason, link=link)
+                    sub=submission.subreddit, reason=reason, link=link)
                 p(self.log_text + ":")
                 p(link)
                 return True
-        elif submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
-            yt = self.y.get_info(submission['url'])
+        elif submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
+            yt = self.y.get_info(submission.url)
             if yt:
                 if self._server_in(yt['title']) or self._server_in(yt['description']):
                     self.log_text = "Found server advertisement in submission"
                     link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                        submission['subreddit'], submission['id'])
+                        submission.subreddit, submission.id)
                     reason = "server advertisements are not allowed"
                     self.comment = self.comment_template.format(
-                        sub=submission['subreddit'], reason=reason, link=link)
+                        sub=submission.subreddit, reason=reason, link=link)
                     p(self.log_text + ":")
-                    p(link, color_seed=submission['name'])
+                    p(link, color_seed=submission.name)
                     return True
 
     def filterComment(self, comment):
@@ -521,8 +521,8 @@ class ServerAd(Filter):
             self.log_text = "Found server advertisement in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['link_id'])
+                comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                color_seed=comment.link_id)
             return True
 
 
@@ -559,13 +559,13 @@ class FreeMinecraft(Filter):
                 for i in result:
                     if not self.empty(result):
                         link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                            submission['subreddit'], submission['id'])
+                            submission.subreddit, submission.id)
                         self.log_text = "Found free Minecraft link in submission"
                         reason = "free minecraft links are not allowed"
                         self.comment = self.comment_template.format(
-                            sub=submission['subreddit'], reason=reason, link=link)
+                            sub=submission.subreddit, reason=reason, link=link)
                         p(self.log_text + ":")
-                        p(link, color_seed=submission['name'])
+                        p(link, color_seed=submission.name)
                         return True
 
     def filterComment(self, comment):
@@ -577,8 +577,8 @@ class FreeMinecraft(Filter):
                     self.log_text = "Found free minecraft link in comment"
                     p(self.log_text + ":")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment['subreddit'], comment['link_id'][3:], comment['id']),
-                        color_seed=comment['link_id'])
+                        comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                        color_seed=comment.link_id)
                     return True
 
 
@@ -590,14 +590,14 @@ class AmazonReferral(Filter):
         self.action = 'spammed'
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or\
-            self.regex.search(submission['selftext']) or\
-                self.regex.search(submission['url']):
+        if self.regex.search(submission.title) or\
+            self.regex.search(submission.selftext) or\
+                self.regex.search(submission.url):
             self.log_text = "Found Amazon referral link in submission"
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
+                submission.subreddit, submission.id)
             p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
+            p(link, color_seed=submission.name)
             return True
 
     def filterComment(self, comment):
@@ -605,8 +605,8 @@ class AmazonReferral(Filter):
             self.log_text = "Found Amazon referral link in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['link_id'])
+                comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                color_seed=comment.link_id)
             return True
 
 
@@ -619,17 +619,17 @@ class ShortUrl(Filter):
             r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk)''', re.I)
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or\
-            self.regex.search(submission['selftext']) or\
-                self.regex.search(submission['url']):
+        if self.regex.search(submission.title) or\
+            self.regex.search(submission.selftext) or\
+                self.regex.search(submission.url):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
+                submission.subreddit, submission.id)
             self.log_text = "Found short url in submission"
             reason = "short urls are not allowed"
             self.comment = self.comment_template.format(
-                sub=submission['subreddit'], reason=reason, link=link)
+                sub=submission.subreddit, reason=reason, link=link)
             p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
+            p(link, color_seed=submission.name)
             return True
 
     def filterComment(self, comment):
@@ -638,8 +638,8 @@ class ShortUrl(Filter):
             self.log_text = "Found short url in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['link_id'])
+                comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                color_seed=comment.link_id)
             return True
 
 
@@ -649,8 +649,8 @@ class Failed(Filter):
 
     def filterSubmission(self, submission):
         link = 'http://reddit.com/r/{}/comments/{}/'.format(
-            submission['subreddit'], submission['id'])
-        if submission['domain'].startswith('['):
+            submission.subreddit, submission.id)
+        if submission.domain.startswith('['):
             self.log_text = "Found submission with formatting in the url"
             self.comment = (
                 "You've seemed to try to use markdown or other markup in the url field"
@@ -659,16 +659,16 @@ class Failed(Filter):
                 "n, please only enter the bare link in the url field.\n\nFeel free to try submitti"
                 "ng again.")
             p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
+            p(link, color_seed=submission.name)
             return True
-        elif '.' not in submission['domain']:
+        elif '.' not in submission.domain:
             self.log_text = "Found submission with invalid url"
             self.comment = (
                 "The submission you've made does not have a valid url in it.  Please t"
                 "ry resubmitting and pay special attention to what you're typing/pasting in the ur"
                 "l field.")
             p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
+            p(link, color_seed=submission.name)
             return True
 
 
@@ -679,13 +679,13 @@ class Minebook(Filter):
         self.action = 'spammed'
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or\
-            self.regex.search(submission['selftext']) or\
-                submission['domain'] == 'minebook.me':
+        if self.regex.search(submission.title) or\
+            self.regex.search(submission.selftext) or\
+                submission.domain == 'minebook.me':
             self.log_text = "Found minebook in submission"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']), color_seed=submission['name'])
+                submission.subreddit, submission.id), color_seed=submission.name)
             return True
 
     def filterComment(self, comment):
@@ -693,8 +693,8 @@ class Minebook(Filter):
             self.log_text = "Found minebook in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=submission['name'])
+                comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                color_seed=submission.name)
 
 
 class SelfLinks(Filter):
@@ -703,8 +703,8 @@ class SelfLinks(Filter):
         self.regex = re.compile(r'''^(?:https?://|www\.)\S*$''')
 
     def filterSubmission(self, submission):
-        if submission['selftext']:
-            for i in submission['selftext'].split():
+        if submission.selftext:
+            for i in submission.selftext.split():
                 if not self.regex.match(i):
                     break
             else:
@@ -715,7 +715,7 @@ class SelfLinks(Filter):
                 self.log_text = "Found self-post that only contained links"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id']), color_seed=submission['name'])
+                    submission.subreddit, submission.id), color_seed=submission.name)
                 return True
 
 
@@ -730,11 +730,11 @@ class BadWords(Filter):
     def filterSubmission(self, submission):
         if not submission['num_reports']:
             for word in self.badwords:
-                if word in submission['selftext'].lower() or word in submission['title'].lower():
+                if word in submission.selftext.lower() or word in submission.title.lower():
                     self.log_text = "Found submission for mod review"
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/'.format(
-                        submission['subreddit'], submission['id']), color_seed=submission['name'],
+                        submission.subreddit, submission.id), color_seed=submission.name,
                         end="")
                     return True
 
@@ -745,8 +745,8 @@ class BadWords(Filter):
                     self.log_text = "Found comment for mod review"
                     p(self.log_text + ":", end="")
                     p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment['subreddit'], comment['link_id'][3:], comment['id']),
-                        color_seed=comment['link_id'], end="")
+                        comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                        color_seed=comment.link_id, end="")
                     return True
 
 
@@ -760,7 +760,7 @@ class YoutubeSpam(Filter):
     def _isVideo(self, submission):
         '''Returns video author name if this is a video'''
         if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
-            return self.y.get_author(submission['url'])
+            return self.y.get_author(submission.url)
 
     def _checkProfile(self, user):
         '''Returns the percentage of things that the user only contributed to themselves.
@@ -803,12 +803,12 @@ class YoutubeSpam(Filter):
     def filterSubmission(self, submission):
         self.report_subreddit = None
         DAY = 24 * 60 * 60
-        if submission['domain'] in ('m.youtube.com', 'youtube.com', 'youtu.be'):
+        if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
+                submission.subreddit, submission.id)
             # check if we've already parsed this submission
             with self.database.open() as db:
-                if submission['id'] in db['submissions']:
+                if submission.id in db['submissions']:
                     return False
                 if submission['author'] in db['users']:
                     user = db['users'][submission['author']]
@@ -865,13 +865,13 @@ class YoutubeSpam(Filter):
                         user['warned'] = True
                     with self.database.open() as db:
                         db['users'][submission['author']] = user
-                        db['submissions'].append(submission['id'])
+                        db['submissions'].append(submission.id)
                     output = True
                 else:
                     output = False
                 with self.database.open() as db:
                     db['users'][submission['author']] = user
-                    db['submissions'].append(submission['id'])
+                    db['submissions'].append(submission.id)
                 return output
 
 
@@ -885,21 +885,21 @@ class AllCaps(Filter):
             """bmit').""")
 
     def filterSubmission(self, submission):
-        title = re.findall(r'''[a-zA-Z]''', submission['title'])
-        title_caps = re.findall(r'''[A-Z]''', submission['title'])
+        title = re.findall(r'''[a-zA-Z]''', submission.title)
+        title_caps = re.findall(r'''[A-Z]''', submission.title)
         if len(title) > 10:
             if len(title_caps) / len(title) > .7:
                 self.log_text = "Found submission with all-caps title"
                 p(self.log_text + ":")
                 p('http://reddit.com/r/{}/comments/{}/'.format(
-                    submission['subreddit'], submission['id']), color_seed=submission['name'])
-                params = {'title': submission['title'].title(), 'resubmit': True}
-                if submission['selftext']:
-                    params['text'] = submission['selftext']
+                    submission.subreddit, submission.id), color_seed=submission.name)
+                params = {'title': submission.title.title(), 'resubmit': True}
+                if submission.selftext:
+                    params['text'] = submission.selftext
                 else:
-                    params['url'] = submission['url']
+                    params['url'] = submission.url
                 self.comment = self.comment_template.format(
-                    link='/r/{}/submit?{}'.format(submission['subreddit'], urlencode(params)))
+                    link='/r/{}/submit?{}'.format(submission.subreddit, urlencode(params)))
                 return True
 
 
@@ -927,24 +927,24 @@ class Meme(Filter):
 
     def filterSubmission(self, submission):
         link = 'http://reddit.com/r/{}/comments/{}/'.format(
-            submission['subreddit'], submission['id'])
-        selflink = "self.{}".format(submission['subreddit'])
+            submission.subreddit, submission.id)
+        selflink = "self.{}".format(submission.subreddit)
         for i in self.meme_sites:
-            if submission['domain'] != selflink and i in submission['domain']:
+            if submission.domain != selflink and i in submission.domain:
                 params = {
-                    'title': submission['title'].title(), 'resubmit': True,
-                    'url': submission['url']}
+                    'title': submission.title.title(), 'resubmit': True,
+                    'url': submission.url}
                 resubmit = '/r/{}/submit?{}'.format('memecraft', urlencode(params))
                 reason = "meme submissions are not allowed"
                 self.comment = self.comment_template.format(
-                    sub=submission['subreddit'], reason=reason, link=link, resubmit=resubmit)
+                    sub=submission.subreddit, reason=reason, link=link, resubmit=resubmit)
                 self.action = 'spammed'
                 self.log_text = "Found meme submission"
                 p(self.log_text + ":")
-                p(link, color_seed=submission['name'])
+                p(link, color_seed=submission.name)
                 return True
         else:
-            if 'meme' in submission['url']:
+            if 'meme' in submission.url:
                 self.comment = ""
                 self.action = 'report'
                 self.log_text = "Found suspected meme submission"
@@ -970,20 +970,20 @@ class InaneTitle(Filter):
             """ere's what was in your title that has been deemed inane:\n\n* {matches}""")
 
     def filterSubmission(self, submission):
-        matches = self.regex.findall(submission['title'].strip())
+        matches = self.regex.findall(submission.title.strip())
         if matches:
             matches = "\n\n* ".join(matches)
             self.log_text = "Found submission with inane title"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']), color_seed=submission['name'])
+                submission.subreddit, submission.id), color_seed=submission.name)
             params = {'resubmit': True}
-            if submission['selftext']:
-                params['text'] = submission['selftext']
+            if submission.selftext:
+                params['text'] = submission.selftext
             else:
-                params['url'] = submission['url']
+                params['url'] = submission.url
             self.comment = self.comment_template.format(
-                sub=submission['subreddit'], params=urlencode(params), matches=matches)
+                sub=submission.subreddit, params=urlencode(params), matches=matches)
             return True
 
 
@@ -995,13 +995,13 @@ class SpamNBan(Filter):
         self.action = 'spammed'
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']) or\
-            self.regex.search(submission['selftext']) or\
-                self.regex.search(submission['url']):
+        if self.regex.search(submission.title) or\
+            self.regex.search(submission.selftext) or\
+                self.regex.search(submission.url):
             self.log_text = "Found spam domain in submission"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']), color_seed=submission['name'])
+                submission.subreddit, submission.id), color_seed=submission.name)
             return True
 
     def filterComment(self, comment):
@@ -1009,8 +1009,8 @@ class SpamNBan(Filter):
             self.log_text = "Found spam domain in comment"
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['link_id'])
+                comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                color_seed=comment.link_id)
             return True
 
 
@@ -1029,7 +1029,7 @@ class FileDownload(Filter):
             r'''\.tar\bz2$|dl\.dropbox\.com''', re.I)
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['url']):
+        if self.regex.search(submission.url):
             return True
 
 
@@ -1040,14 +1040,14 @@ class ChunkError(Filter):
         self.log_text = "Found chunk error/glitch submission"
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['title']):
+        if self.regex.search(submission.title):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id'])
+                submission.subreddit, submission.id)
             reason = "terrain generation glitches/errors submissions are not allowed"
             self.comment = self.comment_template.format(
-                sub=submission['subreddit'], reason=reason, link=link)
+                sub=submission.subreddit, reason=reason, link=link)
             p(self.log_text + ":")
-            p(link, color_seed=submission['name'])
+            p(link, color_seed=submission.name)
             return True
 
 
@@ -1058,14 +1058,14 @@ class Facebook(Filter):
         self.log_text = "Found Facebook submission"
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission['domain']):
+        if self.regex.search(submission.domain):
             self.comment = (
                 """Hey there! I removed your post since it linked to a facebook page, which can """
                 """be traced back to a user profile. You should re-upload the picture somewhere e"""
                 """lse like [imgur](http://imgur.com) or [minus](http://minus.com) and resubmit.""")
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission['subreddit'], submission['id']), color_seed=submission['name'])
+                submission.subreddit, submission.id), color_seed=submission.name)
             return True
 
 
@@ -1079,8 +1079,8 @@ class Reditr(Filter):
         if '^Sent ^from ^[Reditr](http://reditr.com)' in comment['body']:
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                comment['subreddit'], comment['link_id'][3:], comment['id']),
-                color_seed=comment['link_id'])
+                comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                color_seed=comment.link_id)
             return True
 
 
@@ -1097,15 +1097,15 @@ class Flair(Filter):
                 r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
             if xbox.search(submission.title):
                 p("Giving {} xbox flair...".format(
-                    submission['name']), color_seed=submission['name'], end='')
+                    submission.name), color_seed=submission.name, end='')
                 flair = 'xbox'
             elif pe.search(submission.title):
                 p("Giving {} pe flair...".format(
-                    submission['name']), color_seed=submission['name'], end='')
+                    submission.name), color_seed=submission.name, end='')
                 flair = 'pe'
             else:
                 p("Giving {} pc flair...".format(
-                    submission['name']), color_seed=submission['name'], end='')
+                    submission.name), color_seed=submission.name, end='')
                 flair = 'pc'
             submission.set_flair(flair_css=flair, flair_text=flair)
 
