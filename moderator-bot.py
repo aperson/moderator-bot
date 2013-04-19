@@ -1091,7 +1091,7 @@ class Flair(Filter):
         self.nuke = False
 
     def filterSubmission(self, submission):
-        if not submission['link_flair_css_class']:
+        if not submission.link_flair_css_class:
             xbox = re.compile(r'''(?:\W|^)(?:xbox|360|xbla)(?:\W|$)''', re.I)
             pe = re.compile(
                 r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
