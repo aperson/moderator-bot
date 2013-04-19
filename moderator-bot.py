@@ -1140,7 +1140,18 @@ def main():
             if last_status:
                 if status != last_status:
                     p('Mojang server status changed, updating sidebar...', end='')
-                    r.sidebar(SUBREDDIT, status, SIDEBAR_TAGS)
+                    regex = r'''{}.*?{}'''.format(
+                        re.escape(SIDEBAR_TAGS['start']), re.escape(SIDEBAR_TAGS['stop']))
+                    text = SIDEBAR_TAGS['start'] + status + SIDEBAR_TAGS['stop']
+                    sidebar = subreddits.get_wiki_page('config/sidebar')
+                    sidebar_text = sidebar.content_md
+                    to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
+                    for i in to_replace:
+                        sidebar_text = sidebar_text['content_md'].replace(*i)
+                    replace = re.findall(regex, sidebar_text['content_md'], re.DOTALL)[0]
+                    sidebar_text = sidebar_text.replace(replace, text)
+                    sidebar.edit(content=sidebar_text)
+
             last_status = status
         for listing in feed:
             for item in listing:
