@@ -426,7 +426,7 @@ class ServerAd(Filter):
         if (time.time() - self.last_update) >= 1800:
             self.last_update = time.time()
             p('Updating domain blacklist...', end='')
-            blacklist = self.reddit.get_wiki_page(SUBREDDIT, 'domain_blacklist')
+            blacklist = self.reddit.get_wiki_page(SUBREDDIT, 'server_blacklist')
             domain_list = [i for i in re.split(r'''[\r\n]*''', blacklist) if not i.startswith("//")]
             if len(self.domain_list) < len(domain_list):
                 p('Found {} new domains in online blacklist.'.format(
