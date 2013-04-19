@@ -27,11 +27,11 @@ import re
 import signal
 import sys
 from urllib.parse import urlencode
-import http.cookiejar
 import shelve
 from contextlib import contextmanager
 from collections import defaultdict
 import random
+import praw
 
 try:
     from credentials import *  # NOQA
@@ -157,105 +157,105 @@ def cache_url(expire_after):
     return wrap
 
 
-class Reddit(object):
-    """Base class to perform the tasks of a redditor."""
+#class Reddit(object):
+    #"""Base class to perform the tasks of a redditor."""
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self.cj = http.cookiejar.CookieJar()
-        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cj))
-        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
-        self.last_request = 0
-        self._login()
+    #def __init__(self, username, password):
+        #self.username = username
+        #self.password = password
+        #self.cj = http.cookiejar.CookieJar()
+        #self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cj))
+        #self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+        #self.last_request = 0
+        #self._login()
 
-    def _request(self, url, body=None):
-        if body is not None:
-            body = urlencode(body).encode('utf-8')
-        try:
-            since_last = time.time() - self.last_request
-            if not since_last >= 2:
-                time.sleep(2 - since_last)
-            with self.opener.open(url, data=body, timeout=30) as w:
-                self.last_request = time.time()
-                return json.loads(w.read().decode('utf-8'))
-        except urllib.error.HTTPError:
-            # This should at least help for times when reddit derps up when we request a listing
-            return dict()
+    #def _request(self, url, body=None):
+        #if body is not None:
+            #body = urlencode(body).encode('utf-8')
+        #try:
+            #since_last = time.time() - self.last_request
+            #if not since_last >= 2:
+                #time.sleep(2 - since_last)
+            #with self.opener.open(url, data=body, timeout=30) as w:
+                #self.last_request = time.time()
+                #return json.loads(w.read().decode('utf-8'))
+        #except urllib.error.HTTPError:
+            ## This should at least help for times when reddit derps up when we request a listing
+            #return dict()
 
-    def _login(self):
-        p("Logging in as {}.".format(self.username))
-        body = {'user': self.username, 'passwd': self.password, 'api_type': 'json'}
-        resp = self._request('http://www.reddit.com/api/login', body)
-        self.modhash = resp['json']['data']['modhash']
+    #def _login(self):
+        #p("Logging in as {}.".format(self.username))
+        #body = {'user': self.username, 'passwd': self.password, 'api_type': 'json'}
+        #resp = self._request('http://www.reddit.com/api/login', body)
+        #self.modhash = resp['json']['data']['modhash']
 
-    def post(self, url, body):
-        """Sends a POST to the url and returns the json as a dict."""
+    #def post(self, url, body):
+        #"""Sends a POST to the url and returns the json as a dict."""
 
-        if 'api_type' not in body:
-            body['api_type'] = 'json'
+        #if 'api_type' not in body:
+            #body['api_type'] = 'json'
 
-        body['uh'] = self.modhash
+        #body['uh'] = self.modhash
 
-        return self._request(url, body)
+        #return self._request(url, body)
 
-    def get(self, url):
-        """Sends a GET to the url and returns the json as a dict."""
-        if '.json' not in url:
-            url += '.json'
-        return self._request(url)
+    #def get(self, url):
+        #"""Sends a GET to the url and returns the json as a dict."""
+        #if '.json' not in url:
+            #url += '.json'
+        #return self._request(url)
 
-    def nuke(self, post, action):
-        '''Remove/hide/comment.'''
-        if action == 'remove' or action == 'spammed':
-            remove = {
-                'r': post['subreddit'], 'id': post['name'], 'executed': action}
-            if action == 'remove':
-                remove['spam'] = 'false'
-            self.post('http://www.reddit.com/api/remove', remove)
-        if action == 'report':
-            report = {'id': post['name']}
-            self.post('http://www.reddit.com/api/report', report)
-        if 'title' in post:
-            hide = {'id': post['name']}
-            self.post('http://www.reddit.com/api/hide', hide)
+    #def nuke(self, post, action):
+        #'''Remove/hide/comment.'''
+        #if action == 'remove' or action == 'spammed':
+            #remove = {
+                #'r': post['subreddit'], 'id': post['name'], 'executed': action}
+            #if action == 'remove':
+                #remove['spam'] = 'false'
+            #self.post('http://www.reddit.com/api/remove', remove)
+        #if action == 'report':
+            #report = {'id': post['name']}
+            #self.post('http://www.reddit.com/api/report', report)
+        #if 'title' in post:
+            #hide = {'id': post['name']}
+            #self.post('http://www.reddit.com/api/hide', hide)
 
-    def rts(self, username, tag='', subreddit=None, check_age=True):
-        """Checks the account age of a user and rts' them if they are less than a day old."""
-        submit = False
-        if not subreddit:
-            subreddit = BOTSUB
-        DAY = 60 * 60 * 24
+    #def rts(self, username, tag='', subreddit=None, check_age=True):
+        #"""Checks the account age of a user and rts' them if they are less than a day old."""
+        #submit = False
+        #if not subreddit:
+            #subreddit = BOTSUB
+        #DAY = 60 * 60 * 24
 
-        user = self.get("http://reddit.com/user/{}/about.json".format(username))
-        if check_age:
-            if (time.time() - user['data']['created_utc']) <= DAY:
-                submit = True
-        else:
-            submit = True
-        if submit:
-            p('Submitting to /r/{}:'.format(subreddit))
-            body = {'title': '{} {}'.format(username, tag), 'sr': subreddit,
-                    'url': 'http://reddit.com/u/' + username, 'kind': 'link'}
-            submission = self.post('http://www.reddit.com/api/submit', body)
-            p('http://redd.it/{}'.format(submission['json']['data']['id']),
-                color_seed=submission['json']['data']['name'])
+        #user = self.get("http://reddit.com/user/{}/about.json".format(username))
+        #if check_age:
+            #if (time.time() - user['data']['created_utc']) <= DAY:
+                #submit = True
+        #else:
+            #submit = True
+        #if submit:
+            #p('Submitting to /r/{}:'.format(subreddit))
+            #body = {'title': '{} {}'.format(username, tag), 'sr': subreddit,
+                    #'url': 'http://reddit.com/u/' + username, 'kind': 'link'}
+            #submission = self.post('http://www.reddit.com/api/submit', body)
+            #p('http://redd.it/{}'.format(submission['json']['data']['id']),
+                #color_seed=submission['json']['data']['name'])
 
-    def sidebar(self, subreddit, text, section):
-        """Edits the sidebar in subreddit in-between the allowed tags set by section['start'] and
-        section['stop']"""
-        sub = self.get(
-            'http://www.reddit.com/r/{}/wiki/config/sidebar.json'.format(subreddit))['data']
-        regex = r'''{}.*?{}'''.format(re.escape(section['start']), re.escape(section['stop']))
-        text = section['start'] + text + section['stop']
-        to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
-        for i in to_replace:
-            sub['content_md'] = sub['content_md'].replace(*i)
-        replace = re.findall(regex, sub['content_md'], re.DOTALL)[0]
-        sidebar = sub['content_md'].replace(replace, text)
-        body = {'content': sidebar, 'page': 'config/sidebar', 'reason': 'automated edit {}'.format(
-            time.time())}
-        self.post('http://www.reddit.com/r/{}/api/wiki/edit'.format(subreddit), body)
+    #def sidebar(self, subreddit, text, section):
+        #"""Edits the sidebar in subreddit in-between the allowed tags set by section['start'] and
+        #section['stop']"""
+        #sub = self.get(
+            #'http://www.reddit.com/r/{}/wiki/config/sidebar.json'.format(subreddit))['data']
+        #regex = r'''{}.*?{}'''.format(re.escape(section['start']), re.escape(section['stop']))
+        #text = section['start'] + text + section['stop']
+        #to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
+        #for i in to_replace:
+            #sub['content_md'] = sub['content_md'].replace(*i)
+        #replace = re.findall(regex, sub['content_md'], re.DOTALL)[0]
+        #sidebar = sub['content_md'].replace(replace, text)
+        #body = {'content': sidebar, 'page': 'config/sidebar', 'reason': 'automated edit {}'.format(
+            #time.time())}
+        #self.post('http://www.reddit.com/r/{}/api/wiki/edit'.format(subreddit), body)
 
 
 class Imgur(object):
@@ -434,7 +434,6 @@ class Filter(object):
         self.nuke = True
         self.reddit = None
         self.database = Database(DATABASEFILE)
-        self.check_age = True
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -689,9 +688,7 @@ class AmazonReferral(Filter):
         Filter.__init__(self)
         self.regex = re.compile(
             r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk)).*?tag=.*?-20''', re.I)
-        self.tag = "[Amazon Referral Spam]"
         self.action = 'spammed'
-        self.report_subreddit = 'reportthespammers'
 
     def filterSubmission(self, submission):
         if self.regex.search(submission['title']) or\
@@ -858,7 +855,6 @@ class YoutubeSpam(Filter):
     def __init__(self, reddit, youtube):
         Filter.__init__(self)
         self.tag = "[Youtube Spam]"
-        self.check_age = False
         self.reddit = reddit
         self.y = youtube
 
@@ -1223,11 +1219,12 @@ class Flair(Filter):
 
 def main():
     sleep_time = 60 * 3
-    r = Reddit(USERNAME, PASSWORD)
+    r = praw.Reddit('moderator-bot.py v3')
+    r.login(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
     y = Youtube()
     last_status = None
-    processed = {'ids': [], 'authors': []}
+    processed = {'names': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
@@ -1239,10 +1236,11 @@ def main():
     # main loop
     while True:
         p('Getting feed...', end='')
-        modqueue_listing = r.get('http://reddit.com/r/{}/about/modqueue.json'.format(SUBREDDIT))
-        comments_listing = r.get('http://reddit.com/r/{}/comments/.json'.format(SUBREDDIT))
-        new_listing = r.get('http://reddit.com/r/{}/new/.json?sort=new'.format(SUBREDDIT))
-        feed = []
+        subreddits = r.get_subreddit(SUBREDDIT)
+        modqueue = subreddits.get_mod_queue(limit=100)
+        comments = subreddits.get_comments(limit=100)
+        new = subreddits.get_new(limit=100)
+        feed = [modqueue, comments, new]
         status = mojangStatus()
         p('Checking Mojang servers...', end='')
         if status:
@@ -1251,49 +1249,79 @@ def main():
                     p('Mojang server status changed, updating sidebar...', end='')
                     r.sidebar(SUBREDDIT, status, SIDEBAR_TAGS)
             last_status = status
-
-        for i in (comments_listing, modqueue_listing, new_listing):
-            if i:
-                feed.extend(i['data']['children'])
-        for item in feed:
-            item = item['data']
-            if item['name'] not in processed['ids']:
-                p('Processing {}'.format(item['id']), color_seed=item['name'], end="")
-                for f in filters:
-                    processed['ids'].append(item['name'])
-                    # Reddit's api is still a little weird here. Things are None if they're not
-                    # removed by anyone, but they're True if the spam filter removed it.
-                    # otherwise, it's the username of the mod.
-                    if item['banned_by'] is not None and item['banned_by'] is not True:
-                        break
-                    if item['author'] in (USERNAME, 'tweet_poster'):
-                        break
-                    if item['approved_by']:
-                        break
-                    if f.runFilter(item):
-                        if f.nuke:
-                            r.nuke(item, f.action)
+        for listing in feed:
+            for item in feed:
+                if item.name not in processed['names']:
+                    p('Processing {}'.format(item.id), color_seed=item.name, end="")
+                    for f in filters:
+                        processed['names'].append(item.name)
+                        # Reddit's api is still a little weird here. Things are None if they're not
+                        # removed by anyone, but they're True if the spam filter removed it.
+                        # otherwise, it's the username of the mod.
+                        if item.banned_by is not None and item.banned_by is not True:
+                            break
+                        if item.author.name in (USERNAME, 'TweetPoster'):
+                            break
+                        if item.approved_by:
+                            break
+                        if f.runFilter(item):
+                            if f.nuke(nuke):
+                                pass  # IMPLEMENT ME
                         if f.comment:
-                            comment = {'thing_id': item['name'], 'text': f.comment}
-                            submission = r.post(
-                                'http://www.reddit.com/api/comment',
-                                comment)['json']['data']['things'][0]['data']['id']
-                            distinguish = {'id': submission, 'executed': 'distinguishing...'}
-                            r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
+                            comment = item.add_comment(f.comment)
+                            comment.distinguish()
                         if f.report_subreddit:
-                            r.rts(
-                                item['author'], tag=f.tag, subreddit=f.report_subreddit,
-                                check_age=f.check_age)
-                        if f.ban and item['author'] not in processed['authors']:
+                            r.submit(
+                                f.report_subreddit,
+                                '{} {}'.format(item.author.name, f.tag),
+                                url=item.author._url)
+                        if f.ban and item.author.name not in processed['authors']:
                             p(
-                                'Banning http://reddit.com/u/{}'.format(item['author']),
-                                color_seed=item['author'])
-                            body = {
-                                'action': 'add', 'type': 'banned', 'name': item['author'],
-                                'id': '#banned', 'r': item['subreddit']}
-                            r.post('http://www.reddit.com/api/friend', body)
-                            processed['authors'].append(item['author'])
+                                'Banning http://reddit.com/u/{}'.format(item.author.name),
+                                color_seed=item.author.name)
+                            subreddits.add_ban(item.author)
+                            processed['authors'].append(item.author.name)
                         break
+
+        #for item in feed:
+            #item = item['data']
+            #if item['name'] not in processed['ids']:
+                #p('Processing {}'.format(item['id']), color_seed=item['name'], end="")
+                #for f in filters:
+                    #processed['ids'].append(item['name'])
+                    ## Reddit's api is still a little weird here. Things are None if they're not
+                    ## removed by anyone, but they're True if the spam filter removed it.
+                    ## otherwise, it's the username of the mod.
+                    #if item['banned_by'] is not None and item['banned_by'] is not True:
+                        #break
+                    #if item['author'] in (USERNAME, 'tweet_poster'):
+                        #break
+                    #if item['approved_by']:
+                        #break
+                    #if f.runFilter(item):
+                        #if f.nuke:
+                            #r.nuke(item, f.action)
+                        #if f.comment:
+                            #comment = {'thing_id': item['name'], 'text': f.comment}
+                            #submission = r.post(
+                                #'http://www.reddit.com/api/comment',
+                                #comment)['json']['data']['things'][0]['data']['id']
+                            #distinguish = {'id': submission, 'executed': 'distinguishing...'}
+                            #r.post('http://www.reddit.com/api/distinguish/yes', distinguish)
+                        #if f.report_subreddit:
+                            #r.rts(
+                                #item['author'], tag=f.tag, subreddit=f.report_subreddit,
+                                #check_age=f.check_age)
+                        #if f.ban and item['author'] not in processed['authors']:
+                            #p(
+                                #'Banning http://reddit.com/u/{}'.format(item['author']),
+                                #color_seed=item['author'])
+                            #body = {
+                                #'action': 'add', 'type': 'banned', 'name': item['author'],
+                                #'id': '#banned', 'r': item['subreddit']}
+                            #r.post('http://www.reddit.com/api/friend', body)
+                            #processed['authors'].append(item['author'])
+                        #break
         for i in range(sleep_time):
             p('Next scan in {} seconds...'.format(sleep_time - i), end='')
             time.sleep(1)
