@@ -1116,7 +1116,7 @@ def main():
     r.login(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
     y = Youtube()
-    last_status = None
+    #last_status = None
     processed = {'names': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
@@ -1134,23 +1134,23 @@ def main():
         comments = subreddits.get_comments(limit=100)
         new = subreddits.get_new(limit=100)
         feed = [modqueue, comments, new]
-        status = mojangStatus()
-        p('Checking Mojang servers...', end='')
-        if status:
-            if last_status:
-                if status != last_status:
-                    p('Mojang server status changed, updating sidebar...', end='')
-                    regex = r'''{}.*?{}'''.format(
-                        re.escape(SIDEBAR_TAGS['start']), re.escape(SIDEBAR_TAGS['stop']))
-                    text = SIDEBAR_TAGS['start'] + status + SIDEBAR_TAGS['stop']
-                    sidebar_text = subreddits.get_settings()['description']
-                    to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
-                    for i in to_replace:
-                        sidebar_text = sidebar_text.replace(*i)
-                    replace = re.findall(regex, sidebar_text, re.DOTALL)[0]
-                    subreddits.update_settings(description=sidebar_text.replace(replace, text))
+        #status = mojangStatus()
+        #p('Checking Mojang servers...', end='')
+        #if status:
+            #if last_status:
+                #if status != last_status:
+                    #p('Mojang server status changed, updating sidebar...', end='')
+                    #regex = r'''{}.*?{}'''.format(
+                        #re.escape(SIDEBAR_TAGS['start']), re.escape(SIDEBAR_TAGS['stop']))
+                    #text = SIDEBAR_TAGS['start'] + status + SIDEBAR_TAGS['stop']
+                    #sidebar_text = subreddits.get_settings()['description']
+                    #to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
+                    #for i in to_replace:
+                        #sidebar_text = sidebar_text.replace(*i)
+                    #replace = re.findall(regex, sidebar_text, re.DOTALL)[0]
+                    #subreddits.update_settings(description=sidebar_text.replace(replace, text))
 
-            last_status = status
+            #last_status = status
         for listing in feed:
             for item in listing:
                 if item.name not in processed['names']:
