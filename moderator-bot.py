@@ -395,7 +395,8 @@ class Fixed(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''[\[|<\({\*]fixed[\]|>\):}\*]|i(?:'?ll)? see you'?re?,? .*? and raise you''', re.I)
+            r'''[\[|<\({\*]fixed[\]|>\):}\*]|'''
+            r'''i(?:'?ll)? see you'?re?,? .*? and (?:i(?:'?ll)? )?raise you''', re.I)
         self.log_text = "Found [Fixed] submission"
 
     def filterSubmission(self, submission):
