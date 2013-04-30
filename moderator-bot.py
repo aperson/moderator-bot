@@ -795,8 +795,11 @@ class YoutubeSpam(Filter):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
                 submission.subreddit, submission.id)
             # check if we've already parsed this submission
-            with open(DATABASEFILE) as db:
-                db = json.loads(db.read())
+            try:
+                with open(DATABASEFILE) as db:
+                    db = json.loads(db.read())
+            except IOError:
+                db = dict()
             for i in ('submissions', 'users'):
                 if not i in db:
                     db[i] = dict()
