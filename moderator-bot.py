@@ -802,7 +802,7 @@ class YoutubeSpam(Filter):
                 db = dict()
             for i in ('submissions', 'users'):
                 if not i in db:
-                    db[i] = dict()
+                    db[i] = list()
 
             if submission.id in db['submissions']:
                 return False
