@@ -122,7 +122,7 @@ def cache_url(expire_after):
     def wrap(function):
         def new_function(self, url):
             try:
-                with bz2.open(CACHEFILE) as f:
+                with bz2.open(CACHEFILE, 'rt') as f:
                     d = json.loads(f.read())
             except IOError:
                 d = dict()
@@ -797,7 +797,7 @@ class YoutubeSpam(Filter):
                 submission.subreddit, submission.id)
             # check if we've already parsed this submission
             try:
-                with bz2.open(DATABASEFILE) as db:
+                with bz2.open(DATABASEFILE, 'rt') as db:
                     db = json.loads(db.read())
             except IOError:
                 db = dict()
