@@ -320,7 +320,6 @@ class Filter(object):
         self.report_subreddit = None
         self.nuke = True
         self.reddit = None
-        self.database = Database(DATABASEFILE)
 
     def filterComment(self, comment):
         raise NotImplementedError
