@@ -800,9 +800,8 @@ class YoutubeSpam(Filter):
                     db = json.loads(db.read())
             except IOError:
                 db = dict()
-            for i in ('submissions', 'users'):
-                if not i in db:
-                    db[i] = list()
+                db['users'] = dict()
+                db['submissions'] = list()
 
             if submission.id in db['submissions']:
                 return False
