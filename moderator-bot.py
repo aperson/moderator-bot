@@ -27,8 +27,6 @@ import re
 import signal
 import sys
 from urllib.parse import urlencode
-import shelve
-from contextlib import contextmanager
 from collections import defaultdict
 import random
 import praw
@@ -116,43 +114,33 @@ def mojangStatus():
     return '\n{}\n'.format(sidebar_text)
 
 
-class Database(object):
-    '''Handles reading and writing from a shelve 'database'.'''
-    def __init__(self, path):
-        self.path = path
-
-    @contextmanager
-    def open(self):
-        s = shelve.open(self.path, writeback=True)
-        try:
-            yield s
-        finally:
-            s.close()
-
-
 def cache_url(expire_after):
     """Url caching decorator.  For decorating class functions that take a single url as an arg"""
     """and return the response."""
 
-    db = Database(CACHEFILE)
-
     def wrap(function):
         def new_function(self, url):
-            with db.open() as d:
-                if not 'cache' in d:
-                    d['cache'] = dict()
-                if url in d['cache']:
-                    output = d['cache'][url]
-                    expire_time = output['time'] + expire_after
-                    if time.time() < expire_time:
-                        return output['data']
-                    else:
-                        del d['cache'][url]
-                output = function(self, url)
-                if output:
-                    to_cache = {'time': time.time(), 'data': output}
-                    d['cache'][url] = to_cache
-                    return output
+            try:
+                with open(CACHEFILE) as f:
+                    d = json.loads(f.read())
+            except IOError:
+                d = dict()
+            if not 'cache' in d:
+                d['cache'] = dict()
+            if url in d['cache']:
+                output = d['cache'][url]
+                expire_time = output['time'] + expire_after
+                if time.time() < expire_time:
+                    return output['data']
+                else:
+                    del d['cache'][url]
+            output = function(self, url)
+            if output:
+                to_cache = {'time': time.time(), 'data': output}
+                d['cache'][url] = to_cache
+                with open(CACHEFILE, 'w') as f:
+                    f.write(json.dumps(d))
+                return output
         return new_function
     return wrap
 
@@ -808,13 +796,18 @@ class YoutubeSpam(Filter):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
                 submission.subreddit, submission.id)
             # check if we've already parsed this submission
-            with self.database.open() as db:
-                if submission.id in db['submissions']:
-                    return False
-                if submission.author.name in db['users']:
-                    user = db['users'][submission.author.name]
-                else:
-                    user = {'checked_last': 0, 'warned': False, 'banned': False}
+            with open(DATABASEFILE) as db:
+                db = json.loads(db.read())
+            for i in ('submissions', 'users'):
+                if not i in db:
+                    db[i] = dict()
+
+            if submission.id in db['submissions']:
+                return False
+            if submission.author.name in db['users']:
+                user = db['users'][submission.author.name]
+            else:
+                user = {'checked_last': 0, 'warned': False, 'banned': False}
 
             if time.time() - user['checked_last'] > DAY:
                 p("Checking profile of /u/{}".format(submission.author.name), end='')
@@ -864,15 +857,13 @@ class YoutubeSpam(Filter):
                         p("http://reddit.com/u/{}".format(submission.author.name),
                             color_seed=submission.author.name)
                         user['warned'] = True
-                    with self.database.open() as db:
-                        db['users'][submission.author.name] = user
-                        db['submissions'].append(submission.id)
                     output = True
                 else:
                     output = False
-                with self.database.open() as db:
-                    db['users'][submission.author.name] = user
-                    db['submissions'].append(submission.id)
+                db['users'][submission.author.name] = user
+                db['submissions'].append(submission.id)
+                with open(DATABASEFILE, 'w') as f:
+                    f.write(json.dumps(db))
                 return output
 
 
