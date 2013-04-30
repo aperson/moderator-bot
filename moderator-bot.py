@@ -30,6 +30,7 @@ from urllib.parse import urlencode
 from collections import defaultdict
 import random
 import praw
+import bz2
 
 try:
     from credentials import *  # NOQA
@@ -121,7 +122,7 @@ def cache_url(expire_after):
     def wrap(function):
         def new_function(self, url):
             try:
-                with open(CACHEFILE) as f:
+                with bz2.open(CACHEFILE) as f:
                     d = json.loads(f.read())
             except IOError:
                 d = dict()
@@ -138,7 +139,7 @@ def cache_url(expire_after):
             if output:
                 to_cache = {'time': time.time(), 'data': output}
                 d['cache'][url] = to_cache
-                with open(CACHEFILE, 'w') as f:
+                with bz2.open(CACHEFILE, 'wt') as f:
                     f.write(json.dumps(d))
                 return output
         return new_function
@@ -796,7 +797,7 @@ class YoutubeSpam(Filter):
                 submission.subreddit, submission.id)
             # check if we've already parsed this submission
             try:
-                with open(DATABASEFILE) as db:
+                with bz2.open(DATABASEFILE) as db:
                     db = json.loads(db.read())
             except IOError:
                 db = dict()
@@ -863,7 +864,7 @@ class YoutubeSpam(Filter):
                     output = False
                 db['users'][submission.author.name] = user
                 db['submissions'].append(submission.id)
-                with open(DATABASEFILE, 'w') as f:
+                with bz2.open(DATABASEFILE, 'wt') as f:
                     f.write(json.dumps(db))
                 return output
 
