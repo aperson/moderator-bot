@@ -306,21 +306,7 @@ class Youtube(object):
 class Filter(object):
     """Base filter class"""
     def __init__(self):
-        self.regex = None
-        self.comment_template = (
-            "##This submission has been removed automatically.\nAccording to our [subreddit rules]("
-            "/r/{sub}/wiki/rules/) {reason}.  If you feel this was in error, please [message the mo"
-            "derators](/message/compose/?to=/r/{sub}&subject=Removal%20Dispute&message={link}).  If"
-            " this submission was removed in error, do not delete it.  The moderators will fix this"
-            " submission.")
-        self.comment = ""
-        self.tag = ""
-        self.action = 'remove'
-        self.log_text = ""
-        self.ban = False
-        self.report_subreddit = None
-        self.nuke = True
-        self.reddit = None
+        self.result = {'action': '', 'comment': '', 'tag': '', 'reportsub': ''}
 
     def filterComment(self, comment):
         raise NotImplementedError
@@ -330,21 +316,16 @@ class Filter(object):
 
     def runFilter(self, post):
         if 'title' in vars(post):
-            try:
-                if self.filterSubmission(post):
-                    if self.log_text:
-                        logToDisk(self.log_text)
-                    return True
-            except NotImplementedError:
-                pass
+            if self.filterSubmission(post):
+                if self.log_text:
+                    logToDisk(self.log_text)
+                return self.result
+
         elif 'body' in vars(post):
-            try:
-                if self.filterComment(post):
-                    if self.log_text:
-                        logToDisk(self.log_text)
-                    return True
-            except NotImplementedError:
-                pass
+            if self.filterComment(post):
+                if self.log_text:
+                    logToDisk(self.log_text)
+                return self.result
 
 
 class Suggestion(Filter):
