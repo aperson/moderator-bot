@@ -331,53 +331,48 @@ class Filter(object):
 class Suggestion(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(
+        self.result['actions'] = ['remove']
+
+    def filterSubmission(self, submission):
+        regex = re.compile(
             r'''((?:\[|<|\(|{|\*|\|)?sug*estion(?:\s|s?\]|s?>|s?\)|:|}|\*|\|'''
             r''')|(?:^|\[|<|\(|{|\*|\|)ideas?(?:\]|>|\)|:|}|\*|\|))''', re.I)
 
-    def filterSubmission(self, submission):
-        if self.regex.search(submission.title):
+        if regex.search(submission.title):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
                 submission.subreddit, submission.id)
 
             if submission.domain != 'self.{}'.format(submission.subreddit):
-                reason = "suggestions must be self-post only"
-                self.log_text = "Found [Suggestion] submission that is not a self post"
-                self.comment = self.comment_template.format(
-                    sub=submission.subreddit, reason=reason, link=link)
-                p(self.log_text + ":")
+                log_text = "Found [Suggestion] submission that is not a self post"
+                self.result['reason'] = "a non self-text [Suggestion] submission"
+                p(log_text + ":")
                 p(link, color_seed=submission.name)
-                return True
+                return self.result
             elif not submission.selftext:
-                self.log_text = "Found [Suggestion] submission that has no self text"
-                reason = (
-                    "suggestion posts must have a description along with them, which is something y"
-                    "ou cannot convey with only a title")
-                self.comment = self.comment_template.format(
-                    sub=submission.subreddit, reason=reason, link=link)
-                p(self.log_text + ":")
+                log_text = "Found [Suggestion] submission that has no self text"
+                self.result['reason'] = "a [Suggestion] submission that has no selftext"
+                p(log_text + ":")
                 p(link, color_seed=submission.name)
-                return True
+                return self.result
 
 
 class Fixed(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(
-            r'''[\[|<\({\*]fixed[\]|>\):}\*]|'''
-            r'''i(?:'?ll)? see you'?re?,? .*? and (?:i(?:'?ll)? )?raise you''', re.I)
-        self.log_text = "Found [Fixed] submission"
+        self.result['actions'] = ['remove']
+        self.result['reason'] = "[Fixed] submissions are not allowed"
 
     def filterSubmission(self, submission):
-        if self.regex.search(submission.title):
+        regex = re.compile(
+            r'''[\[|<\({\*]fixed[\]|>\):}\*]|'''
+            r'''i(?:'?ll)? see you'?re?,? .*? and (?:i(?:'?ll)? )?raise you''', re.I)
+        log_text = "Found [Fixed] submission"
+        if regex.search(submission.title):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
                 submission.subreddit, submission.id)
-            reason = "[Fixed] submissions are not allowed"
-            self.comment = self.comment_template.format(
-                sub=submission.subreddit, reason=reason, link=link)
-            p(self.log_text + ":")
+            p(log_text + ":")
             p(link, color_seed=submission.name)
-            return True
+            return self.result
 
 
 class ServerAd(Filter):
