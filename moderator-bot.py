@@ -955,7 +955,7 @@ class InaneTitle(Filter):
             r'''what does (?:/?r/minecraft|reddit) think|yo,? d(?:o|aw)g|'''
             r'''^\.*?(?:too )?(?:soon|late)[.!?]*?$|am i the only(?: one)?|you had one job|'''
             r'''^\S*ception$|when suddenly|first post|am i doin(?:g|')? (?:this|it) ri(?:te|ght)|'''
-            r'''^day [0-9]+''',
+            r'''^day [0-9]+|cake ?day''',
             re.I)
         self.comment_template = (
             """Hey there, you seem to be using an inane title!  You can pro"""
