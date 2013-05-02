@@ -306,7 +306,7 @@ class Youtube(object):
 class Filter(object):
     """Base filter class"""
     def __init__(self):
-        self.result = {'action': '', 'comment': '', 'tag': '', 'reportsub': ''}
+        self.result = {'actions': [], 'reason': '', 'tag': '', 'reportsub': ''}
 
     def filterComment(self, comment):
         raise NotImplementedError
