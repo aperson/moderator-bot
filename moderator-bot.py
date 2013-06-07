@@ -440,7 +440,7 @@ class ServerAd(Filter):
                     return False
             except ValueError:
                 return False
-            if split_ip[:3] == [10, 0, 0]:
+            if split_ip[0] == 10:
                 return False
             elif split_ip[:3] == [127, 0, 0]:
                 return False
@@ -605,7 +605,7 @@ class ShortUrl(Filter):
         self.regex = re.compile(
             r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|(?<!reddi)(?:t\.co)(?!m|\.uk)|tinyurl\.com|'''
             r'''j\.mp|linkbitty\.com|tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co'''
-            r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk|skroc\.pl)''', re.I)
+            r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk|skroc\.pl|ufa\.lt)''', re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission.title) or\
