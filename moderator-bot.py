@@ -985,7 +985,8 @@ class InaneTitle(Filter):
 class SpamNBan(Filter):
     def __init__(self):
         Filter.__init__(self)
-        self.regex = re.compile(r'''teslabots\.jimbo\.com|topminecraftworldseeds\.com''')
+        self.regex = re.compile(
+            r'''teslabots\.jimbo\.com|topminecraftworldseeds\.com|\/r\/mcgriefservers''')
         self.ban = True
         self.action = 'spammed'
 
