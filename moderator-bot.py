@@ -522,18 +522,18 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(
             r'''(?:(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever))[\[\(\{]*?'''
-            r'''(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
+            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(steampowers))'''
+            r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
         self.action = 'spammed'
         self.ban = True
 
     def empty(self, thing):
-        if thing == ('', '', '', ''):
+        if thing == ('', '', '', '', ''):
             return True
         elif isinstance(thing, list):
             for i in thing:
-                if i != ('', '', '', ''):
+                if i != ('', '', '', '', ''):
                     return False
             else:
                 return True
@@ -605,7 +605,8 @@ class ShortUrl(Filter):
         self.regex = re.compile(
             r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|(?<!reddi)(?:t\.co)(?!m|\.uk)|tinyurl\.com|'''
             r'''j\.mp|linkbitty\.com|tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co'''
-            r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk|skroc\.pl|ufa\.lt)''', re.I)
+            r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk|skroc\.pl|ufa\.lt|alturl\.com)''',
+            re.I)
 
     def filterSubmission(self, submission):
         if self.regex.search(submission.title) or\
