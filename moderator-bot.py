@@ -468,13 +468,13 @@ class ServerAd(Filter):
 
     def filterSubmission(self, submission):
         self.comment = ''
+        reason = "server advertisements are not allowed; please use /r/mcservers"
         if self._server_in(submission.title) or\
             self._server_in(submission.selftext) or\
                 self._server_in(submission.url[7:]):
             self.log_text = "Found server advertisement in submission"
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
                 submission.subreddit, submission.id)
-            reason = "server advertisements are not allowed"
             self.comment = self.comment_template.format(
                 sub=submission.subreddit, reason=reason, link=link)
             p(self.log_text + ":")
@@ -485,7 +485,6 @@ class ServerAd(Filter):
                 self.log_text = "Found server advertisement in submission"
                 link = 'http://reddit.com/r/{}/comments/{}/'.format(
                     submission.subreddit, submission.id)
-                reason = "server advertisements are not allowed"
                 self.comment = self.comment_template.format(
                     sub=submission.subreddit, reason=reason, link=link)
                 p(self.log_text + ":")
@@ -498,7 +497,6 @@ class ServerAd(Filter):
                     self.log_text = "Found server advertisement in submission"
                     link = 'http://reddit.com/r/{}/comments/{}/'.format(
                         submission.subreddit, submission.id)
-                    reason = "server advertisements are not allowed"
                     self.comment = self.comment_template.format(
                         sub=submission.subreddit, reason=reason, link=link)
                     p(self.log_text + ":")
