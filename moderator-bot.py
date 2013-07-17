@@ -99,7 +99,7 @@ def mojangStatus():
     except:
         return None
     text = []
-    for i in ('website', 'login', 'account', 'session', 'skins', 'realms'):
+    for i in ('website', 'login', 'session', 'skins', 'realms'):
         if status[i]['status'] == 'up':
             text.append("> ## [{server} is online.](#status_green '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title'].split()[0]))
