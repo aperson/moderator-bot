@@ -573,7 +573,7 @@ class AmazonReferral(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk)).*?tag=.*?-20''', re.I)
+            r'''amazon\.(?:at|fr|com|ca|cn|de|es|it|co\.(?:jp|uk)).*?tag=[^&]*?-\d+''', re.I)
         self.action = 'spammed'
 
     def filterSubmission(self, submission):
