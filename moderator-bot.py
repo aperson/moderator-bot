@@ -124,7 +124,7 @@ def cache_url(expire_after):
             try:
                 with bz2.open(CACHEFILE, 'rt') as f:
                     d = json.loads(f.read())
-            except IOError:
+            except (IOError, ValueError):
                 d = dict()
             if not 'cache' in d:
                 d['cache'] = dict()
@@ -280,10 +280,7 @@ class Youtube(object):
         yt_id = self._get_id(url)
 
         if yt_id:
-            try:
-                return self._request(urls['video'].format(yt_id))
-            except ValueError:
-                return None
+            return self._request(urls['video'].format(yt_id))
         else:
             username = re.findall(r'''(?i)\.com\/(?:user\/|channel\/)?(.*?)(?:\/|\?|$)''', url)
             if username:
