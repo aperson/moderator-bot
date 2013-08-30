@@ -115,12 +115,14 @@ def mojangStatus():
     return '\n{}\n'.format(sidebar_text)
 
 
-def cache_url(expire_after):
+def cache_url():
     """Url caching decorator.  For decorating class functions that take a single url as an arg"""
     """and return the response."""
 
     def wrap(function):
-        def new_function(self, url):
+        def new_function(*args):
+            url = args[0].url
+            expire_after = args[0].cache_time
             try:
                 with bz2.open(CACHEFILE, 'rt') as f:
                     d = json.loads(f.read())
@@ -135,7 +137,7 @@ def cache_url(expire_after):
                     return output['data']
                 else:
                     del d['cache'][url]
-            output = function(self, url)
+            output = function(*args)
             if output:
                 to_cache = {'time': time.time(), 'data': output}
                 d['cache'][url] = to_cache
@@ -147,14 +149,15 @@ def cache_url(expire_after):
 
 
 class Imgur(object):
-    def __init__(self, client_id):
+    def __init__(self, client_id, cache_time=86400):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [
             ('User-agent', 'moderator-bot.py v2'),
             ('Authorization', 'Client-id {}'.format(client_id))]
         self.last_request = 0
+        self.cache_time = cache_time
 
-    @cache_url(60 * 60 * 24)
+    @cache_url()
     def _request(self, url):
         try:
             since_last = time.time() - self.last_request
@@ -243,7 +246,7 @@ class Youtube(object):
         self.last_request = 0
         self.cache_time = cache_time
 
-    @cache_url(self.cache_time)
+    @cache_url()
     def _request(self, url):
         try:
             since_last = time.time() - self.last_request
