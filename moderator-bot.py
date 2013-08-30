@@ -241,8 +241,9 @@ class Youtube(object):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
         self.last_request = 0
+        self.cache_time = cache_time
 
-    @cache_url(cache_time)
+    @cache_url(self.cache_time)
     def _request(self, url):
         try:
             since_last = time.time() - self.last_request
@@ -1121,8 +1122,8 @@ def main():
     filters = [
         Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur, youtube(cache_time=60*60*72)),
         FreeMinecraft(), AmazonReferral(), ShortUrl(), Failed(), Minebook(), SelfLinks(),
-        BadWords(), YoutubeSpam(r, Youtube()), BannedSubs(), Meme(), InaneTitle(), SpamNBan(),
-        AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
+        BadWords(), YoutubeSpam(r, Youtube(cache_time=0)), BannedSubs(), Meme(), InaneTitle(),
+        SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
 
     # main loop
     while True:
