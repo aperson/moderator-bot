@@ -121,7 +121,7 @@ def cache_url():
 
     def wrap(function):
         def new_function(*args):
-            url = args[0].url
+            url = args[1]
             expire_after = args[0].cache_time
             try:
                 with bz2.open(CACHEFILE, 'rt') as f:
