@@ -131,7 +131,7 @@ def cache_url(expire_after):
             if url in d['cache']:
                 output = d['cache'][url]
                 expire_time = output['time'] + expire_after
-                if time.time() < expire_time:
+                if expire_after == 0 or time.time() < expire_time:
                     return output['data']
                 else:
                     del d['cache'][url]
@@ -237,12 +237,12 @@ class Imgur(object):
 
 
 class Youtube(object):
-    def __init__(self):
+    def __init__(self, cache_time=0):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
         self.last_request = 0
 
-    @cache_url(60 * 60 * 72)
+    @cache_url(cache_time)
     def _request(self, url):
         try:
             since_last = time.time() - self.last_request
@@ -1114,16 +1114,15 @@ def main():
     r = praw.Reddit('moderator-bot.py v3')
     r.login(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
-    y = Youtube()
     last_status = None
     processed = {'names': [], 'authors': []}
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur, y), FreeMinecraft(), AmazonReferral(),
-        ShortUrl(), Failed(), Minebook(), SelfLinks(), BadWords(), YoutubeSpam(r, y), BannedSubs(),
-        Meme(), InaneTitle(), SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(),
-        Reditr()]
+        Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur, youtube(cache_time=60*60*72)),
+        FreeMinecraft(), AmazonReferral(), ShortUrl(), Failed(), Minebook(), SelfLinks(),
+        BadWords(), YoutubeSpam(r, Youtube()), BannedSubs(), Meme(), InaneTitle(), SpamNBan(),
+        AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
 
     # main loop
     while True:
