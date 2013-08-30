@@ -1123,7 +1123,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur, youtube(cache_time=60*60*72)),
+        Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur, Youtube(cache_time=60*60*72)),
         FreeMinecraft(), AmazonReferral(), ShortUrl(), Failed(), Minebook(), SelfLinks(),
         BadWords(), YoutubeSpam(r, Youtube(cache_time=0)), BannedSubs(), Meme(), InaneTitle(),
         SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
