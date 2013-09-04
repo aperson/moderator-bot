@@ -1166,7 +1166,7 @@ def main():
                         # otherwise, it's the username of the mod.
                         if item.banned_by is not None and item.banned_by is not True:
                             break
-                        if 'name' in item.author and item.author.name in (USERNAME, 'TweetPoster'):
+                        if item.author and item.author.name in (USERNAME, 'TweetPoster'):
                             break
                         if item.approved_by:
                             break
