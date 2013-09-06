@@ -527,18 +527,19 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(
             r'''(?:(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(steampowers))'''
+            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(steampowers)|'''
+            r'''(cardcodes)'''
             r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
         self.action = 'spammed'
         self.ban = True
 
     def empty(self, thing):
-        if thing == ('', '', '', '', ''):
+        if thing == ('', '', '', '', '', ''):
             return True
         elif isinstance(thing, list):
             for i in thing:
-                if i != ('', '', '', '', ''):
+                if i != ('', '', '', '', '', ''):
                     return False
             else:
                 return True
