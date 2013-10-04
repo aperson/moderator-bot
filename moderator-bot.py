@@ -116,8 +116,8 @@ def mojangStatus():
 
 
 def cache_url():
-    """Url caching decorator.  For decorating class functions that take a single url as an arg"""
-    """and return the response."""
+    """Url caching decorator.  For decorating class functions that take a single url as an arg
+    and return the response."""
 
     def wrap(function):
         def new_function(*args):
@@ -1034,7 +1034,8 @@ class FileDownload(Filter):
 
     def filterSubmission(self, submission):
         if self.regex.search(submission.url):
-            return True
+            if not submission.url.endswith(('.gif', '.png', '.jpg', '.jpeg')):
+                return True
 
 
 class ChunkError(Filter):
