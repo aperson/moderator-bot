@@ -307,6 +307,12 @@ class Youtube(object):
                 description = output['media$group']['media$description']['$t']
                 return {'title': title, 'description': description}
 
+    def is_video(self, url):
+        if self._get_id(url) is not None:
+            return True
+        else:
+            return False
+
 
 class Filter(object):
     """Base filter class"""
@@ -1090,6 +1096,24 @@ class Reditr(Filter):
             return True
 
 
+class YoutubeVideo(Filter):
+    def __init__(self, youtube):
+        Filter.__init__(self)
+        self.log_text = "Found Youtube submission that is not a video"
+        self.youtube = youtube
+        self.comment = (
+            """Hey there!  Your submission was removed because it contains a link to Youtube that"""
+            """ is not a link to a video or playlist.  If you're going to submit a link to youtub"""
+            """e it must be to a video.  Thanks!""")
+
+    def filterSubmission(self, submission):
+        if self.youtube.is_video(submission.url) is False:
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/'.format(
+                submission.subreddit, submission.id), color_seed=submission.name)
+            return True
+
+
 class Flair(Filter):
     def __init__(self, reddit):
         Filter.__init__(self)
@@ -1129,7 +1153,8 @@ def main():
         Flair(r), Suggestion(), Fixed(), ServerAd(r, imgur, Youtube(cache_time=60*60*72)),
         FreeMinecraft(), AmazonReferral(), ShortUrl(), Failed(), Minebook(), SelfLinks(),
         BadWords(), YoutubeSpam(r, Youtube(cache_time=0)), BannedSubs(), Meme(), InaneTitle(),
-        SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr()]
+        SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr(),
+        YoutubeVideo(Youtube())]
 
     # main loop
     while True:
