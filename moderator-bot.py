@@ -1101,13 +1101,14 @@ class YoutubeVideo(Filter):
         Filter.__init__(self)
         self.log_text = "Found Youtube submission that is not a video"
         self.youtube = youtube
-        self.comment = (
+        self.comment_template = (
             """Hey there!  Your submission was removed because it contains a link to Youtube that"""
-            """ is not a video or playlist.  If you're going to submit a link to youtube it must """
-            """be to a video.  Thanks!""")
+            """ is not a video or playlist, which is considered off-topic in /r/{sub}  If you're """
+            """going to submit a link to youtube it must be to a video.  Thanks!""")
 
     def filterSubmission(self, submission):
         if self.youtube.is_video(submission.url) is False:
+            self.comment = self.comment_template.format(sub=submission.subreddit)
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/'.format(
                 submission.subreddit, submission.id), color_seed=submission.name)
