@@ -1107,12 +1107,13 @@ class YoutubeVideo(Filter):
             """going to submit a link to youtube it must be to a video.  Thanks!""")
 
     def filterSubmission(self, submission):
-        if self.youtube.is_video(submission.url) is False:
-            self.comment = self.comment_template.format(sub=submission.subreddit)
-            p(self.log_text + ":")
-            p('http://reddit.com/r/{}/comments/{}/'.format(
-                submission.subreddit, submission.id), color_seed=submission.name)
-            return True
+        if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
+            if self.youtube.is_video(submission.url) is False:
+                self.comment = self.comment_template.format(sub=submission.subreddit)
+                p(self.log_text + ":")
+                p('http://reddit.com/r/{}/comments/{}/'.format(
+                    submission.subreddit, submission.id), color_seed=submission.name)
+                return True
 
 
 class Flair(Filter):
