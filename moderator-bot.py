@@ -267,7 +267,8 @@ class Youtube(object):
         regex = re.compile(
             r'''(?<=(?:v|i)=)[a-zA-Z0-9-]+(?=&)|(?<=(?:v|i)\/)[^&\n]+|(?<=embed\/)[^"&\n]+|'''
             r'''(?<=(?:v|i)=)[^&\n]+|(?<=youtu.be\/)[^&\n]+''', re.I)
-        yt_id = regex.findall(url)
+        yt_id = regex.findall(
+            url.replace('%3D', '=').replace('%26', '&').replace('%2F', '?').replace('&amp;', '&'))
 
         if yt_id:
             # temp fix:
