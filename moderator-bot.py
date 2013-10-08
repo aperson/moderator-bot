@@ -1103,8 +1103,8 @@ class YoutubeVideo(Filter):
         self.youtube = youtube
         self.comment = (
             """Hey there!  Your submission was removed because it contains a link to Youtube that"""
-            """ is not a link to a video or playlist.  If you're going to submit a link to youtub"""
-            """e it must be to a video.  Thanks!""")
+            """ is not a video or playlist.  If you're going to submit a link to youtube it must """
+            """be to a video.  Thanks!""")
 
     def filterSubmission(self, submission):
         if self.youtube.is_video(submission.url) is False:
