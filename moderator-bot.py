@@ -618,7 +618,8 @@ class ShortUrl(Filter):
         self.regex = re.compile(
             r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|(?<!reddi)(?:t\.co)(?!m|\.uk)|tinyurl\.com|'''
             r'''j\.mp|linkbitty\.com|tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co'''
-            r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk|skroc\.pl|ufa\.lt|alturl\.com)''',
+            r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk|skroc\.pl|ufa\.lt|alturl\.com|'''
+            r'''awe\sm)''',
             re.I)
 
     def filterSubmission(self, submission):
