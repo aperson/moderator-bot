@@ -775,9 +775,10 @@ class YoutubeSpam(Filter):
         check against the last 100 items on the user's profile.'''
 
         try:
+            start_time = time.time() - (60 * 60 * 24 * 30 * 6)  # ~six months
             redditor = self.reddit.get_redditor(user)
-            comments = [i for i in redditor.get_comments(limit=100)]
-            submitted = [i for i in redditor.get_submitted(limit=100)]
+            comments = [i for i in redditor.get_comments(limit=100) if i.created_utc > start_time]
+            submitted = [i for i in redditor.get_submitted(limit=100) if i.created_utc > start_time]
         except urllib.error.HTTPError:
             # This is a hack to get around shadowbanned or deleted users
             p("Could not parse /u/{}, probably shadowbanned or deleted".format(user))
