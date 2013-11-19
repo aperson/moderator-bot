@@ -867,7 +867,7 @@ class YoutubeSpam(Filter):
                             """iendly message, but here in /r/{sub}, we take action against anyon"""
                             """e that fits the above definition.\n\nIf you feel this was in error"""
                             """, feel free to [message the moderators](/message/compose/?to=/r/"""
-                            """{sub}&subject=Video%20Spam&message={link).""".format(
+                            """{sub}&subject=Video%20Spam&message={link}).""".format(
                                 user=submission.author.name, sub=SUBREDDIT, link=link))
                         self.ban = False
                         self.nuke = False
