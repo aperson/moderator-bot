@@ -1177,7 +1177,7 @@ def main():
         FreeMinecraft(), AmazonReferral(), ShortUrl(), Failed(), Minebook(), SelfLinks(),
         BadWords(), YoutubeSpam(r, Youtube(cache_time=0)), BannedSubs(), Meme(), InaneTitle(),
         SpamNBan(), AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr(),
-        YoutubeVideo(Youtube())]
+        YoutubeVideo(Youtube()), Twitch()]
 
     # main loop
     while True:
