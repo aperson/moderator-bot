@@ -1121,7 +1121,7 @@ class YoutubeVideo(Filter):
 
 class Twitch(Filter):
     def __init__(self):
-        Filter.__init_(self)
+        Filter.__init__(self)
         self.log_text = "Found twitch.tv stream in submission"
         self.regex = r'''twitch\.tv/.*/[a-z]/[0-9]*'''
 
