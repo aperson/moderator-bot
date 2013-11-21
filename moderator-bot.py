@@ -1123,7 +1123,7 @@ class Twitch(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.log_text = "Found twitch.tv stream in submission"
-        self.regex = r'''twitch\.tv/.*/[a-z]/[0-9]*'''
+        self.regex = re.compile(r'''twitch\.tv/[a-z0-9_-]*/[a-z]/[0-9]*''', re.I)
 
     def filterSubmission(self, submission):
         if submission.domain == 'twitch.tv' and self.regex.match(submission.url) is None:
