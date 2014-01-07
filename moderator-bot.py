@@ -534,7 +534,7 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(
             r'''(?:(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(steampowers)|'''
+            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(litekoin)|(ccincc)|(steampowers)|'''
             r'''(cardcodes))'''
             r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
