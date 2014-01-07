@@ -534,19 +534,19 @@ class FreeMinecraft(Filter):
         self.regex = re.compile(
             r'''(?:(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(litekoin)|(ccincc)|(steampowers)|'''
-            r'''(cardcodes))'''
+            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(litekoin)|'''
+            r'''(ccincc)|(steampowers)|(cardcodes))'''
             r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
             re.I)
         self.action = 'spammed'
         self.ban = True
 
     def empty(self, thing):
-        if thing == ('', '', '', '', '', ''):
+        if thing == ('', '', '', '', '', '', '', ''):
             return True
         elif isinstance(thing, list):
             for i in thing:
-                if i != ('', '', '', '', '', ''):
+                if i != ('', '', '', '', '', '', '', ''):
                     return False
             else:
                 return True
@@ -1146,7 +1146,8 @@ class Flair(Filter):
 
     def filterSubmission(self, submission):
         if not submission.link_flair_css_class:
-            xbox = re.compile(r'''(?:\W|^)(?:xbox|360|xbla|ps3|playstation|ps4|xbone)(?:\W|$)''', re.I)
+            xbox = re.compile(
+                r'''(?:\W|^)(?:xbox|360|xbla|ps3|playstation|ps4|xbone)(?:\W|$)''', re.I)
             pe = re.compile(
                 r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
             if xbox.search(submission.title):
