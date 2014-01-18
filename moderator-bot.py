@@ -451,19 +451,19 @@ class ServerAd(Filter):
                 for ip in ips:
                     if ip:
                         split_ip = [int(i) for i in ip.split('.')]
-                if split_ip[0] == 10:
-                    return False
-                elif split_ip[:3] == [127, 0, 0]:
-                    return False
-                elif split_ip[:2] == [192, 168]:
-                    return False
-                elif split_ip == [0] * 4:
-                    return False
-                for i in split_ip:
-                    if not i <= 255:
-                        return False
-                    else:
-                        return False
+                        if split_ip[0] == 10:
+                            return False
+                        elif split_ip[:3] == [127, 0, 0]:
+                            return False
+                        elif split_ip[:2] == [192, 168]:
+                            return False
+                        elif split_ip == [0] * 4:
+                            return False
+                        for i in split_ip:
+                            if not i <= 255:
+                                return False
+                            else:
+                                return False
             except ValueError:
                 return False
             return True
