@@ -462,11 +462,11 @@ class ServerAd(Filter):
                         for i in split_ip:
                             if not i <= 255:
                                 return False
+                        return True
                     else:
                         return False
             except ValueError:
                 return False
-            return True
 
     def _imgur_check(self, url):
         '''Takes a imgur url and returns True if a server ad is found in the title or description'''
