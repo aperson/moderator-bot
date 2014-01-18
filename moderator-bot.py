@@ -462,8 +462,8 @@ class ServerAd(Filter):
                         for i in split_ip:
                             if not i <= 255:
                                 return False
-                            else:
-                                return False
+                    else:
+                        return False
             except ValueError:
                 return False
             return True
