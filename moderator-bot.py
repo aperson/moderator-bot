@@ -1178,7 +1178,7 @@ class BannedYoutubers(Filter):
     def filterSubmission(self, submission):
         self._update_list()
         if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
-            yt = self.youtube.get_info(submission.url)
+            yt = self.youtube.get_author(submission.url)
             if yt:
                 if yt in self.youtube_list:
                     self.log_text = "Found link to banned Youtuber in submission"
