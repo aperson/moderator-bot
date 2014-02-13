@@ -1142,8 +1142,8 @@ class Twitch(Filter):
 class BannedYoutubers(Filter):
     def __init__(self, reddit, youtube):
         self.last_update = 0
-        self.reddit = reddit
         Filter.__init__(self)
+        self.reddit = reddit
         self.youtube = youtube
         self.action = 'spammed'
 
