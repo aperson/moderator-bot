@@ -1170,8 +1170,8 @@ class BannedYoutubers(Filter):
                 else:
                     self.youtube_list.append(youtuber)
             if update_page:
-                p('Updating youtube blacklist with {} new entries...'.format(
-                    len(added_ids)), end='')
+                p('Updating youtube blacklist with {} new entries.'.format(
+                    len(added_ids)))
                 self.reddit.edit_wiki_page(
                     SUBREDDIT, 'youtube_blacklist', blacklist, reason='Added ids: {}'.format(
                         ', '.join(added_ids)))
@@ -1179,10 +1179,10 @@ class BannedYoutubers(Filter):
     def filterSubmission(self, submission):
         self._update_list()
         if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
-            yt = self.get_info(submission.url)
+            yt = self.youtube.get_info(submission.url)
             if yt:
                 if yt in self.youtube_list:
-                    self.log_text = "Found link to banned Youtuber"
+                    self.log_text = "Found link to banned Youtuber in submission"
                     p(self.log_text + ":")
                     p(link, color_seed=submission.name)
                     return True
