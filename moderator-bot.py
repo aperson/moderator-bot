@@ -1181,6 +1181,8 @@ class BannedYoutubers(Filter):
             yt = self.youtube.get_author(submission.url)
             if yt:
                 if yt in self.youtube_list:
+                    link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                        submission.subreddit, submission.id)
                     self.log_text = "Found link to banned Youtuber in submission"
                     p(self.log_text + ":")
                     p(link, color_seed=submission.name)
