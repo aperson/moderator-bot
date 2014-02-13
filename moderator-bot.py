@@ -1163,7 +1163,7 @@ class BannedYoutubers(Filter):
             for youtuber in youtube_list:
                 if youtuber.startswith('http'):
                     user_id = self.youtube.get_author(youtuber)
-                    blacklist_text.replace(youtuber, user_id)
+                    blacklist_text = blacklist_text.replace(youtuber, user_id)
                     self.youtube_list.append(user_id)
                     added_ids.append(user_id)
                     update_page = True
@@ -1173,8 +1173,7 @@ class BannedYoutubers(Filter):
                 p('Updating youtube blacklist with {} new entries.'.format(
                     len(added_ids)))
                 blacklist.edit(
-                    content=blacklist_text,
-                    reason='Added ids: {}'.format(', '.join(added_ids)))
+                    content=blacklist_text, reason='Added ids: {}'.format(', '.join(added_ids)))
 
     def filterSubmission(self, submission):
         self._update_list()
