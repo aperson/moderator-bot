@@ -1174,7 +1174,7 @@ class BannedYoutubers(Filter):
                     len(added_ids)))
                 blacklist.edit(
                     SUBREDDIT, 'youtube_blacklist', blacklist_text, reason='Added ids: {}'.format(
-                        ', '.join(added_ids)))
+                        ' '.join(added_ids)))
 
     def filterSubmission(self, submission):
         self._update_list()
