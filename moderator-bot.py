@@ -1155,15 +1155,15 @@ class BannedYoutubers(Filter):
             self.last_update = time.time()
             p('Updating youtube blacklist...', end='')
             blacklist = self.reddit.get_wiki_page(SUBREDDIT, 'youtube_blacklist')
-            blacklist = blacklist.content_md
+            blacklist_text = blacklist.content_md
             youtube_list = [
-                i.replace(' ', '') for i in re.split(r'''[\r\n]*''', blacklist) if not
+                i.replace(' ', '') for i in re.split(r'''[\r\n]*''', blacklist_text) if not
                 i.startswith("//")]
             youtube_list = [i for i in youtube_list if i]
             for youtuber in youtube_list:
                 if youtuber.startswith('http'):
                     user_id = self.youtube.get_author(youtuber)
-                    blacklist.replace(youtuber, user_id)
+                    blacklist_text.replace(youtuber, user_id)
                     self.youtube_list.append(user_id)
                     added_ids.append(user_id)
                     update_page = True
@@ -1172,8 +1172,8 @@ class BannedYoutubers(Filter):
             if update_page:
                 p('Updating youtube blacklist with {} new entries.'.format(
                     len(added_ids)))
-                self.reddit.edit_wiki_page(
-                    SUBREDDIT, 'youtube_blacklist', blacklist, reason='Added ids: {}'.format(
+                blacklist.edit(
+                    SUBREDDIT, 'youtube_blacklist', blacklist_text, reason='Added ids: {}'.format(
                         ', '.join(added_ids)))
 
     def filterSubmission(self, submission):
