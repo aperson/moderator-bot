@@ -1161,7 +1161,7 @@ class BannedYoutubers(Filter):
                 i.startswith("//")]
             youtube_list = [i for i in youtube_list if i]
             for youtuber in youtube_list:
-                if youtuber.startswith('http://'):
+                if youtuber.startswith('http'):
                     user_id = self.youtube.get_author(youtuber)
                     blacklist.replace(youtuber, user_id)
                     self.youtube_list.append(user_id)
