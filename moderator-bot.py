@@ -1139,6 +1139,55 @@ class Twitch(Filter):
             return True
 
 
+class BannedYoutubers(Filter):
+    def __init__(self, reddit, youtube):
+        self.last_update = 0
+        self.reddit = reddit
+        Filter.__init__(self)
+        self.youtube = youtube
+        self.action = 'spammed'
+
+    def _update_list(self):
+        if (time.time() - self.last_update) >= 1800:
+            update_page = False
+            added_ids = []
+            self.youtube_list = []
+            self.last_update = time.time()
+            p('Updating youtube blacklist...', end='')
+            blacklist = self.reddit.get_wiki_page(SUBREDDIT, 'youtube_blacklist')
+            blacklist = blacklist.content_md
+            youtube_list = [
+                i.replace(' ', '') for i in re.split(r'''[\r\n]*''', blacklist) if not
+                i.startswith("//")]
+            youtube_list = [i for i in youtube_list if i]
+            for youtuber in youtube_list:
+                if youtuber.startswith('http://'):
+                    user_id = self.youtube.get_author(youtuber)
+                    blacklist.replace(youtuber, user_id)
+                    self.youtube_list.append(user_id)
+                    added_ids.append(user_id)
+                    update_page = True
+                else:
+                    self.youtube_list.append(youtuber)
+            if update_page:
+                p('Updating youtube blacklist with {} new entries...'.format(
+                    len(added_ids)), end='')
+                self.reddit.edit_wiki_page(
+                    SUBREDDIT, 'youtube_blacklist', blacklist, reason='Added ids: {}'.format(
+                        ', '.join(added_ids)))
+
+    def filterSubmission(self, submission):
+        self._update_list()
+        if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
+            yt = self.get_info(submission.url)
+            if yt:
+                if yt in self.youtube_list:
+                    self.log_text = "Found link to banned Youtuber"
+                    p(self.log_text + ":")
+                    p(link, color_seed=submission.name)
+                    return True
+
+
 class Flair(Filter):
     def __init__(self, reddit):
         Filter.__init__(self)
