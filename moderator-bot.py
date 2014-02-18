@@ -1125,10 +1125,11 @@ class Twitch(Filter):
         Filter.__init__(self)
         self.log_text = "Found twitch.tv stream in submission"
         self.regex = re.compile(
-            r'''(?:http://)?(?:www\.)?twitch\.tv/[a-z0-9_-]+/[a-z]{1}/[0-9]+''', re.I)
+            r'''(?:http://)?(?:www\.)?(?:[a-z]{2}\.)?twitch\.tv/[a-z0-9_-]+/[a-z]{1}/[0-9]+''',
+            re.I)
 
     def filterSubmission(self, submission):
-        if submission.domain == 'twitch.tv' and self.regex.match(submission.url) is None:
+        if submission.domain.endswith('twitch.tv') and self.regex.match(submission.url) is None:
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
                 submission.subreddit, submission.id)
             reason = "direct links to twitch.tv streams are not allowed"
