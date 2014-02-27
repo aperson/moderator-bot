@@ -1005,7 +1005,7 @@ class SpamNBan(Filter):
         Filter.__init__(self)
         self.regex = re.compile(
             r'''teslabots\.jimbo\.com|topminecraftworldseeds\.com|\/r\/mcgriefservers|'''
-            r'''F2sTr6yNJ2A|instagc\.com''')
+            r'''F2sTr6yNJ2A|instagc\.com|minecraftstack\.com''', re.I)
         self.ban = True
         self.action = 'spammed'
 
