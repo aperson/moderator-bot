@@ -29,6 +29,7 @@ import sys
 from urllib.parse import urlencode
 from collections import defaultdict
 import random
+from praw.handlers import MultiprocessHandler
 import praw
 import bz2
 
@@ -1219,7 +1220,7 @@ class Flair(Filter):
 
 def main():
     sleep_time = 60 * 3
-    r = praw.Reddit('moderator-bot.py v3')
+    r = praw.Reddit('moderator-bot.py v3', handler=MultiprocessHandler())
     r.login(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
     last_status = None
