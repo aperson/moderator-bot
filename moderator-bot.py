@@ -789,7 +789,7 @@ class YoutubeSpam(Filter):
         video_count = defaultdict(lambda: 0)
         video_submissions = set()
         comments_on_self = 0
-        initial_author = self.isVideo(initial_link)
+        initial_author = self._isVideo(initial_link)
         for item in submitted:
             video_author = self._isVideo(item)
             if video_author:
