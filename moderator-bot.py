@@ -835,7 +835,7 @@ class YoutubeSpam(Filter):
             if time.time() - user['checked_last'] > DAY:
                 p("Checking profile of /u/{}".format(submission.author.name), end='')
                 user['checked_last'] = time.time()
-                if self._checkProfile(submission.author.name, submission.url):
+                if self._checkProfile(submission.author.name, submission):
                     if user['warned']:
                         self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
