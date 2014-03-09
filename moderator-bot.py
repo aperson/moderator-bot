@@ -32,6 +32,7 @@ import random
 from praw.handlers import MultiprocessHandler
 import praw
 import bz2
+import operator
 
 try:
     from credentials import *  # NOQA
@@ -768,7 +769,7 @@ class YoutubeSpam(Filter):
         if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             return self.y.get_author(submission.url)
 
-    def _checkProfile(self, user):
+    def _checkProfile(self, user, initial_link):
         '''Returns the percentage of things that the user only contributed to themselves.
         ie: submitting and only commenting on their content.  Currently, the criteria is:
             * linking to videos of the same author (which implies it is their account)
@@ -788,11 +789,13 @@ class YoutubeSpam(Filter):
         video_count = defaultdict(lambda: 0)
         video_submissions = set()
         comments_on_self = 0
+        initial_author = self.isVideo(initial_link)
         for item in submitted:
             video_author = self._isVideo(item)
             if video_author:
                 video_count[video_author] += 1
                 video_submissions.add(item.name)
+        most_submitted_author = max(video_count.items(), key=operator.itemgetter(1))[0]
         for item in comments:
             if item.link_id in video_submissions:
                 comments_on_self += 1
@@ -804,7 +807,7 @@ class YoutubeSpam(Filter):
         if video_percent > .85 and sum(video_count.values()) >= 3:
             spammer_value = (sum(video_count.values()) + comments_on_self) / (len(
                 comments) + len(submitted))
-            if spammer_value > .85:
+            if spammer_value > .85 and initial_author == most_submitted_author:
                 return True
 
     def filterSubmission(self, submission):
@@ -832,7 +835,7 @@ class YoutubeSpam(Filter):
             if time.time() - user['checked_last'] > DAY:
                 p("Checking profile of /u/{}".format(submission.author.name), end='')
                 user['checked_last'] = time.time()
-                if self._checkProfile(submission.author.name):
+                if self._checkProfile(submission.author.name, submission.url):
                     if user['warned']:
                         self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
