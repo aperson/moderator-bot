@@ -701,7 +701,7 @@ class Minebook(Filter):
             p(self.log_text + ":")
             p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
                 comment.subreddit.display_name, comment.link_id[3:], comment.id),
-                color_seed=submission.name)
+                color_seed=comment.name)
 
 
 class SelfLinks(Filter):
@@ -769,7 +769,7 @@ class YoutubeSpam(Filter):
         if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             return self.y.get_author(submission.url)
 
-    def _checkProfile(self, user, initial_link):
+    def _checkProfile(self, submission):
         '''Returns the percentage of things that the user only contributed to themselves.
         ie: submitting and only commenting on their content.  Currently, the criteria is:
             * linking to videos of the same author (which implies it is their account)
@@ -779,7 +779,7 @@ class YoutubeSpam(Filter):
 
         try:
             start_time = time.time() - (60 * 60 * 24 * 30 * 6)  # ~six months
-            redditor = self.reddit.get_redditor(user)
+            redditor = self.reddit.get_redditor(submission.user.name)
             comments = [i for i in redditor.get_comments(limit=100) if i.created_utc > start_time]
             submitted = [i for i in redditor.get_submitted(limit=100) if i.created_utc > start_time]
         except urllib.error.HTTPError:
@@ -789,7 +789,7 @@ class YoutubeSpam(Filter):
         video_count = defaultdict(lambda: 0)
         video_submissions = set()
         comments_on_self = 0
-        initial_author = self._isVideo(initial_link)
+        initial_author = self._isVideo(submission)
         for item in submitted:
             video_author = self._isVideo(item)
             if video_author:
@@ -835,7 +835,7 @@ class YoutubeSpam(Filter):
             if time.time() - user['checked_last'] > DAY:
                 p("Checking profile of /u/{}".format(submission.author.name), end='')
                 user['checked_last'] = time.time()
-                if self._checkProfile(submission.author.name, submission):
+                if self._checkProfile(submission):
                     if user['warned']:
                         self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
