@@ -779,7 +779,7 @@ class YoutubeSpam(Filter):
 
         try:
             start_time = time.time() - (60 * 60 * 24 * 30 * 6)  # ~six months
-            redditor = self.reddit.get_redditor(submission.user.name)
+            redditor = self.reddit.get_redditor(submission.author.name)
             comments = [i for i in redditor.get_comments(limit=100) if i.created_utc > start_time]
             submitted = [i for i in redditor.get_submitted(limit=100) if i.created_utc > start_time]
         except urllib.error.HTTPError:
