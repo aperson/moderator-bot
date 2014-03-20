@@ -855,7 +855,7 @@ class YoutubeSpam(Filter):
                             """nsider yourself on thin ice. So please pay careful attention to th"""
                             """e rest of these bullet points.\n\n* If you spend more time submitt"""
                             """ing to reddit than reading it, you're almost certainly a spammer. """
-                            """\n\n *If your contribution to Reddit consists mostly of submitting"""
+                            """\n\n* If your contribution to Reddit consists mostly of submitting"""
                             """ links to a site(s) that you own or otherwise benefit from in some"""
                             """ way, and additionally if you do not participate in discussion, or"""
                             """ reply to people's questions, regardless of how many upvotes your """
