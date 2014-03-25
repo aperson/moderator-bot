@@ -39,6 +39,7 @@ try:
 except:
     USERNAME = 'botname'
     PASSWORD = 'botpass'
+    USERAGENT = 'moderator-bot.py v4'
     SUBREDDIT = 'subtomonitor'
     HEADER_TAGS = {'start': '[](#heditstart)', 'stop': '[](#heditstop)'}
     SIDEBAR_TAGS = {'start': '[](#sbeditstart)', 'stop': '[](#sbeditstop)'}
@@ -94,7 +95,7 @@ def sigint_handler(signal, frame):
 def mojangStatus():
     '''Returns the status indicator for /r/Minecraft's sidebar'''
     opener = urllib.request.build_opener()
-    opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+    opener.addheaders = [('User-agent', USERAGENT)]
     try:
         with opener.open(STATUS_JSON, timeout=30) as w:
             status = json.loads(w.read().decode('utf-8'))['report']
@@ -154,7 +155,7 @@ class Imgur(object):
     def __init__(self, client_id, cache_time=86400):
         self.opener = urllib.request.build_opener()
         self.opener.addheaders = [
-            ('User-agent', 'moderator-bot.py v2'),
+            ('User-agent', USERAGENT),
             ('Authorization', 'Client-id {}'.format(client_id))]
         self.last_request = 0
         self.cache_time = cache_time
@@ -244,7 +245,7 @@ class Imgur(object):
 class Youtube(object):
     def __init__(self, cache_time=0):
         self.opener = urllib.request.build_opener()
-        self.opener.addheaders = [('User-agent', 'moderator-bot.py v2')]
+        self.opener.addheaders = [('User-agent', USERAGENT)]
         self.last_request = 0
         self.cache_time = cache_time
 
@@ -1223,7 +1224,7 @@ class Flair(Filter):
 
 def main():
     sleep_time = 60 * 3
-    r = praw.Reddit('moderator-bot.py v3', handler=MultiprocessHandler())
+    r = praw.Reddit(USERAGENT, handler=MultiprocessHandler())
     r.login(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
     last_status = None
