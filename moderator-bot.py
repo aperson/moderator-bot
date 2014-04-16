@@ -484,6 +484,22 @@ class ServerAd(Filter):
                     return True
         return False
 
+    def _planet_minecraft_check(self, url):
+        '''Takes a planet minecraft url and returns True if a server ad is found in its
+        description'''
+        url = url.replace('&amp', '&')
+        opener = urllib.request.build_opener()
+        opener.addheaders = [('User-agent', USERAGENT)]
+        try:
+            with opener.open(url, timeout=30) as w:
+                page = w.read().lower().replace('\n', '')
+                page = re.findall(r'''r-text-block">(.*?)</div>''', page)[0]
+        except:
+            return None
+        if page:
+            if self._server_in(page):
+                return True
+
     def filterSubmission(self, submission):
         self.comment = ''
         reason = "server advertisements are not allowed; please use /r/mcservers"
@@ -520,6 +536,16 @@ class ServerAd(Filter):
                     p(self.log_text + ":")
                     p(link, color_seed=submission.name)
                     return True
+        elif submission.domain == 'planetminecraft.com':
+            if self._planet_minecraft_check():
+                self.log_text = "Found server advertisement in submission"
+                link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                    submission.subreddit, submission.id)
+                self.comment = self.comment_template.format(
+                    sub=submission.subreddit, reason=reason, link=link)
+                p(self.log_text + ":")
+                p(link)
+                return True
 
     def filterComment(self, comment):
         if self._server_in(comment.body):
