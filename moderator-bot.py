@@ -537,7 +537,7 @@ class ServerAd(Filter):
                     p(link, color_seed=submission.name)
                     return True
         elif submission.domain == 'planetminecraft.com':
-            if self._planet_minecraft_check():
+            if self._planet_minecraft_check(submission.url):
                 self.log_text = "Found server advertisement in submission"
                 link = 'http://reddit.com/r/{}/comments/{}/'.format(
                     submission.subreddit, submission.id)
