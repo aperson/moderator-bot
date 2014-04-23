@@ -1333,7 +1333,7 @@ def main():
                                     color_seed=item.author.name)
                                 subreddits.add_ban(
                                     item.author, note="automated ban: {}: {}".format(
-                                        f.log_text, item.short_link))
+                                        f.log_text, item.permalink))
                                 processed['authors'].append(item.author.name)
                             break
 
