@@ -1331,7 +1331,9 @@ def main():
                                 p(
                                     'Banning http://reddit.com/u/{}'.format(item.author.name),
                                     color_seed=item.author.name)
-                                subreddits.add_ban(item.author, note=item.url)
+                                subreddits.add_ban(
+                                    item.author, note="automated ban: {}: {}".format(
+                                        f.log_text, item.short_link))
                                 processed['authors'].append(item.author.name)
                             break
 
