@@ -121,7 +121,7 @@ def sidebarUpdater():
             text.append("> ## [{server} is offline.](#status_red '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title'].split('•')[0].strip()))
     status_text = '\n{}\n'.format('\n'.join(text))
-    version_text = 'Stable: | Snapshot: {}'.format(version['release'], version['snapshot'])
+    version_text = 'Stable: {} | Snapshot: {}'.format(version['release'], version['snapshot'])
     return status_text + version_text
 
 
@@ -1237,21 +1237,33 @@ class Flair(Filter):
     def filterSubmission(self, submission):
         if not submission.link_flair_css_class:
             xbox = re.compile(
-                r'''(?:\W|^)(?:xbox|360|xbla|ps3|playstation|ps4|xbone)(?:\W|$)''', re.I)
+                r'''(?:\W|^)(?:xbox|360|xbla|xbone)(?:\W|$)''', re.I)
+            playstation = re.compile(
+                r'''(?:\W|^)(?:playstation|ps[34])(?:\W|$)''', re.I)
             pe = re.compile(
                 r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
+            raspi = re.compile(
+                r'''(?:\W|^)(?:raspi|rasberry pie)(?:\W|$)''', re.I)
             if xbox.search(submission.title):
                 p("Giving {} xbox flair...".format(
                     submission.name), color_seed=submission.name, end='')
-                flair = 'xbox'
+                flair = 'c'
             elif pe.search(submission.title):
                 p("Giving {} pe flair...".format(
                     submission.name), color_seed=submission.name, end='')
-                flair = 'pe'
+                flair = 'g'
+            elif playstation.search(submission.title):
+                p("Giving {} playstation flair...".format(
+                    submission.name), color_seed=submission.name, end='')
+                flair = 'd'
+            elif raspi.search(submission.title):
+                p("Giving {} raspberry pi flair...".format(
+                    submission.name), color_seed=submission.name, end='')
+                flair = 'f'
             else:
                 p("Giving {} pc flair...".format(
                     submission.name), color_seed=submission.name, end='')
-                flair = 'pc'
+                flair = 'e'
             submission.set_flair(flair_css_class=flair, flair_text=flair)
 
 
