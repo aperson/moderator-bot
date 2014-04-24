@@ -52,6 +52,7 @@ except:
     CACHEFILE = '/some/other/path'
     BANNEDSUBS = ['some', 'list']
     STATUS_JSON = 'http://somesite.com/some.json'
+    VERSION_JSON = 'http://someothersite.com/some.json'
     IMGUR_CLIENT_ID = 'someid'
 
 
@@ -92,13 +93,18 @@ def sigint_handler(signal, frame):
     sys.exit(0)
 
 
-def mojangStatus():
+def sidebarUpdater():
     '''Returns the status indicator for /r/Minecraft's sidebar'''
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', USERAGENT)]
     try:
         with opener.open(STATUS_JSON, timeout=30) as w:
             status = json.loads(w.read().decode('utf-8'))['report']
+    except:
+        return None
+    try:
+        with opener.open(VERSION_JSON, timeout=30) as w:
+            version = json.loads(w.read().decode('utf-8'))['latest']
     except:
         return None
     text = []
@@ -114,8 +120,9 @@ def mojangStatus():
         elif status[i]['status'] == 'down':
             text.append("> ## [{server} is offline.](#status_red '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title'].split('•')[0].strip()))
-    sidebar_text = '\n'.join(text)
-    return '\n{}\n'.format(sidebar_text)
+    status_text = '\n{}\n'.format('\n'.join(text))
+    version_text = 'Stable: | Snapshot: {}'.format(version['release'], version['snapshot'])
+    return status_text + version_text
 
 
 def cache_url():
@@ -1272,12 +1279,12 @@ def main():
         comments = subreddits.get_comments(limit=100)
         new = subreddits.get_new(limit=100)
         feed = [modqueue, comments, new]
-        status = mojangStatus()
-        p('Checking Mojang servers...', end='')
+        status = sidebarUpdater()
+        p('Checking if sidebar needs to be updated...', end='')
         if status:
             if last_status:
                 if status != last_status:
-                    p('Mojang server status changed, updating sidebar...', end='')
+                    p('sidebar contents changed, updating sidebar...', end='')
                     regex = r'''{}.*?{}'''.format(
                         re.escape(SIDEBAR_TAGS['start']), re.escape(SIDEBAR_TAGS['stop']))
                     text = SIDEBAR_TAGS['start'] + status + SIDEBAR_TAGS['stop']
