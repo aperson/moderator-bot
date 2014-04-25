@@ -120,8 +120,8 @@ def sidebarUpdater():
         elif status[i]['status'] == 'down':
             text.append("> ## [{server} is offline.](#status_red '{server} - {status}')".format(
                 server=i.title(), status=status[i]['title'].split('•')[0].strip()))
-    status_text = '\n{}\n'.format('\n'.join(text))
-    version_text = 'Stable: {} | Snapshot: {}'.format(version['release'], version['snapshot'])
+    status_text = '\n>{}\n'.format('\n'.join(text))
+    version_text = '>Stable: {} | Snapshot: {}'.format(version['release'], version['snapshot'])
     return status_text + version_text
 
 
