@@ -1248,23 +1248,28 @@ class Flair(Filter):
                 p("Giving {} xbox flair...".format(
                     submission.name), color_seed=submission.name, end='')
                 flair = 'c'
+                flairtext = 'xbox'
             elif pe.search(submission.title):
                 p("Giving {} pe flair...".format(
                     submission.name), color_seed=submission.name, end='')
                 flair = 'g'
+                flairtext = 'pocket edition'
             elif playstation.search(submission.title):
                 p("Giving {} playstation flair...".format(
                     submission.name), color_seed=submission.name, end='')
                 flair = 'd'
+                flairtext = 'playstation'
             elif raspi.search(submission.title):
                 p("Giving {} raspberry pi flair...".format(
                     submission.name), color_seed=submission.name, end='')
                 flair = 'f'
+                flairtext = 'rasperry pi'
             else:
                 p("Giving {} pc flair...".format(
                     submission.name), color_seed=submission.name, end='')
                 flair = 'e'
-            submission.set_flair(flair_css_class=flair, flair_text=flair)
+                flairtext = ''
+            submission.set_flair(flair_css_class=flair, flair_text=flairtext)
 
 
 def main():
