@@ -1263,7 +1263,7 @@ class Flair(Filter):
                 p("Giving {} raspberry pi flair...".format(
                     submission.name), color_seed=submission.name, end='')
                 flair = 'f'
-                flairtext = 'rasperry pi'
+                flairtext = 'raspberry pi'
             else:
                 p("Giving {} pc flair...".format(
                     submission.name), color_seed=submission.name, end='')
