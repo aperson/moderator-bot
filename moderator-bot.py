@@ -114,12 +114,12 @@ def sidebarUpdater():
                 server=i.title(), status=status[i]['title'].split()[0]))
         elif status[i]['status'] == 'problem':
             text.append(
-                "> ## [{server} is having a problem.]"
-                "(#status_green '{server} - {status}')".format(
-                    server=i.title(), status=status[i]['title']))
+                "> ## [{} is having a problem.]"
+                "(#status_green_{} '{} - {}')".format(
+                    i.title(), i, i.title(), status[i]['title']))
         elif status[i]['status'] == 'down':
-            text.append("> ## [{server} is offline.](#status_red '{server} - {status}')".format(
-                server=i.title(), status=status[i]['title'].split('•')[0].strip()))
+            text.append("> ## [{} is offline.](#status_red_{} '{} - {}')".format(
+                i.title(), i, i.title(), status[i]['title'].split('•')[0].strip()))
     status_text = '\n>{}\n'.format('\n'.join(text))
     version_text = '>Stable: {} | Snapshot: {}'.format(version['release'], version['snapshot'])
     return status_text + version_text
@@ -138,7 +138,7 @@ def cache_url():
                     d = json.loads(f.read())
             except (IOError, ValueError):
                 d = dict()
-            if not 'cache' in d:
+            if 'cache' not in d:
                 d['cache'] = dict()
             if url in d['cache']:
                 output = d['cache'][url]
@@ -180,7 +180,7 @@ class Imgur(object):
             self.last_request = 0
             return None
 
-        if not 'error' in imgur:
+        if 'error' not in imgur:
             return imgur
 
     def _get_ids(self, url):
@@ -269,7 +269,7 @@ class Youtube(object):
             self.last_request = time.time()
             return None
 
-        if not 'errors' in yt_json:
+        if 'errors' not in yt_json:
             return yt_json['entry']
 
     def _get_id(self, url):
