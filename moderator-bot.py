@@ -110,8 +110,8 @@ def sidebarUpdater():
     text = []
     for i in ('website', 'login', 'session', 'skins', 'realms'):
         if status[i]['status'] == 'up':
-            text.append("> ## [{server} is online.](#status_green '{server} - {status}')".format(
-                server=i.title(), status=status[i]['title'].split()[0]))
+            text.append("> ## [{} is online.](#status_green_{} '{} - {}')".format(
+                i.title(), i, i.title(), status[i]['title'].split()[0]))
         elif status[i]['status'] == 'problem':
             text.append(
                 "> ## [{} is having a problem.]"
