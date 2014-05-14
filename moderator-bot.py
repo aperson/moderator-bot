@@ -829,7 +829,10 @@ class YoutubeSpam(Filter):
             if video_author:
                 video_count[video_author] += 1
                 video_submissions.add(item.name)
-        most_submitted_author = max(video_count.items(), key=operator.itemgetter(1))[0]
+        if video_count:
+            most_submitted_author = max(video_count.items(), key=operator.itemgetter(1))[0]
+        else:
+            return False
         for item in comments:
             if item.link_id in video_submissions:
                 comments_on_self += 1
