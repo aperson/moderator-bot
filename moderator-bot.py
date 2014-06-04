@@ -877,7 +877,7 @@ class YoutubeSpam(Filter):
                         self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
                         self.comment = ''
-                        self.report_subreddit = 'reportthespammers'
+                        self.report_subreddit = 'spam'
                         self.ban = True
                         self.nuke = True
                         user['banned'] = True
