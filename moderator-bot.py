@@ -848,7 +848,6 @@ class YoutubeSpam(Filter):
                 return True
 
     def filterSubmission(self, submission):
-        self.report_subreddit = None
         DAY = 24 * 60 * 60
         if submission.domain in ('m.youtube.com', 'youtube.com', 'youtu.be'):
             link = 'http://reddit.com/r/{}/comments/{}/'.format(
@@ -877,10 +876,18 @@ class YoutubeSpam(Filter):
                         self.log_text = "Confirmed video spammer"
                         p(self.log_text + ":")
                         self.comment = ''
-                        self.report_subreddit = 'reportthespammers'
                         self.ban = True
                         self.nuke = True
                         user['banned'] = True
+                        adjective = random.choice(
+                            ('awesome', 'sweet', 'super', 'lovely', 'terrific', 'marvelous'))
+                        thanks = random.choice(('Thanks!', 'Thank you!'))
+                        message = (
+                            """Hi, this user seems to be spamming/overly promoting their youtube """
+                            """content: /u/{}.  It'd be {} if they could be checked on.  {}""")
+                        message = message.format(submission.author.name, adjective, thanks)
+                        reddit.send_message('/r/reddit.com', 'Youtube Spammer', message)
+
                     else:
                         self.comment = (
                             """Hello, /u/{user}, it looks like you're on the verge with submittin"""
