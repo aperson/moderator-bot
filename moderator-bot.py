@@ -507,6 +507,12 @@ class ServerAd(Filter):
             if self._server_in(page):
                 return True
 
+    def _sidebar_check(self, subreddit):
+        subreddit = self.reddit.get_subreddit(subreddit)
+        sidebar = subreddit.description
+        if self._server_in(sidebar):
+            return True
+
     def filterSubmission(self, submission):
         self.comment = ''
         reason = "server advertisements are not allowed; please use /r/mcservers"
@@ -563,6 +569,16 @@ class ServerAd(Filter):
                 comment.subreddit.display_name, comment.link_id[3:], comment.id),
                 color_seed=comment.link_id)
             return True
+        else:
+            subreddit = re.findall(r'''/r/[\w-]+''', comment)
+            if self._sidebar_check(subreddit):
+                self.comment = ''
+                self.log_text = "Found server advertisement in subreddit link"
+                p(self.log_text + ":")
+                p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                    comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                    color_seed=comment.link_id)
+                return True
 
 
 class FreeMinecraft(Filter):
