@@ -573,7 +573,7 @@ class ServerAd(Filter):
                 color_seed=comment.link_id)
             return True
         else:
-            subreddits = re.findall(r'''/r/[\w-]+''', comment.body)
+            subreddits = re.findall(r'''/r/([\w-]+)''', comment.body)
             for subreddit in subreddits:
                 if self._sidebar_check(subreddit):
                     self.comment = ''
