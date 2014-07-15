@@ -509,12 +509,11 @@ class ServerAd(Filter):
 
     def _sidebar_check(self, subreddit):
         subreddit = self.reddit.get_subreddit(subreddit)
-        sidebar = subreddit.get_wiki_page('config/sidebar')
-        sidebar_text = sidebar.content_md
+        sidebar = subreddit.description
         to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
         for i in to_replace:
-            sidebar_text = sidebar_text.replace(*i)
-        if self._server_in(sidebar_text):
+            sidebar = sidebar.replace(*i)
+        if self._server_in(sidebar):
             return True
 
     def filterSubmission(self, submission):
@@ -574,15 +573,16 @@ class ServerAd(Filter):
                 color_seed=comment.link_id)
             return True
         else:
-            subreddit = re.findall(r'''/r/[\w-]+''', comment.body)
-            if self._sidebar_check(subreddit.display_name):
-                self.comment = ''
-                self.log_text = "Found server advertisement in subreddit link"
-                p(self.log_text + ":")
-                p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                    comment.subreddit.display_name, comment.link_id[3:], comment.id),
-                    color_seed=comment.link_id)
-                return True
+            subreddits = re.findall(r'''/r/[\w-]+''', comment.body)
+            for subreddit in subreddits:
+                if self._sidebar_check(subreddit):
+                    self.comment = ''
+                    self.log_text = "Found server advertisement in subreddit link"
+                    p(self.log_text + ":")
+                    p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                        comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                        color_seed=comment.link_id)
+                    return True
 
 
 class FreeMinecraft(Filter):
