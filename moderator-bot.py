@@ -509,8 +509,12 @@ class ServerAd(Filter):
 
     def _sidebar_check(self, subreddit):
         subreddit = self.reddit.get_subreddit(subreddit)
-        sidebar = subreddit.description
-        if self._server_in(sidebar):
+        sidebar = subreddit.get_wiki_page('config/sidebar')
+        sidebar_text = sidebar.content_md
+        to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
+        for i in to_replace:
+            sidebar_text = sidebar_text.replace(*i)
+        if self._server_in(sidebar_text):
             return True
 
     def filterSubmission(self, submission):
