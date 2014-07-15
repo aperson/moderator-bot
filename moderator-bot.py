@@ -575,7 +575,7 @@ class ServerAd(Filter):
             return True
         else:
             subreddit = re.findall(r'''/r/[\w-]+''', comment.body)
-            if self._sidebar_check(subreddit):
+            if self._sidebar_check(subreddit.display_name):
                 self.comment = ''
                 self.log_text = "Found server advertisement in subreddit link"
                 p(self.log_text + ":")
