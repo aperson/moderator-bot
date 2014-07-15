@@ -570,7 +570,7 @@ class ServerAd(Filter):
                 color_seed=comment.link_id)
             return True
         else:
-            subreddit = re.findall(r'''/r/[\w-]+''', comment)
+            subreddit = re.findall(r'''/r/[\w-]+''', comment.body)
             if self._sidebar_check(subreddit):
                 self.comment = ''
                 self.log_text = "Found server advertisement in subreddit link"
