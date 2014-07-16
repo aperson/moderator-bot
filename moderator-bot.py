@@ -573,16 +573,19 @@ class ServerAd(Filter):
                 color_seed=comment.link_id)
             return True
         else:
-            subreddits = re.findall(r'''/r/([\w-]+)''', comment.body)
-            for subreddit in subreddits:
-                if self._sidebar_check(subreddit):
-                    self.comment = ''
-                    self.log_text = "Found server advertisement in subreddit link"
-                    p(self.log_text + ":")
-                    p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment.subreddit.display_name, comment.link_id[3:], comment.id),
-                        color_seed=comment.link_id)
-                    return True
+            try:
+                subreddits = re.findall(r'''/r/([\w-]+)''', comment.body)
+                for subreddit in subreddits:
+                    if self._sidebar_check(subreddit):
+                        self.comment = ''
+                        self.log_text = "Found server advertisement in subreddit link"
+                        p(self.log_text + ":")
+                        p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                            comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                            color_seed=comment.link_id)
+                        return True
+            except requests.exceptions.HTTPError:
+                pass
 
 
 class FreeMinecraft(Filter):
