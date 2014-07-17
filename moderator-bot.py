@@ -584,7 +584,7 @@ class ServerAd(Filter):
                             comment.subreddit.display_name, comment.link_id[3:], comment.id),
                             color_seed=comment.link_id)
                         return True
-            except praw.errors.RedirectException:
+            except (praw.errors.RedirectException, requests.exceptions.HTTPError):
                 pass
 
 
