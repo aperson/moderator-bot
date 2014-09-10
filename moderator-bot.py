@@ -33,6 +33,7 @@ from praw.handlers import MultiprocessHandler
 import praw
 import bz2
 import operator
+import requests
 
 try:
     from credentials import *  # NOQA
