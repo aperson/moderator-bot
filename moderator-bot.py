@@ -1261,7 +1261,7 @@ class Flair(Filter):
             xbox = re.compile(
                 r'''(?:\W|^)(?:xbox|360|xbla|xbone)(?:\W|$)''', re.I)
             playstation = re.compile(
-                r'''(?:\W|^)(?:playstation|ps[34])(?:\W|$)''', re.I)
+                r'''(?:\W|^)(?:playstation|ps[34]|vita)(?:\W|$)''', re.I)
             pe = re.compile(
                 r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
             raspi = re.compile(
