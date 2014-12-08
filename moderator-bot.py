@@ -1295,7 +1295,6 @@ class Flair(Filter):
 
 
 def main():
-    sleep_time = 60 * 3
     r = praw.Reddit(USERAGENT, handler=MultiprocessHandler())
     r.login(USERNAME, PASSWORD)
     imgur = Imgur(IMGUR_CLIENT_ID)
@@ -1312,6 +1311,8 @@ def main():
 
     # main loop
     while True:
+        sleep_time = 60 * 3
+        start_time = time.time()
         p('Getting feed...', end='')
         subreddits = r.get_subreddit(SUBREDDIT)
         modqueue = subreddits.get_mod_queue(limit=100)
@@ -1382,7 +1383,10 @@ def main():
                                         f.log_text, item.permalink))
                                 processed['authors'].append(item.author.name)
                             break
-
+        end_time = time.time()
+        total_time = end_time - start_time
+        if total_time >= sleep_time:
+            sleep_time = 1
         for i in range(sleep_time):
             p('Next scan in {} seconds...'.format(sleep_time - i), end='')
             time.sleep(1)
