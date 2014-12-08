@@ -677,7 +677,7 @@ class ShortUrl(Filter):
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
-            r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|(?<!reddi)(?:t\.co)(?!m|\.uk)|tinyurl\.com|'''
+            r'''(?:bit\.ly|goo\.gl|adf\.ly|is\.gd|(?<!reddi)(?:t\.co\/)(?!m|\.uk)|tinyurl\.com|'''
             r'''j\.mp|linkbitty\.com|tiny\.cc|soc\.li|ultrafiles\.net|linkbucks\.com|lnk\.co'''
             r'''|qvvo\.com|ht\.ly|pulse\.me|lmgtfy\.com|\.tk|skroc\.pl|ufa\.lt|alturl\.com|'''
             r'''awe\.sm|q\.gs|lat\.li)''',
@@ -1261,7 +1261,7 @@ class Flair(Filter):
             xbox = re.compile(
                 r'''(?:\W|^)(?:xbox|360|xbla|xbone)(?:\W|$)''', re.I)
             playstation = re.compile(
-                r'''(?:\W|^)(?:playstation|ps[34])(?:\W|$)''', re.I)
+                r'''(?:\W|^)(?:playstation|ps[34]|vita)(?:\W|$)''', re.I)
             pe = re.compile(
                 r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
             raspi = re.compile(
