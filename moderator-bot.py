@@ -592,22 +592,30 @@ class ServerAd(Filter):
 class FreeMinecraft(Filter):
     def __init__(self):
         Filter.__init__(self)
+        self.tlds = r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)'''
         self.regex = re.compile(
             r'''(?:(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?)|(epicfreeprizes)|(freemspointsforever)|(litekoin)|'''
-            r'''(ccincc)|(steampowers)|(cardcodes))'''
-            r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)''',
+            r'''forever)?(?:\.blogspot)?))'''
+            + self.tlds,
             re.I)
+        self.domain_list = '''
+            epicfreeprizes
+            freemspointsforever
+            litekoin
+            ccincc
+            steampowers
+            cardcodes
+            '''.split()
         self.action = 'spammed'
         self.ban = True
 
     def empty(self, thing):
-        if thing == ('', '', '', '', '', '', '', ''):
+        if thing == ('', ''):
             return True
         elif isinstance(thing, list):
             for i in thing:
-                if i != ('', '', '', '', '', '', '', ''):
+                if i != ('', ''):
                     return False
             else:
                 return True
@@ -616,33 +624,36 @@ class FreeMinecraft(Filter):
         else:
             return True
 
-    def filterSubmission(self, submission):
-        for i in (submission.title, submission.selftext, submission.url):
-            result = self.regex.findall(i)
-            if result:
-                if not self.empty(result):
-                    link = 'http://reddit.com/r/{}/comments/{}/'.format(
-                        submission.subreddit, submission.id)
-                    self.log_text = "Found free Minecraft link in submission"
-                    reason = "free minecraft links are not allowed"
-                    self.comment = self.comment_template.format(
-                        sub=submission.subreddit, reason=reason, link=link)
-                    p(self.log_text + ":")
-                    p(link, color_seed=submission.name)
+    def check(self, thing):
+        if not self.empty(thing):
+            return True
+        else:
+            for domain in self.domain_list:
+                if re.findall(domain + self.tlds):
                     return True
 
+    def filterSubmission(self, submission):
+        for i in (submission.title, submission.selftext, submission.url):
+            if self.check(i):
+                link = 'http://reddit.com/r/{}/comments/{}/'.format(
+                    submission.subreddit, submission.id)
+                self.log_text = "Found free Minecraft link in submission"
+                reason = "free minecraft links are not allowed"
+                self.comment = self.comment_template.format(
+                    sub=submission.subreddit, reason=reason, link=link)
+                p(self.log_text + ":")
+                p(link, color_seed=submission.name)
+                return True
+
     def filterComment(self, comment):
-        result = self.regex.findall(comment.body)
-        if result:
-            for i in result:
-                if not self.empty(result):
-                    self.comment = ''
-                    self.log_text = "Found free minecraft link in comment"
-                    p(self.log_text + ":")
-                    p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
-                        comment.subreddit.display_name, comment.link_id[3:], comment.id),
-                        color_seed=comment.link_id)
-                    return True
+        if self.check(comment):
+            self.comment = ''
+            self.log_text = "Found free minecraft link in comment"
+            p(self.log_text + ":")
+            p('http://reddit.com/r/{}/comments/{}/a/{}'.format(
+                comment.subreddit.display_name, comment.link_id[3:], comment.id),
+                color_seed=comment.link_id)
+            return True
 
 
 class AmazonReferral(Filter):
