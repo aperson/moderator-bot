@@ -606,6 +606,8 @@ class FreeMinecraft(Filter):
             ccincc
             steampowers
             cardcodes
+            minecraftpromotions
+            mojangpromotions
             '''.split()
         self.action = 'spammed'
         self.ban = True
