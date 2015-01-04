@@ -648,7 +648,7 @@ class FreeMinecraft(Filter):
                 return True
 
     def filterComment(self, comment):
-        if self.check(comment):
+        if self.check(comment.body):
             self.comment = ''
             self.log_text = "Found free minecraft link in comment"
             p(self.log_text + ":")
