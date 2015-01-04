@@ -613,7 +613,6 @@ class FreeMinecraft(Filter):
         self.ban = True
 
     def check(self, thing):
-        print("checking: " + thing)
         if self.regex.findall(thing):
             return True
         else:
