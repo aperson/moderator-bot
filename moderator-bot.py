@@ -609,8 +609,8 @@ class FreeMinecraft(Filter):
             minecraftpromotions
             mojangpromotions
             '''.split()
-        self.action = 'spammed'
-        self.ban = True
+        self.action = None
+        self.ban = None
 
     def empty(self, thing):
         if thing == ('', ''):
@@ -627,11 +627,15 @@ class FreeMinecraft(Filter):
             return True
 
     def check(self, thing):
+        # DEBUG
+        print("checking: " + thing)
         if not self.empty(thing):
+            print("test1 passed")
             return True
         else:
             for domain in self.domain_list:
                 if re.findall(domain + self.tlds, thing):
+                    print("test2 passed:", re.findall(domain + self.tlds, thing))
                     return True
 
     def filterSubmission(self, submission):
