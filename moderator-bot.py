@@ -629,7 +629,7 @@ class FreeMinecraft(Filter):
             return True
         else:
             for domain in self.domain_list:
-                if re.findall(domain + self.tlds):
+                if re.findall(domain + self.tlds, thing):
                     return True
 
     def filterSubmission(self, submission):
