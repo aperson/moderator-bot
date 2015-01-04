@@ -594,9 +594,9 @@ class FreeMinecraft(Filter):
         Filter.__init__(self)
         self.tlds = r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)'''
         self.regex = re.compile(
-            r'''(?:(?:(free|cracked)?-?minecraft-?(install|get|'''
+            r'''(?:(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?))'''
+            r'''forever)?(?:\.blogspot)?)'''
             + self.tlds,
             re.I)
         self.domain_list = '''
@@ -609,33 +609,16 @@ class FreeMinecraft(Filter):
             minecraftpromotions
             mojangpromotions
             '''.split()
-        self.action = None
-        self.ban = None
-
-    def empty(self, thing):
-        if thing == ('', ''):
-            return True
-        elif isinstance(thing, list):
-            for i in thing:
-                if i != ('', ''):
-                    return False
-            else:
-                return True
-        elif not thing:
-            return False
-        else:
-            return True
+        self.action = 'spammed'
+        self.ban = True
 
     def check(self, thing):
-        # DEBUG
         print("checking: " + thing)
-        if not self.empty(thing):
-            print("test1 passed")
+        if self.regex.findall(thing):
             return True
         else:
             for domain in self.domain_list:
                 if re.findall(domain + self.tlds, thing):
-                    print("test2 passed:", re.findall(domain + self.tlds, thing))
                     return True
 
     def filterSubmission(self, submission):
