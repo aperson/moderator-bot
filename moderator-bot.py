@@ -594,9 +594,9 @@ class FreeMinecraft(Filter):
         Filter.__init__(self)
         self.tlds = r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)'''
         self.regex = re.compile(
-            r'''(?:(free|cracked)?-?minecraft-?(install|get|'''
+            r'''(free|cracked)?-?minecraft-?(install|get|'''
             r'''(?:gift-?)?codes?(?:-?gen(?:erator)?)?|rewards?|acc(?:t|ount)s?(?:free)?|now|'''
-            r'''forever)?(?:\.blogspot)?)'''
+            r'''forever)?(?:\.blogspot)?'''
             + self.tlds,
             re.I)
         self.domain_list = '''
@@ -613,7 +613,8 @@ class FreeMinecraft(Filter):
         self.ban = True
 
     def check(self, thing):
-        if self.regex.findall(thing):
+        result = self.regex.findall(thing)
+        if result and result != [('', '')]:
             return True
         else:
             for domain in self.domain_list:
