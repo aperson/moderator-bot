@@ -614,7 +614,11 @@ class FreeMinecraft(Filter):
 
     def check(self, thing):
         result = self.regex.findall(thing)
-        if result and result != [('', '')]:
+        if type(result) == list():
+            for i in result:
+                if result != ('', ''):
+                    return True
+        if result:
             return True
         else:
             for domain in self.domain_list:
