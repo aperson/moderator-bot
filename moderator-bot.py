@@ -1255,47 +1255,18 @@ class BannedYoutubers(Filter):
 
 
 class Flair(Filter):
-    def __init__(self, reddit):
+    def __init__(self):
         Filter.__init__(self)
-        self.reddit = reddit
         self.nuke = False
 
     def filterSubmission(self, submission):
         if not submission.link_flair_css_class:
-            xbox = re.compile(
-                r'''(?:\W|^)(?:xbox|360|xbla|xbone)(?:\W|$)''', re.I)
-            playstation = re.compile(
-                r'''(?:\W|^)(?:playstation|ps[34]|vita)(?:\W|$)''', re.I)
-            pe = re.compile(
-                r'''(?:\W|^)(?:(?:MC)?PE|Pocket Edition)(?:\W|$)''', re.I)
-            raspi = re.compile(
-                r'''(?:\W|^)(?:raspi|rasberry pie)(?:\W|$)''', re.I)
-            if xbox.search(submission.title):
-                p("Giving {} xbox flair...".format(
+            if submission.title.startswith('[::]'):
+                p("Giving {} CommandBlock flair...".format(
                     submission.name), color_seed=submission.name, end='')
-                flair = 'c'
-                flairtext = 'xbox'
-            elif pe.search(submission.title):
-                p("Giving {} pe flair...".format(
-                    submission.name), color_seed=submission.name, end='')
-                flair = 'g'
-                flairtext = 'pocket edition'
-            elif playstation.search(submission.title):
-                p("Giving {} playstation flair...".format(
-                    submission.name), color_seed=submission.name, end='')
-                flair = 'd'
-                flairtext = 'playstation'
-            elif raspi.search(submission.title):
-                p("Giving {} raspberry pi flair...".format(
-                    submission.name), color_seed=submission.name, end='')
-                flair = 'f'
-                flairtext = 'raspberry pi'
-            else:
-                p("Giving {} pc flair...".format(
-                    submission.name), color_seed=submission.name, end='')
-                flair = 'e'
-                flairtext = ''
-            submission.set_flair(flair_css_class=flair, flair_text=flairtext)
+                flair = 'command'
+                flair_text = 'CommandBlock'
+            submission.set_flair(flair_css_class=flair, flair_text=flair_text)
 
 
 def main():
@@ -1307,7 +1278,7 @@ def main():
     p('Started monitoring submissions on /r/{}.'.format(SUBREDDIT))
 
     filters = [
-        BannedYoutubers(r, Youtube(cache_time=0)),  YoutubeVideo(Youtube()), Suggestion(),
+        Flair(), BannedYoutubers(r, Youtube(cache_time=0)),  YoutubeVideo(Youtube()), Suggestion(),
         Fixed(), ServerAd(r, imgur, Youtube(cache_time=60*30)), FreeMinecraft(), AmazonReferral(),
         ShortUrl(), Failed(), Minebook(), SelfLinks(), BadWords(),
         YoutubeSpam(r, Youtube(cache_time=0)), BannedSubs(), Meme(), InaneTitle(), SpamNBan(),
