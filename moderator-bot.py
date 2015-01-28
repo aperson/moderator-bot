@@ -1260,6 +1260,7 @@ class Flair(Filter):
         self.nuke = False
 
     def filterSubmission(self, submission):
+        flair, flair_text = (None, None)
         if not submission.link_flair_css_class:
             if submission.title.startswith('[::]'):
                 p("Giving {} CommandBlock flair...".format(
