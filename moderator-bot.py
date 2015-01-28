@@ -616,7 +616,7 @@ class FreeMinecraft(Filter):
         result = self.regex.findall(thing)
         if isinstance(result, list):
             for i in result:
-                if result != ('', ''):
+                if i != ('', ''):
                     return True
         if result:
             return True
