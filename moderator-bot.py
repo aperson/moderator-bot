@@ -1266,7 +1266,8 @@ class Flair(Filter):
                     submission.name), color_seed=submission.name, end='')
                 flair = 'command'
                 flair_text = 'CommandBlock'
-            submission.set_flair(flair_css_class=flair, flair_text=flair_text)
+            if flair and flair_text:
+                submission.set_flair(flair_css_class=flair, flair_text=flair_text)
 
 
 def main():
