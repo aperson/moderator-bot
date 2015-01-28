@@ -1281,7 +1281,7 @@ def main():
 
     filters = [
         Flair(), BannedYoutubers(r, Youtube(cache_time=0)),  YoutubeVideo(Youtube()), Suggestion(),
-        Fixed(), ServerAd(r, imgur, Youtube(cache_time=60*30)), FreeMinecraft(), AmazonReferral(),
+        Fixed(), ServerAd(r, imgur, Youtube(cache_time=60*30)), AmazonReferral(),
         ShortUrl(), Failed(), Minebook(), SelfLinks(), BadWords(),
         YoutubeSpam(r, Youtube(cache_time=0)), BannedSubs(), Meme(), InaneTitle(), SpamNBan(),
         AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr(), Twitch()]
