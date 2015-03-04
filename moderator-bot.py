@@ -1267,6 +1267,11 @@ class Flair(Filter):
                     submission.name), color_seed=submission.name, end='')
                 flair = 'command'
                 flair_text = 'CommandBlock'
+            elif "creative" in submission.title.lower():
+                p("Giving {} Creative flair...".format(
+                    submission.name), color_seed=submission.name, end='')
+                flair = 'creative'
+                flair_text = 'Creative'
             if flair and flair_text:
                 submission.set_flair(flair_css_class=flair, flair_text=flair_text)
 
