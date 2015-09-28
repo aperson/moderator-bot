@@ -370,6 +370,7 @@ class Filter(object):
 
 
 class Suggestion(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
@@ -402,6 +403,7 @@ class Suggestion(Filter):
 
 
 class Fixed(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
@@ -590,6 +592,7 @@ class ServerAd(Filter):
 
 
 class FreeMinecraft(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.tlds = r'''[\[\(\{]*?(?:\.|dot|\s)[\]\)\}]*?(?:me|info|com|net|org|ru|co\.uk|us)'''
@@ -650,6 +653,7 @@ class FreeMinecraft(Filter):
 
 
 class AmazonReferral(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
@@ -678,6 +682,7 @@ class AmazonReferral(Filter):
 
 
 class ShortUrl(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
@@ -742,6 +747,7 @@ class Failed(Filter):
 
 
 class Minebook(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''minebook\.me''', re.I)
@@ -767,6 +773,7 @@ class Minebook(Filter):
 
 
 class SelfLinks(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''^(?:https?://|www\.)\S*$''')
@@ -789,6 +796,7 @@ class SelfLinks(Filter):
 
 
 class BadWords(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.action = 'report'
@@ -979,6 +987,7 @@ class AllCaps(Filter):
 
 
 class BannedSubs(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.action = 'spammed'
@@ -991,6 +1000,7 @@ class BannedSubs(Filter):
 
 
 class Meme(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.comment_template = self.comment_template + (
@@ -1030,6 +1040,7 @@ class Meme(Filter):
 
 
 class InaneTitle(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
@@ -1064,6 +1075,7 @@ class InaneTitle(Filter):
 
 
 class SpamNBan(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(
@@ -1093,6 +1105,7 @@ class SpamNBan(Filter):
 
 
 class FileDownload(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.nuke = False
@@ -1113,6 +1126,7 @@ class FileDownload(Filter):
 
 
 class ChunkError(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''terrain(?: generation)? (?:error|glitch)''')
@@ -1131,6 +1145,7 @@ class ChunkError(Filter):
 
 
 class Facebook(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.regex = re.compile(r'''facebook|fbcdn|picsimgesite''')
@@ -1149,6 +1164,7 @@ class Facebook(Filter):
 
 
 class Reditr(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.log_text = "Found Reditr app comment"
@@ -1185,6 +1201,7 @@ class YoutubeVideo(Filter):
 
 
 class Twitch(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.log_text = "Found twitch.tv stream in submission"
@@ -1255,6 +1272,7 @@ class BannedYoutubers(Filter):
 
 
 class Flair(Filter):
+    ## TODO: DEPRECIATED
     def __init__(self):
         Filter.__init__(self)
         self.nuke = False
