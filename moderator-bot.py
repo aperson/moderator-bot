@@ -51,7 +51,6 @@ except:
     SERVERDOMAINS = 'http://example.com/server_domain_list.csv'
     DATABASEFILE = '/some/path'
     CACHEFILE = '/some/other/path'
-    BANNEDSUBS = ['some', 'list']
     STATUS_JSON = 'http://somesite.com/some.json'
     VERSION_JSON = 'http://someothersite.com/some.json'
     IMGUR_CLIENT_ID = 'someid'
@@ -986,19 +985,6 @@ class AllCaps(Filter):
                 return True
 
 
-class BannedSubs(Filter):
-    ## TODO: DEPRECIATED
-    def __init__(self):
-        Filter.__init__(self)
-        self.action = 'spammed'
-
-    def filterComment(self, comment):
-        if not comment.num_reports:
-            for word in BANNEDSUBS:
-                if word in comment.body.lower():
-                    return True
-
-
 class Meme(Filter):
     ## TODO: DEPRECIATED
     def __init__(self):
@@ -1306,7 +1292,7 @@ def main():
         Flair(), BannedYoutubers(r, Youtube(cache_time=0)),  YoutubeVideo(Youtube()), Suggestion(),
         Fixed(), ServerAd(r, imgur, Youtube(cache_time=60*30)), AmazonReferral(),
         ShortUrl(), Failed(), Minebook(), SelfLinks(), BadWords(),
-        YoutubeSpam(r, Youtube(cache_time=0)), BannedSubs(), Meme(), InaneTitle(), SpamNBan(),
+        YoutubeSpam(r, Youtube(cache_time=0)), Meme(), InaneTitle(), SpamNBan(),
         AllCaps(), FileDownload(), ChunkError(), Facebook(), Reditr(), Twitch()]
 
     # main loop
