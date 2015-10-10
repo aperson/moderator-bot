@@ -510,13 +510,16 @@ class ServerAd(Filter):
                 return True
 
     def _sidebar_check(self, subreddit):
-        subreddit = self.reddit.get_subreddit(subreddit)
-        sidebar = subreddit.description
-        to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
-        for i in to_replace:
-            sidebar = sidebar.replace(*i)
-        if self._server_in(sidebar):
-            return True
+        try:
+            subreddit = self.reddit.get_subreddit(subreddit)
+            sidebar = subreddit.description
+            to_replace = (('&amp;', '&'), ('&gt;', '>'), ('&lt;', '<'))
+            for i in to_replace:
+                sidebar = sidebar.replace(*i)
+            if self._server_in(sidebar):
+                return True
+        except praw.errors.InvalidSubreddit:
+            return None
 
     def filterSubmission(self, submission):
         self.comment = ''
