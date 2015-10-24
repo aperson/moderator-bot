@@ -1285,7 +1285,7 @@ class Flair(Filter):
 
 def main():
     r = praw.Reddit(USERAGENT, handler=MultiprocessHandler())
-    r.login(USERNAME, PASSWORD)
+    r.login(USERNAME, PASSWORD, disable_warning=True)
     imgur = Imgur(IMGUR_CLIENT_ID)
     last_status = None
     processed = {'names': [], 'authors': []}
